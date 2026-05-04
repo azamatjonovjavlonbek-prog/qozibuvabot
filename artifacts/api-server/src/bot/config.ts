@@ -1,8 +1,8 @@
 export const CONSULTATION_PHONE = "+998901234567";
 export const CONSULTATION_HOURS = "10:00 dan 20:00 gacha";
 
-export const ARIZA_PRICE = 15000;
-export const CONSULTATION_PRICE = 50000;
+export const ARIZA_PRICE = 99000;
+export const CONSULTATION_PRICE = 149000;
 
 export const ARIZA_TYPES = [
   {
