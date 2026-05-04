@@ -48,10 +48,9 @@ export function confirmConsultationKeyboard(): TelegramBot.InlineKeyboardMarkup 
   };
 }
 
-export function checkSentKeyboard(): TelegramBot.InlineKeyboardMarkup {
+export function cancelKeyboard(): TelegramBot.InlineKeyboardMarkup {
   return {
     inline_keyboard: [
-      [{ text: "✅ Chek yubordim", callback_data: "check_sent" }],
       [{ text: "❌ Bekor qilish", callback_data: "back_main" }],
     ],
   };
@@ -59,13 +58,14 @@ export function checkSentKeyboard(): TelegramBot.InlineKeyboardMarkup {
 
 export function adminApproveKeyboard(
   userId: number,
-  type: string,
+  type: "ariza" | "consultation",
   arizaId?: string,
 ): TelegramBot.InlineKeyboardMarkup {
-  const approveData = arizaId
-    ? `admin_approve_ariza_${userId}_${arizaId}`
-    : `admin_approve_consultation_${userId}`;
-  const rejectData = `admin_reject_${userId}`;
+  const approveData =
+    type === "ariza"
+      ? `admin_ok:${userId}:${arizaId}`
+      : `admin_ok_c:${userId}`;
+  const rejectData = `admin_no:${userId}`;
   return {
     inline_keyboard: [
       [

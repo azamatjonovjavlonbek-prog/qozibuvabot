@@ -15,7 +15,7 @@ import {
   arizaListKeyboard,
   confirmArizaKeyboard,
   confirmConsultationKeyboard,
-  checkSentKeyboard,
+  cancelKeyboard,
   adminApproveKeyboard,
   backToMainKeyboard,
 } from "./keyboards";
@@ -38,7 +38,9 @@ export function setupHandlers(bot: TelegramBot): void {
     const chatId = query.message?.chat.id;
     const messageId = query.message?.message_id;
     const userId = query.from.id;
-    const username = query.from.username ? `@${query.from.username}` : query.from.first_name;
+    const username = query.from.username
+      ? `@${query.from.username}`
+      : (query.from.first_name ?? "Noma'lum");
     const data = query.data ?? "";
 
     if (!chatId || !messageId) return;
@@ -104,8 +106,8 @@ export function setupHandlers(bot: TelegramBot): void {
         `Quyidagi kartaga *${ariza.price.toLocaleString()} so'm* o'tkazing:\n\n` +
         `🏦 Karta raqami:\n\`${CARD_NUMBER}\`\n` +
         `👤 Karta egasi: *${CARD_OWNER}*\n\n` +
-        `To'lovni amalga oshirgach, chek (screenshot) yuboring va "✅ Chek yubordim" tugmasini bosing.`,
-        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: checkSentKeyboard() }
+        `✅ To'lov qilgandan so'ng *to'lov cheki (screenshot) rasmini* shu chatga yuboring — administrator tekshirib ariza faylini yuboradi.`,
+        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: cancelKeyboard() }
       );
       return;
     }
@@ -124,77 +126,63 @@ export function setupHandlers(bot: TelegramBot): void {
         `Quyidagi kartaga *${CONSULTATION_PRICE.toLocaleString()} so'm* o'tkazing:\n\n` +
         `🏦 Karta raqami:\n\`${CARD_NUMBER}\`\n` +
         `👤 Karta egasi: *${CARD_OWNER}*\n\n` +
-        `To'lovni amalga oshirgach, chek (screenshot) yuboring va "✅ Chek yubordim" tugmasini bosing.`,
-        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: checkSentKeyboard() }
+        `✅ To'lov qilgandan so'ng *to'lov cheki (screenshot) rasmini* shu chatga yuboring — administrator tekshirib telefon raqam yuboradi.`,
+        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: cancelKeyboard() }
       );
       return;
     }
 
-    if (data === "check_sent") {
-      const state = getState(userId);
-      if (
-        state.step !== "waiting_ariza_check" &&
-        state.step !== "waiting_consultation_check"
-      ) return;
-
-      await bot.editMessageText(
-        `⏳ *Chekingiz tekshirilmoqda...*\n\nAdministrator tomonidan tasdiqlanishi bilanoq sizga xizmat yuboriladi. Odatda 5-10 daqiqa ichida.`,
-        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown" }
-      );
-      return;
-    }
-
-    if (data.startsWith("admin_approve_ariza_")) {
-      const parts = data.replace("admin_approve_ariza_", "").split("_");
-      const targetUserId = parseInt(parts[0]!);
-      const arizaId = parts[1]!;
+    // Admin: ariza tasdiqlash  (format: admin_ok:<userId>:<arizaId>)
+    if (data.startsWith("admin_ok:")) {
+      const parts = data.split(":");
+      const targetUserId = parseInt(parts[1]!);
+      const arizaId = parts[2]!;
       const ariza = ARIZA_TYPES.find((a) => a.id === arizaId);
-      const state = getState(targetUserId);
 
-      if (!ariza) return;
+      if (!ariza) {
+        await bot.sendMessage(chatId, `⚠️ Ariza turi topilmadi: ${arizaId}`);
+        return;
+      }
 
       await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId });
-      await bot.sendMessage(chatId, `✅ Tasdiqlandi! Ariza foydalanuvchiga yuborildi.`);
+      await bot.sendMessage(chatId, `✅ Tasdiqlandi! Ariza foydalanuvchiga yuborilmoqda.`);
 
-      const targetChatId = state.pendingChatId ?? targetUserId;
       await bot.sendMessage(
-        targetChatId,
+        targetUserId,
         `✅ *To'lovingiz tasdiqlandi!*\n\n📄 *${ariza.label}* fayli quyida yuborilmoqda...`,
         { parse_mode: "Markdown" }
       );
-      await sendArizaDocument(bot, targetChatId, arizaId);
+      await sendArizaDocument(bot, targetUserId, arizaId);
       resetState(targetUserId);
       return;
     }
 
-    if (data.startsWith("admin_approve_consultation_")) {
-      const targetUserId = parseInt(data.replace("admin_approve_consultation_", ""));
-      const state = getState(targetUserId);
+    // Admin: konsultatsiya tasdiqlash  (format: admin_ok_c:<userId>)
+    if (data.startsWith("admin_ok_c:")) {
+      const targetUserId = parseInt(data.split(":")[1]!);
 
       await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId });
       await bot.sendMessage(chatId, `✅ Tasdiqlandi! Telefon raqam foydalanuvchiga yuborildi.`);
 
-      const targetChatId = state.pendingChatId ?? targetUserId;
       await bot.sendMessage(
-        targetChatId,
-        `✅ *To'lovingiz tasdiqlandi!*\n\n📞 Mutaxassisimiz bilan bog'laning:\n\n🔗 Telefon: *${CONSULTATION_PHONE}*\n🕐 Ish vaqti: *${CONSULTATION_HOURS}*\n\nKo'rsatilgan vaqt oralig'ida qo'ng'iroq qilishingiz mumkin! ✨`,
+        targetUserId,
+        `✅ *To'lovingiz tasdiqlandi!*\n\n📞 Mutaxassisimiz bilan bog'laning:\n\n🔗 Telefon: *${CONSULTATION_PHONE}*\n🕐 Ish vaqti: *${CONSULTATION_HOURS}*\n\nKo'rsatilgan vaqt oralig'ida qo'ng'iroq qiling! ✨`,
         { parse_mode: "Markdown", reply_markup: backToMainKeyboard() }
       );
       resetState(targetUserId);
       return;
     }
 
-    if (data.startsWith("admin_reject_")) {
-      const targetUserId = parseInt(data.replace("admin_reject_", ""));
-      const state = getState(targetUserId);
+    // Admin: rad etish  (format: admin_no:<userId>)
+    if (data.startsWith("admin_no:")) {
+      const targetUserId = parseInt(data.split(":")[1]!);
 
       await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId });
-      await bot.sendMessage(chatId, `❌ Rad etildi. Foydalanuvchiga xabar yuborildi.`);
+      await bot.sendMessage(chatId, `❌ Rad etildi.`);
 
-      const targetChatId = state.pendingChatId ?? targetUserId;
       await bot.sendMessage(
-        targetChatId,
-        `❌ *To'lovingiz tasdiqlanmadi.*\n\nIltimos, to'g'ri karta raqamiga o'tkazganingizni tekshirib, chekni qayta yuboring yoki biz bilan bog'laning.`,
+        targetUserId,
+        `❌ *To'lovingiz tasdiqlanmadi.*\n\nIltimos, to'g'ri karta raqamiga o'tkazganingizni tekshirib, chekni qayta yuboring.`,
         { parse_mode: "Markdown", reply_markup: backToMainKeyboard() }
       );
       resetState(targetUserId);
@@ -202,89 +190,99 @@ export function setupHandlers(bot: TelegramBot): void {
     }
   });
 
+  // Foydalanuvchi rasm (chek) yuborganda — darhol adminga yuboriladi
   bot.on("message", async (msg) => {
     const chatId = msg.chat.id;
     const userId = msg.from?.id ?? chatId;
-    const username = msg.from?.username ? `@${msg.from.username}` : msg.from?.first_name ?? "Noma'lum";
+    const username = msg.from?.username
+      ? `@${msg.from.username}`
+      : (msg.from?.first_name ?? "Noma'lum");
     const state = getState(userId);
 
     if (msg.text?.startsWith("/")) return;
 
-    if (
+    const isWaiting =
       state.step === "waiting_ariza_check" ||
-      state.step === "waiting_consultation_check"
-    ) {
-      const hasPhoto = msg.photo && msg.photo.length > 0;
-      const hasDoc = !!msg.document;
+      state.step === "waiting_consultation_check";
 
-      if (!hasPhoto && !hasDoc) {
-        await bot.sendMessage(
-          chatId,
-          `📸 Iltimos, to'lov chekini *rasm* yoki *fayl* sifatida yuboring.`,
-          { parse_mode: "Markdown" }
-        );
-        return;
+    if (!isWaiting) return;
+
+    const hasPhoto = msg.photo && msg.photo.length > 0;
+    const hasDoc = !!msg.document;
+
+    if (!hasPhoto && !hasDoc) {
+      await bot.sendMessage(
+        chatId,
+        `📸 Iltimos, to'lov chekini *rasm yoki fayl* sifatida yuboring.`,
+        { parse_mode: "Markdown" }
+      );
+      return;
+    }
+
+    const isAriza = state.step === "waiting_ariza_check";
+    const ariza = isAriza
+      ? ARIZA_TYPES.find((a) => a.id === state.selectedArizaId)
+      : null;
+
+    const serviceLabel = isAriza
+      ? `📄 Ariza: *${ariza?.label ?? state.selectedArizaId}*`
+      : `📞 Konsultatsiya`;
+
+    const amount = isAriza ? ARIZA_PRICE : CONSULTATION_PRICE;
+
+    const adminText =
+      `🔔 *Yangi to'lov cheki!*\n\n` +
+      `👤 Foydalanuvchi: ${username}\n` +
+      `🆔 ID: \`${userId}\`\n` +
+      `${serviceLabel}\n` +
+      `💰 Summa: *${amount.toLocaleString()} so'm*\n\n` +
+      `Chekni tekshirib tasdiqlang yoki rad eting:`;
+
+    const adminKeyboard = adminApproveKeyboard(
+      userId,
+      isAriza ? "ariza" : "consultation",
+      state.selectedArizaId
+    );
+
+    try {
+      if (hasPhoto) {
+        const fileId = msg.photo![msg.photo!.length - 1]!.file_id;
+        await bot.sendPhoto(ADMIN_ID, fileId, {
+          caption: adminText,
+          parse_mode: "Markdown",
+          reply_markup: adminKeyboard,
+        });
+      } else if (hasDoc) {
+        await bot.sendDocument(ADMIN_ID, msg.document!.file_id, {
+          caption: adminText,
+          parse_mode: "Markdown",
+          reply_markup: adminKeyboard,
+        });
       }
 
-      const isAriza = state.step === "waiting_ariza_check";
-      const ariza = isAriza
-        ? ARIZA_TYPES.find((a) => a.id === state.selectedArizaId)
-        : null;
+      await bot.sendMessage(
+        chatId,
+        `⏳ *Chekingiz administratorga yuborildi!*\n\nTasdiqlangach, xizmat darhol yuboriladi. Odatda *5–10 daqiqa* ichida.`,
+        { parse_mode: "Markdown" }
+      );
 
-      const serviceLabel = isAriza
-        ? `📄 Ariza: *${ariza?.label ?? "Noma'lum"}*`
-        : `📞 Konsultatsiya`;
-
-      const amount = isAriza ? ARIZA_PRICE : CONSULTATION_PRICE;
-
-      const approveData = isAriza
-        ? `admin_approve_ariza_${userId}_${state.selectedArizaId}`
-        : `admin_approve_consultation_${userId}`;
-
-      const adminText =
-        `🔔 *Yangi to'lov cheki keldi!*\n\n` +
-        `👤 Foydalanuvchi: ${username}\n` +
-        `🆔 ID: \`${userId}\`\n` +
-        `${serviceLabel}\n` +
-        `💰 Summa: *${amount.toLocaleString()} so'm*\n\n` +
-        `Chekni tekshirib tasdiqlang yoki rad eting:`;
-
-      const adminKeyboard = adminApproveKeyboard(userId, isAriza ? "ariza" : "consultation", state.selectedArizaId);
-
-      try {
-        if (hasPhoto) {
-          const fileId = msg.photo![msg.photo!.length - 1]!.file_id;
-          await bot.sendPhoto(ADMIN_ID, fileId, {
-            caption: adminText,
-            parse_mode: "Markdown",
-            reply_markup: adminKeyboard,
-          });
-        } else if (hasDoc) {
-          await bot.sendDocument(ADMIN_ID, msg.document!.file_id, {
-            caption: adminText,
-            parse_mode: "Markdown",
-            reply_markup: adminKeyboard,
-          });
-        }
-
-        await bot.sendMessage(
-          chatId,
-          `⏳ *Chekingiz administratorga yuborildi!*\n\nTasdiqlangach, xizmat darhol yuboriladi. Odatda 5-10 daqiqa ichida.`,
-          { parse_mode: "Markdown" }
-        );
-      } catch (err) {
-        logger.error({ err }, "Admin ga xabar yuborishda xato");
-        await bot.sendMessage(
-          chatId,
-          `⚠️ Xatolik yuz berdi. Iltimos qaytadan urinib ko'ring.`,
-          { reply_markup: backToMainKeyboard() }
-        );
-      }
+      logger.info({ userId, username, service: isAriza ? state.selectedArizaId : "consultation" }, "Chek adminga yuborildi");
+    } catch (err) {
+      logger.error({ err }, "Adminga chek yuborishda xato");
+      await bot.sendMessage(
+        chatId,
+        `⚠️ Xatolik yuz berdi. Iltimos qaytadan urinib ko'ring.`,
+        { reply_markup: backToMainKeyboard() }
+      );
     }
   });
 }
 
-async function sendArizaDocument(bot: TelegramBot, chatId: number, arizaId: string): Promise<void> {
+async function sendArizaDocument(
+  bot: TelegramBot,
+  chatId: number,
+  arizaId: string,
+): Promise<void> {
   const templates: Record<string, string> = {
     divorce: generateDivorceTemplate(),
     aliment: generateAlimentTemplate(),
@@ -301,7 +299,10 @@ async function sendArizaDocument(bot: TelegramBot, chatId: number, arizaId: stri
   await bot.sendDocument(
     chatId,
     buffer,
-    { caption: "📄 Ushbu arizani to'ldirib, imzolab sudga topshiring.", reply_markup: backToMainKeyboard() },
+    {
+      caption: "📄 Ushbu arizani to'ldirib, imzolab sudga topshiring.",
+      reply_markup: backToMainKeyboard(),
+    },
     { filename: `ariza_${arizaId}.txt`, contentType: "text/plain" }
   );
 }
