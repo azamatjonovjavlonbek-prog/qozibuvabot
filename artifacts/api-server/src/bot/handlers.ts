@@ -486,14 +486,15 @@ async function sendShablonDocument(
   const templates: Record<string, string> = {
     divorce: generateDivorceTemplate(),
     aliment: generateAlimentTemplate(),
-    property: generatePropertyTemplate(),
-    child_custody: generateChildCustodyTemplate(),
-    debt: generateDebtTemplate(),
-    labor: generateLaborTemplate(),
-    other: generateOtherTemplate(),
+    radar:   generateRadarTemplate(),
   };
 
-  const content = templates[catId] ?? templates["other"]!;
+  const content = templates[catId];
+  if (!content) {
+    await bot.sendMessage(chatId, `⚠️ Shablon topilmadi. Iltimos admin bilan bog'laning.`, { reply_markup: backToMainKeyboard() });
+    return;
+  }
+
   const buffer = Buffer.from(content, "utf-8");
 
   await bot.sendDocument(
@@ -508,233 +509,191 @@ async function sendShablonDocument(
 }
 
 function generateDivorceTemplate(): string {
-  return `NIKOHNI BEKOR QILISH TO'G'RISIDA
-ARIZA (DA'VO ARIZASI)
+  return `Fuqarolik ishlari bo'yicha _________________________
+tumanlararo sudiga
 
-____________ TUMANI (SHAHRI) FUQAROLIK ISHLARI BO'YICHA
-____________ SUDIGA
+Da'vogar:  ____________________________________
+           ____________________________________
+Manzil:    ____________________________________
+           ____________________________________
+Tel:       ____________________________________
 
-Da'vogar: ___________________________
-          (F.I.O.)
-Manzil: _____________________________
-Telefon: ____________________________
+Javobgar:  ____________________________________
+           ____________________________________
+Manzil:    ____________________________________
+           ____________________________________
+Tel:       ____________________________________
 
-Javobgar: ___________________________
-          (F.I.O.)
-Manzil: _____________________________
 
-ARIZA
+D A ' V O   A R I Z A
+(Nikohdan ajratish haqida)
 
-Men, _____________________ (F.I.O.), _____________________ (F.I.O.) bilan
-_____ yil _____ oyda nikoh bog'laganman.
-Nikoh ____ raqami bilan ro'yxatdan o'tgan.
 
-Nikoh davomida _____ nafar farzand(lar) tug'ilgan:
-1. _____________________________ (tug'ilgan yil: _____)
-2. _____________________________ (tug'ilgan yil: _____)
+Men va javobgar o'rtamizdagi qonuniy nikoh _________________ tumani FHDY bo'limi
+tomonidan _____________ kuni ________________-sonli dalolatnoma bilan qayd etilgan.
 
-Nikohni davom ettirish imkoniyati qolmaganligi sababli, ya'ni:
-_______________________________________________
+Birgalikdagi turmushimizdan __________ yilda tug'ilgan _______________________________
+ismli farzandimiz bor. Uning tug'ilganligi to'g'risidagi guvohnoma _____________ tumani
+FHDY bo'limi tomonidan _______________-sonli seriya raqamli guvohnoma berilgan.
 
-O'TINAMAN:
+___________________________________________________________________________
+___________________________________________________________________________
+___________________________________________________________________________
+(Nikohni saqlab qolish imkoni yo'qligiga sabab)
 
-1. Men bilan javobgar o'rtasidagi nikohni bekor qilishni.
-2. Farzand(lar)ni mening tarbiyamga berishni.
-3. Birgalikda orttirgan mulkni quyidagicha bo'lishni:
-   _______________________________________________
+Men _____________ kundan beri javobgar bilan bir oila sifatida yashamayman.
 
-ILOVA:
-- Nikoh guvohnomasi nusxasi
-- Farzandlar tug'ilganlik guvohnomasi nusxasi
-- Davlat boji to'lovi cheki
+O'zbekiston Respublikasi Oila kodeksining 41-moddasiga binoan, agar sud er va xotinning
+bundan buyon birgalikda yashashiga va oilani saqlab qolishga imkoniyat yo'q deb topsa,
+ularni nikohdan ajratadi.
 
-Sana: _____ yil _____ oy _____ kun
-Imzo: _____________ / _____________________ /`;
+Yuqoridagilarga ko'ra, O'zbekiston Respublikasi Oila Kodeksining 41-moddasiga,
+O'zbekiston Respublikasi Fuqarolik protsessual kodeksining 188, 189-191-moddalariga asosan
+
+
+SO'RAYMAN:
+
+Javobgar bilan o'rtamizdagi _____________ tumani tomonidan _______________ kuni
+___________-son bilan qayd etilgan nikohdan ajratishni.
+
+
+Ilova qilinayotgan hujjatlar:
+1. Da'vo ariza nusxasi;
+2. Nikoh qayd etilganligi haqida guvohnoma;
+3. Tug'ilganlik haqida guvohnoma nusxasi;
+4. Boshqa hujjatlar.
+
+
+_________________________________
+(F.I.O.)
+
+__________
+(imzo)
+
+"___" _____________ 202___ yil`;
 }
 
 function generateAlimentTemplate(): string {
-  return `ALIMENT UNDIRISH TO'G'RISIDA
-ARIZA (DA'VO ARIZASI)
+  return `                                        Fuqarolik ishlari bo'yicha ___________
+                                        tumanlararo sudiga
 
-____________ TUMANI (SHAHRI) FUQAROLIK ISHLARI BO'YICHA
-____________ SUDIGA
 
-Da'vogar: ___________________________
-Manzil: _____________________________
-Telefon: ____________________________
+                                        Da'vogar:      ____________________
+                                        ______________________________
+                                        Manzil:      ______________________
+                                        ______________________________
+                                        tel: __________________________
 
-Javobgar: ___________________________
-Ish joyi: ___________________________
 
-ARIZA
+                                        Javobgar:       ___________________
+                                        ______________________________
+                                        Manzil:       _____________________
+                                        ______________________________
+                                        tel: __________________________
 
-Men, _____________________, javobgar _____________________ bilan
-_____ yildan _____ yilgacha nikohda bo'lganman.
+                                  A R I Z A
+                         (Aliment undirish to'g'risida)
 
-Farzand(lar):
-1. _____________________________ (tug'ilgan: _____)
-2. _____________________________ (tug'ilgan: _____)
+      Men va javobgar  _________________________________  bilan  o'rtamizdagi
+qonuniy nikoh  _________ tumani FHDY bo'limi  tomonidan  ______________  kuni
+rasmiylashtiriIgan.
+      Birgalikdagi  turmushimizdan  ____________   yilda   ______________________________
+______________________________  tug'ildi.
+      Turmush  o'rtog'im  bilan  __  yil  birga  yashadik  va  oiladagi  muntazam
+kelishmovchiliklar  sababli  _____  yil  ______  oyidan  buyon  bIrga  yashamaymiz
+hamda bolalarim bilan ota  uyimga  ketishga  majbur  bo'ldim.  Javobgar  farzandimni
+ta'minotini umuman o'ylamaydi. Farzandimning  barcha  xarajatlarini  o'zim  amalga
+oshiraman va javobgar tomonidan biror bir moddiy yordam  berilmaydi.  Hattoki  shu
+kungacha na meni na farzandimizni holidan xabar oldi.
+      Oila Kodeksining 96-moddasiga asosan ota-ona voyaga yetmagan  bolalariga
+ta'minot berishi shart.
+      Voyaga yetmagan bolalariga ta'minot berish majburiyatini ixtiyoriy  ravishda
+bajarrnagan ota (ona)dan sudning hal qiluv qaroriga yoki sud buyrug'iga  asosan
+aliment undirilishi belgilangan.
+      O'rtamizda aliment to'lash to'g'risida kelishuv mavjud emas.
+      Oila Kodeksining 99-moddasiga muvofiq agar  voyaga  yetmagan  bolalariga
+ta'minot berish haqida ota-ona o'rtasida kelishuv bo'lmasa,  ularning  ta'minoti
+uchun aliment sud tomonidan ota-onaning har oylik ish  haqi  va  (yoki)  boshqa
+daromadining bir bola uchun — to'rtdan bir qismi; ikki bola uchun —  uchdan  bir
+qismi; uch va undan ortiq bola uchun — yarmi  miqdorida  undirilishi  ko'rsatilib
+o'tilgan.
+      Yuqoridagilarga asosan:
 
-Javobgar farzand(lar) boqishiga hech qanday hissa qo'shmayapti.
+                                  SO'RAYMAN:
 
-O'TINAMAN:
+       Farzandimning  moddiy  ta'minoti  uchun   javobgar   _________________
+___________________dan  har oyda  ish haqi va  boshqa  daromadlaridan  qonunda
+belgilangan tartibda aliment undirish to'g'risida sud  buyrug'i  chiqarishingizni.
 
-Javobgardan aliment undirishni:
-- 1 nafar: 1/4 (25%) | 2 nafar: 1/3 (33%) | 3+: 1/2 (50%)
 
-ILOVA:
-- Nikoh/ajralish guvohnomasi nusxasi
-- Farzandlar tug'ilganlik guvohnomasi nusxasi
-- Davlat boji to'lovi cheki
+Ilova:
+    1. Ariza nusxasi
+    2. Nikoh qayd etilganligi haqida guvohnoma.
+    3. Tug'ilganlik haqida guvohnoma nusxasi.
 
-Sana: _____ yil _____ oy _____ kun
-Imzo: _____________ / _____________________ /`;
+
+
+                                            ________  ______________________
+
+                                                   202__ yil  "___" _________`;
 }
 
-function generatePropertyTemplate(): string {
-  return `BIRGALIKDA ORTTIRGAN MULKNI BO'LISH TO'G'RISIDA
-ARIZA (DA'VO ARIZASI)
+function generateRadarTemplate(): string {
+  return `Jinoyat ishlari bo'yicha ______________________________
+______________________________ SUDIGA
 
-____________ TUMANI (SHAHRI) FUQAROLIK ISHLARI BO'YICHA
-____________ SUDIGA
 
-Da'vogar: ___________________________
-Javobgar: ___________________________
+Arizachi: ______________________________
+Yashash manzil: ______________________________
+______________________________
+Telefon raqam: ______________________________
 
-ARIZA
 
-Nikoh davomida ortirilgan mulk:
+A R I Z A
+(______________________________-sonli jarimani bekor qilish to'g'risida)
 
-1. Ko'chmas mulk: _____________________________
-   Bahosi: _____________________________ so'm
 
-2. Avtomobil: ________________________________
-   Bahosi: _____________________________ so'm
+Men, ______________________________, ______________________________ rusumli avtomobil
+davlat raqami ______________________________ avtomobilga ______________________________
+viloyati IIB YHXB MAI inspektori ______________________________ tomonidan MJtKning
+128X3-moddasi 1-qismi bilan huquqbuzarlik sodir etganlikda aybdor deb topildim va ushbu
+huquqbuzarlik yuzasidan ______________________________ kuni
+______________________________-sonli qaror rasmiylashtirildi.
 
-3. Boshqa: ___________________________________
+Ushbu ______________________________-sonli jarima solish to'g'risidagi qarorni
+O'zbekiston Respublikasining amaldagi qonunlari buzilgan deb hisoblaymiz. Qaror quyidagi
+qonuniy asoslar buzilgan holda rasmiylashtirilgan:
 
-Jami: __________________ so'm
+Vazirlar Mahkamasining 2018-yil 1-dekabrdagi 975-sonli qarori Nizomning 6-bobi 1-paragrafi
+buzilgan. Ko'chma fotoradarlar, mobil foto va video qayd etish komplekslari orqali aniqlangan
+qoidabuzarlik holatlarida to'g'ridan-to'g'ri QAROR emas, faqatgina BAYONNOMA
+rasmiylashtiriIishi kerak.
 
-O'TINAMAN: Mulkni teng (50/50) bo'lishni.
+Nizomning 28-bandiga binoan, sertifikatsiyadan o'tmagan, yoki amal qilish muddati o'tgan
+texnik vositalardan foydalanish qat'iyan man etiladi. ______________________________-sonli
+qarorga hech qanday texnik hujjat ilova qilinmagan.
 
-ILOVA: Mulk hujjatlari, nikoh/ajralish guvohnomasi, davlat boji cheki.
+Nizomning 37-bobi 2-qismiga muvofiq, foto va video fiksatsiyaga asoslangan qarorlar majburiy
+ravishda elektron raqamli imzo (ERI) bilan tasdiqlangan bo'lishi shart.
+______________________________-sonli qarorda esa hech qanday elektron imzo mavjud emas.
 
-Sana: _____ yil _____ oy _____ kun
-Imzo: _____________ / _____________________ /`;
-}
+O'zbekiston Respublikasi Ma'muriy javobgarlik to'g'risidagi kodeksining 321-moddasi
+2-qismida quyidagicha belgilangan: "Ma'muriy huquqbuzarliklar to'g'risidagi ishlarni yuritish
+qoidalarining jiddiy buzilishi — ma'muriy huquqbuzarlik to'g'risidagi ish yuzasidan chiqarilgan
+qarorni bekor qilishga asos bo'ladi."
 
-function generateChildCustodyTemplate(): string {
-  return `FARZANDNI VASIYLIKKA OLISH TO'G'RISIDA
-ARIZA (DA'VO ARIZASI)
+Yuqoridagi qonuniy faktlarga asosan, O'zbekiston Respublikasi MJtKning 271-moddasi
+1-bandiga asosan ______________________________-sonli qarorni bekor qilishingizni so'rayman.
 
-____________ TUMANI (SHAHRI) FUQAROLIK ISHLARI BO'YICHA
-____________ SUDIGA
 
-Da'vogar: ___________________________
-Javobgar: ___________________________
+Ilova:
+- Haydovchilik guvohnomasi;
+- Avtomototransport vositasi ro'yxatdan o'tkazilganligi to'g'risidagi guvohnoma;
+- Shaxsni tasdiqlovchi hujjat (pasport/ID karta);
+- ______________________________-sonli jarima qarori.
 
-ARIZA
 
-Farzand: _____________________________ (tug'ilgan: _____)
-Hozir: _________________________ tarbiyasida.
+IMZO:   _________________
 
-Farzandni mening tarbiyamga berishga asoslar:
-1. _______________________________________________
-2. _______________________________________________
-
-O'TINAMAN: Farzandni mening tarbiyamga berishni.
-
-ILOVA: Tug'ilganlik guvohnomasi, ajralish guvohnomasi, turar joy va ish hujjatlari.
-
-Sana: _____ yil _____ oy _____ kun
-Imzo: _____________ / _____________________ /`;
-}
-
-function generateDebtTemplate(): string {
-  return `QARZ UNDIRISH TO'G'RISIDA
-ARIZA (DA'VO ARIZASI)
-
-____________ TUMANI (SHAHRI) FUQAROLIK ISHLARI BO'YICHA
-____________ SUDIGA
-
-Da'vogar: ___________________________
-Javobgar: ___________________________
-
-ARIZA
-
-_____ yil _____ oyda javobgarga _____________________ so'm qarz berdim.
-Qaytarish muddati: _____________________
-Hujjat: _____________________
-
-Qarz qaytarilmadi.
-
-O'TINAMAN:
-1. Asosiy qarz: __________________ so'm.
-2. Kechikish foizi: ______________ so'm.
-3. Sud xarajatlarini undirishni.
-
-ILOVA: Qarz hujjati, o'tkazma tasdiqlari, davlat boji cheki.
-
-Sana: _____ yil _____ oy _____ kun
-Imzo: _____________ / _____________________ /`;
-}
-
-function generateLaborTemplate(): string {
-  return `MEHNAT HUQUQLARINI TIKLASH TO'G'RISIDA
-ARIZA (DA'VO ARIZASI)
-
-____________ TUMANI (SHAHRI) FUQAROLIK ISHLARI BO'YICHA
-____________ SUDIGA
-
-Da'vogar: ___________________________
-Javobgar (Ish beruvchi): ______________
-
-ARIZA
-
-_____ yildan beri _____________________ lavozimida ishladim.
-
-Muammo: _______________________________________________
-(Noto'g'ri ishdan bo'shatish / Ish haqi to'lanmagan / Boshqa)
-
-Voqea sanasi: _____________________
-
-O'TINAMAN:
-1. Ishga qayta tiklashni / To'lanmagan ish haqi: ________ so'm.
-2. Moddiy zarar: ______________ so'm.
-3. Sud xarajatlarini undirishni.
-
-ILOVA: Mehnat shartnomasi, ishdan bo'shatish buyrug'i, ish haqi hujjatlari.
-
-Sana: _____ yil _____ oy _____ kun
-Imzo: _____________ / _____________________ /`;
-}
-
-function generateOtherTemplate(): string {
-  return `DA'VO ARIZASI
-
-____________ TUMANI (SHAHRI) FUQAROLIK ISHLARI BO'YICHA
-____________ SUDIGA
-
-Da'vogar: ___________________________
-Javobgar: ___________________________
-
-ARIZA
-
-Nizo mohiyati:
-_______________________________________________
-_______________________________________________
-
-Voqealar:
-_____ yil _____ oy: ______________________________
-
-Huquqiy asos: O'zbekiston Respublikasi ________ Kodeksining ___-moddasi.
-
-O'TINAMAN:
-1. _______________________________________________
-2. Sud xarajatlarini undirishni.
-
-ILOVA: Dalil hujjatlari, davlat boji cheki.
-
-Sana: _____ yil _____ oy _____ kun
-Imzo: _____________ / _____________________ /`;
+"___" _____________ 202___ yil`;
 }

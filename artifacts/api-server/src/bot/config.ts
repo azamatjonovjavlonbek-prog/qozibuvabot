@@ -10,13 +10,9 @@ export const CARD_OWNER = "Javlonbek Azamatjonov";
 export const ADMIN_ID = 1079088129;
 
 export const ARIZA_CATEGORIES = [
-  { id: "divorce",       label: "Nikohdan ajratish" },
-  { id: "aliment",       label: "Aliment undirish" },
-  { id: "property",      label: "Mulkni bo'lish" },
-  { id: "child_custody", label: "Farzand vasiyligini aniqlash" },
-  { id: "debt",          label: "Qarz undirish" },
-  { id: "labor",         label: "Mehnat nizosi" },
-  { id: "other",         label: "Boshqa masala" },
+  { id: "divorce", label: "Nikohdan ajratish" },
+  { id: "aliment", label: "Aliment undirish" },
+  { id: "radar",   label: "Jarima (radar) bekor qilish" },
 ] as const;
 
 export type ArizaCategoryId = (typeof ARIZA_CATEGORIES)[number]["id"];
