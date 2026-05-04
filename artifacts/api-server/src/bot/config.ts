@@ -1,4 +1,4 @@
-export const CONSULTATION_PHONE = "+998901234567";
+export const CONSULTATION_PHONE = "+998918518551";
 export const CONSULTATION_HOURS = "10:00 dan 20:00 gacha";
 
 export const ARIZA_PRICE = 99000;
