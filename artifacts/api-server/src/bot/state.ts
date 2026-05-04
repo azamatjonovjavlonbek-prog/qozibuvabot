@@ -3,11 +3,15 @@ export interface UserState {
     | "idle"
     | "selecting_ariza"
     | "confirming_ariza"
-    | "waiting_ariza_payment"
+    | "waiting_ariza_check"
     | "selecting_consultation"
     | "confirming_consultation"
-    | "waiting_consultation_payment";
+    | "waiting_consultation_check";
   selectedArizaId?: string;
+  pendingChatId?: number;
+  pendingUserId?: number;
+  pendingUsername?: string;
+  pendingType?: "ariza" | "consultation";
 }
 
 const userStates = new Map<number, UserState>();
