@@ -1,8 +1,9 @@
 import TelegramBot from "node-telegram-bot-api";
 import {
-  ARIZA_TYPES,
+  ARIZA_CATEGORIES,
+  PROFESSIONAL_TYPES,
+  SHABLON_PRICE,
   CONSULTATION_PRICE,
-  ARIZA_PRICE,
   CONSULTATION_PHONE,
   CONSULTATION_HOURS,
   CARD_NUMBER,
@@ -12,8 +13,11 @@ import {
 import { getState, setState, resetState } from "./state";
 import {
   mainMenuKeyboard,
-  arizaListKeyboard,
-  confirmArizaKeyboard,
+  arizaMenuKeyboard,
+  shablonListKeyboard,
+  confirmShablonKeyboard,
+  professionalListKeyboard,
+  confirmProfessionalKeyboard,
   confirmConsultationKeyboard,
   cancelKeyboard,
   adminApproveKeyboard,
@@ -44,9 +48,9 @@ export function setupHandlers(bot: TelegramBot): void {
     const data = query.data ?? "";
 
     if (!chatId || !messageId) return;
-
     await bot.answerCallbackQuery(query.id);
 
+    // ── Bosh menyu ──────────────────────────────────────────────────────
     if (data === "back_main") {
       resetState(userId);
       await bot.editMessageText(
@@ -56,58 +60,128 @@ export function setupHandlers(bot: TelegramBot): void {
       return;
     }
 
+    // ── Ariza bo'limi ────────────────────────────────────────────────────
     if (data === "menu_ariza") {
-      setState(userId, { step: "selecting_ariza" });
+      setState(userId, { step: "idle" });
       await bot.editMessageText(
-        `📄 *Ariza turini tanlang*\n\nHar bir ariza narxi: *${ARIZA_PRICE.toLocaleString()} so'm*\nTo'lovdan so'ng ariza fayli avtomatik yuboriladi.`,
-        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: arizaListKeyboard() }
+        `📄 *Ariza bo'limi*\n\nQuyidagi ikki xizmatdan birini tanlang:\n\n` +
+        `📝 *Shablon ariza* — tayyor shablon, ba'zi ma'lumotlarni o'zingiz to'ldirasiz.\n` +
+        `✍️ *Professional ariza* — yurist tomonidan to'liq yozib beriladi.`,
+        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: arizaMenuKeyboard() }
       );
       return;
     }
 
+    // ── Shablon ariza ro'yxati ───────────────────────────────────────────
+    if (data === "menu_shablon") {
+      setState(userId, { step: "selecting_shablon" });
+      await bot.editMessageText(
+        `📝 *Shablon ariza*\n\nNarxi: *${SHABLON_PRICE.toLocaleString()} so'm*\n\nTayyor shablon faylingiz yuboriladi. Undagi bo'sh joylarni o'zingiz to'ldirасiz.\n\nQaysi mavzu bo'yicha ariza kerak?`,
+        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: shablonListKeyboard() }
+      );
+      return;
+    }
+
+    if (data.startsWith("shablon_")) {
+      const catId = data.replace("shablon_", "");
+      const cat = ARIZA_CATEGORIES.find((c) => c.id === catId);
+      if (!cat) return;
+
+      setState(userId, { step: "confirming_shablon", selectedServiceId: catId });
+      await bot.editMessageText(
+        `📝 *${cat.label} — Shablon ariza*\n\n` +
+        `Tayyor shablon faylini olasiz va undagi bo'sh joylarni o'zingiz to'ldirasiz.\n\n` +
+        `💰 Narxi: *${SHABLON_PRICE.toLocaleString()} so'm*`,
+        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: confirmShablonKeyboard(catId) }
+      );
+      return;
+    }
+
+    if (data.startsWith("pay_shablon_")) {
+      const catId = data.replace("pay_shablon_", "");
+      const cat = ARIZA_CATEGORIES.find((c) => c.id === catId);
+      if (!cat) return;
+
+      setState(userId, {
+        step: "waiting_shablon_check",
+        selectedServiceId: catId,
+        pendingChatId: chatId,
+        pendingUsername: username,
+        pendingType: "shablon",
+      });
+      await bot.editMessageText(
+        `💳 *To'lov ma'lumotlari*\n\n` +
+        `Xizmat: *${cat.label} (Shablon)*\n` +
+        `Summa: *${SHABLON_PRICE.toLocaleString()} so'm*\n\n` +
+        `🏦 Karta raqami:\n\`${CARD_NUMBER}\`\n` +
+        `👤 Karta egasi: *${CARD_OWNER}*\n\n` +
+        `✅ To'lov qilgandan so'ng *to'lov cheki (screenshot) rasmini* shu chatga yuboring.`,
+        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: cancelKeyboard() }
+      );
+      return;
+    }
+
+    // ── Professional ariza ro'yxati ──────────────────────────────────────
+    if (data === "menu_professional") {
+      setState(userId, { step: "selecting_professional" });
+      await bot.editMessageText(
+        `✍️ *Professional ariza*\n\nYuristimiz sizning holatингизга mos ariza yozib beradi.\n\n` +
+        `💰 Narxi: *199 000 – 399 000 so'm* (mavzuga qarab)\n\n` +
+        `Qaysi mavzu bo'yicha ariza kerak?`,
+        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: professionalListKeyboard() }
+      );
+      return;
+    }
+
+    if (data.startsWith("pro_")) {
+      const proId = data.replace("pro_", "");
+      const pro = PROFESSIONAL_TYPES.find((p) => p.id === proId);
+      if (!pro) return;
+
+      setState(userId, { step: "confirming_professional", selectedServiceId: proId });
+      await bot.editMessageText(
+        `✍️ *${pro.label} — Professional ariza*\n\n` +
+        `Yuristimiz sizning ma'lumotlaringiz asosida to'liq ariza matnini yozib beradi.\n\n` +
+        `💰 Narxi: *${pro.price.toLocaleString()} so'm*\n\n` +
+        `To'lovdan so'ng administrator siz bilan bog'lanadi va kerakli ma'lumotlarni so'raydi.`,
+        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: confirmProfessionalKeyboard(proId, pro.price) }
+      );
+      return;
+    }
+
+    if (data.startsWith("pay_pro_")) {
+      const proId = data.replace("pay_pro_", "");
+      const pro = PROFESSIONAL_TYPES.find((p) => p.id === proId);
+      if (!pro) return;
+
+      setState(userId, {
+        step: "waiting_professional_check",
+        selectedServiceId: proId,
+        pendingChatId: chatId,
+        pendingUsername: username,
+        pendingType: "professional",
+      });
+      await bot.editMessageText(
+        `💳 *To'lov ma'lumotlari*\n\n` +
+        `Xizmat: *${pro.label} (Professional)*\n` +
+        `Summa: *${pro.price.toLocaleString()} so'm*\n\n` +
+        `🏦 Karta raqami:\n\`${CARD_NUMBER}\`\n` +
+        `👤 Karta egasi: *${CARD_OWNER}*\n\n` +
+        `✅ To'lov qilgandan so'ng *to'lov cheki (screenshot) rasmini* shu chatga yuboring.`,
+        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: cancelKeyboard() }
+      );
+      return;
+    }
+
+    // ── Konsultatsiya ────────────────────────────────────────────────────
     if (data === "menu_consultation") {
       setState(userId, { step: "selecting_consultation" });
       await bot.editMessageText(
-        `📞 *Konsultatsiya xizmati*\n\nHuquqiy masalalaringiz bo'yicha mutaxassisimiz bilan bog'laning.\n\n💰 Narxi: *${CONSULTATION_PRICE.toLocaleString()} so'm*\n🕐 Ish vaqti: *${CONSULTATION_HOURS}*\n\nTo'lovdan so'ng telefon raqamimiz yuboriladi.`,
+        `📞 *Konsultatsiya xizmati*\n\nHuquqiy masalalaringiz bo'yicha mutaxassisimiz bilan bog'laning.\n\n` +
+        `💰 Narxi: *${CONSULTATION_PRICE.toLocaleString()} so'm*\n` +
+        `🕐 Ish vaqti: *${CONSULTATION_HOURS}*\n\n` +
+        `To'lovdan so'ng telefon raqamimiz yuboriladi.`,
         { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: confirmConsultationKeyboard() }
-      );
-      return;
-    }
-
-    if (data.startsWith("ariza_")) {
-      const arizaId = data.replace("ariza_", "");
-      const ariza = ARIZA_TYPES.find((a) => a.id === arizaId);
-      if (!ariza) return;
-
-      setState(userId, { step: "confirming_ariza", selectedArizaId: arizaId });
-      await bot.editMessageText(
-        `📋 *${ariza.label}*\n\n${ariza.description}\n\n💰 Narxi: *${ariza.price.toLocaleString()} so'm*\n\nTo'lov qilishni tasdiqlaysizmi?`,
-        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: confirmArizaKeyboard(arizaId) }
-      );
-      return;
-    }
-
-    if (data.startsWith("pay_ariza_")) {
-      const arizaId = data.replace("pay_ariza_", "");
-      const ariza = ARIZA_TYPES.find((a) => a.id === arizaId);
-      if (!ariza) return;
-
-      setState(userId, {
-        step: "waiting_ariza_check",
-        selectedArizaId: arizaId,
-        pendingChatId: chatId,
-        pendingUserId: userId,
-        pendingUsername: username,
-        pendingType: "ariza",
-      });
-
-      await bot.editMessageText(
-        `💳 *To'lov ma'lumotlari*\n\n` +
-        `Quyidagi kartaga *${ariza.price.toLocaleString()} so'm* o'tkazing:\n\n` +
-        `🏦 Karta raqami:\n\`${CARD_NUMBER}\`\n` +
-        `👤 Karta egasi: *${CARD_OWNER}*\n\n` +
-        `✅ To'lov qilgandan so'ng *to'lov cheki (screenshot) rasmini* shu chatga yuboring — administrator tekshirib ariza faylini yuboradi.`,
-        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: cancelKeyboard() }
       );
       return;
     }
@@ -116,73 +190,98 @@ export function setupHandlers(bot: TelegramBot): void {
       setState(userId, {
         step: "waiting_consultation_check",
         pendingChatId: chatId,
-        pendingUserId: userId,
         pendingUsername: username,
         pendingType: "consultation",
       });
-
       await bot.editMessageText(
         `💳 *To'lov ma'lumotlari*\n\n` +
-        `Quyidagi kartaga *${CONSULTATION_PRICE.toLocaleString()} so'm* o'tkazing:\n\n` +
+        `Xizmat: *Konsultatsiya*\n` +
+        `Summa: *${CONSULTATION_PRICE.toLocaleString()} so'm*\n\n` +
         `🏦 Karta raqami:\n\`${CARD_NUMBER}\`\n` +
         `👤 Karta egasi: *${CARD_OWNER}*\n\n` +
-        `✅ To'lov qilgandan so'ng *to'lov cheki (screenshot) rasmini* shu chatga yuboring — administrator tekshirib telefon raqam yuboradi.`,
+        `✅ To'lov qilgandan so'ng *to'lov cheki (screenshot) rasmini* shu chatga yuboring.`,
         { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: cancelKeyboard() }
       );
       return;
     }
 
-    // Admin: ariza tasdiqlash  (format: admin_ok:<userId>:<arizaId>)
-    if (data.startsWith("admin_ok:")) {
+    // ── Admin: shablon tasdiqlash  admin_ok_s:<userId>:<catId> ──────────
+    if (data.startsWith("admin_ok_s:")) {
       const parts = data.split(":");
       const targetUserId = parseInt(parts[1]!);
-      const arizaId = parts[2]!;
-      const ariza = ARIZA_TYPES.find((a) => a.id === arizaId);
+      const catId = parts[2]!;
+      const cat = ARIZA_CATEGORIES.find((c) => c.id === catId);
 
-      if (!ariza) {
-        await bot.sendMessage(chatId, `⚠️ Ariza turi topilmadi: ${arizaId}`);
+      await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId });
+
+      if (!cat) {
+        await bot.sendMessage(chatId, `⚠️ Kategoriya topilmadi: ${catId}`);
         return;
       }
 
-      await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId });
-      await bot.sendMessage(chatId, `✅ Tasdiqlandi! Ariza foydalanuvchiga yuborilmoqda.`);
-
-      await bot.sendMessage(
-        targetUserId,
-        `✅ *To'lovingiz tasdiqlandi!*\n\n📄 *${ariza.label}* fayli quyida yuborilmoqda...`,
+      await bot.sendMessage(chatId, `✅ Tasdiqlandi! Shablon ariza yuborilmoqda.`);
+      await bot.sendMessage(targetUserId,
+        `✅ *To'lovingiz tasdiqlandi!*\n\n📄 *${cat.label}* shablon arizasi quyida yuborilmoqda...`,
         { parse_mode: "Markdown" }
       );
-      await sendArizaDocument(bot, targetUserId, arizaId);
+      await sendShablonDocument(bot, targetUserId, catId);
       resetState(targetUserId);
       return;
     }
 
-    // Admin: konsultatsiya tasdiqlash  (format: admin_ok_c:<userId>)
-    if (data.startsWith("admin_ok_c:")) {
-      const targetUserId = parseInt(data.split(":")[1]!);
+    // ── Admin: professional tasdiqlash  admin_ok_p:<userId>:<proId> ─────
+    if (data.startsWith("admin_ok_p:")) {
+      const parts = data.split(":");
+      const targetUserId = parseInt(parts[1]!);
+      const proId = parts[2]!;
+      const pro = PROFESSIONAL_TYPES.find((p) => p.id === proId);
 
       await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId });
-      await bot.sendMessage(chatId, `✅ Tasdiqlandi! Telefon raqam foydalanuvchiga yuborildi.`);
 
-      await bot.sendMessage(
-        targetUserId,
-        `✅ *To'lovingiz tasdiqlandi!*\n\n📞 Mutaxassisimiz bilan bog'laning:\n\n🔗 Telefon: *${CONSULTATION_PHONE}*\n🕐 Ish vaqti: *${CONSULTATION_HOURS}*\n\nKo'rsatilgan vaqt oralig'ida qo'ng'iroq qiling! ✨`,
+      if (!pro) {
+        await bot.sendMessage(chatId, `⚠️ Xizmat turi topilmadi: ${proId}`);
+        return;
+      }
+
+      await bot.sendMessage(chatId,
+        `✅ Tasdiqlandi!\n\n📌 Endi foydalanuvchi (ID: \`${targetUserId}\`) bilan bog'laning va ariza uchun kerakli ma'lumotlarni so'rang.`,
+        { parse_mode: "Markdown" }
+      );
+      await bot.sendMessage(targetUserId,
+        `✅ *To'lovingiz tasdiqlandi!*\n\n✍️ *${pro.label}* bo'yicha professional ariza buyurtmangiz qabul qilindi.\n\n` +
+        `Yuristimiz tez orada siz bilan bog'lanib, kerakli ma'lumotlarni so'raydi. Iltimos, kutib turing.`,
         { parse_mode: "Markdown", reply_markup: backToMainKeyboard() }
       );
       resetState(targetUserId);
       return;
     }
 
-    // Admin: rad etish  (format: admin_no:<userId>)
+    // ── Admin: konsultatsiya tasdiqlash  admin_ok_c:<userId> ────────────
+    if (data.startsWith("admin_ok_c:")) {
+      const targetUserId = parseInt(data.split(":")[1]!);
+
+      await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId });
+      await bot.sendMessage(chatId, `✅ Tasdiqlandi! Telefon raqam yuborildi.`);
+      await bot.sendMessage(targetUserId,
+        `✅ *To'lovingiz tasdiqlandi!*\n\n📞 Mutaxassisimiz bilan bog'laning:\n\n` +
+        `🔗 Telefon: *${CONSULTATION_PHONE}*\n` +
+        `🕐 Ish vaqti: *${CONSULTATION_HOURS}*\n\n` +
+        `Ko'rsatilgan vaqt oralig'ida qo'ng'iroq qiling! ✨`,
+        { parse_mode: "Markdown", reply_markup: backToMainKeyboard() }
+      );
+      resetState(targetUserId);
+      return;
+    }
+
+    // ── Admin: rad etish  admin_no:<userId> ─────────────────────────────
     if (data.startsWith("admin_no:")) {
       const targetUserId = parseInt(data.split(":")[1]!);
 
       await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId });
       await bot.sendMessage(chatId, `❌ Rad etildi.`);
-
-      await bot.sendMessage(
-        targetUserId,
-        `❌ *To'lovingiz tasdiqlanmadi.*\n\nIltimos, to'g'ri karta raqamiga o'tkazganingizni tekshirib, chekni qayta yuboring.`,
+      await bot.sendMessage(targetUserId,
+        `❌ *To'lovingiz tasdiqlanmadi.*\n\n` +
+        `Iltimos, to'g'ri karta raqamiga o'tkazganingizni tekshirib, chekni qayta yuboring.`,
         { parse_mode: "Markdown", reply_markup: backToMainKeyboard() }
       );
       resetState(targetUserId);
@@ -190,7 +289,7 @@ export function setupHandlers(bot: TelegramBot): void {
     }
   });
 
-  // Foydalanuvchi rasm (chek) yuborganda — darhol adminga yuboriladi
+  // ── Rasm/fayl qabul qilish (chek) ─────────────────────────────────────
   bot.on("message", async (msg) => {
     const chatId = msg.chat.id;
     const userId = msg.from?.id ?? chatId;
@@ -202,7 +301,8 @@ export function setupHandlers(bot: TelegramBot): void {
     if (msg.text?.startsWith("/")) return;
 
     const isWaiting =
-      state.step === "waiting_ariza_check" ||
+      state.step === "waiting_shablon_check" ||
+      state.step === "waiting_professional_check" ||
       state.step === "waiting_consultation_check";
 
     if (!isWaiting) return;
@@ -211,24 +311,33 @@ export function setupHandlers(bot: TelegramBot): void {
     const hasDoc = !!msg.document;
 
     if (!hasPhoto && !hasDoc) {
-      await bot.sendMessage(
-        chatId,
+      await bot.sendMessage(chatId,
         `📸 Iltimos, to'lov chekini *rasm yoki fayl* sifatida yuboring.`,
         { parse_mode: "Markdown" }
       );
       return;
     }
 
-    const isAriza = state.step === "waiting_ariza_check";
-    const ariza = isAriza
-      ? ARIZA_TYPES.find((a) => a.id === state.selectedArizaId)
-      : null;
+    // Admin uchun ma'lumot
+    let serviceLabel = "";
+    let amount = 0;
+    let adminKeyboard: TelegramBot.InlineKeyboardMarkup;
 
-    const serviceLabel = isAriza
-      ? `📄 Ariza: *${ariza?.label ?? state.selectedArizaId}*`
-      : `📞 Konsultatsiya`;
-
-    const amount = isAriza ? ARIZA_PRICE : CONSULTATION_PRICE;
+    if (state.step === "waiting_shablon_check") {
+      const cat = ARIZA_CATEGORIES.find((c) => c.id === state.selectedServiceId);
+      serviceLabel = `📝 Shablon: *${cat?.label ?? state.selectedServiceId}*`;
+      amount = SHABLON_PRICE;
+      adminKeyboard = adminApproveKeyboard(userId, "shablon", state.selectedServiceId);
+    } else if (state.step === "waiting_professional_check") {
+      const pro = PROFESSIONAL_TYPES.find((p) => p.id === state.selectedServiceId);
+      serviceLabel = `✍️ Professional: *${pro?.label ?? state.selectedServiceId}*`;
+      amount = pro?.price ?? 0;
+      adminKeyboard = adminApproveKeyboard(userId, "professional", state.selectedServiceId);
+    } else {
+      serviceLabel = `📞 Konsultatsiya`;
+      amount = CONSULTATION_PRICE;
+      adminKeyboard = adminApproveKeyboard(userId, "consultation");
+    }
 
     const adminText =
       `🔔 *Yangi to'lov cheki!*\n\n` +
@@ -238,39 +347,30 @@ export function setupHandlers(bot: TelegramBot): void {
       `💰 Summa: *${amount.toLocaleString()} so'm*\n\n` +
       `Chekni tekshirib tasdiqlang yoki rad eting:`;
 
-    const adminKeyboard = adminApproveKeyboard(
-      userId,
-      isAriza ? "ariza" : "consultation",
-      state.selectedArizaId
-    );
-
     try {
       if (hasPhoto) {
         const fileId = msg.photo![msg.photo!.length - 1]!.file_id;
         await bot.sendPhoto(ADMIN_ID, fileId, {
           caption: adminText,
           parse_mode: "Markdown",
-          reply_markup: adminKeyboard,
+          reply_markup: adminKeyboard!,
         });
-      } else if (hasDoc) {
+      } else {
         await bot.sendDocument(ADMIN_ID, msg.document!.file_id, {
           caption: adminText,
           parse_mode: "Markdown",
-          reply_markup: adminKeyboard,
+          reply_markup: adminKeyboard!,
         });
       }
 
-      await bot.sendMessage(
-        chatId,
+      await bot.sendMessage(chatId,
         `⏳ *Chekingiz administratorga yuborildi!*\n\nTasdiqlangach, xizmat darhol yuboriladi. Odatda *5–10 daqiqa* ichida.`,
         { parse_mode: "Markdown" }
       );
-
-      logger.info({ userId, username, service: isAriza ? state.selectedArizaId : "consultation" }, "Chek adminga yuborildi");
+      logger.info({ userId, username, step: state.step, serviceId: state.selectedServiceId }, "Chek adminga yuborildi");
     } catch (err) {
       logger.error({ err }, "Adminga chek yuborishda xato");
-      await bot.sendMessage(
-        chatId,
+      await bot.sendMessage(chatId,
         `⚠️ Xatolik yuz berdi. Iltimos qaytadan urinib ko'ring.`,
         { reply_markup: backToMainKeyboard() }
       );
@@ -278,10 +378,11 @@ export function setupHandlers(bot: TelegramBot): void {
   });
 }
 
-async function sendArizaDocument(
+// ── Shablon hujjatlar ──────────────────────────────────────────────────────
+async function sendShablonDocument(
   bot: TelegramBot,
   chatId: number,
-  arizaId: string,
+  catId: string,
 ): Promise<void> {
   const templates: Record<string, string> = {
     divorce: generateDivorceTemplate(),
@@ -293,17 +394,17 @@ async function sendArizaDocument(
     other: generateOtherTemplate(),
   };
 
-  const content = templates[arizaId] ?? templates["other"]!;
+  const content = templates[catId] ?? templates["other"]!;
   const buffer = Buffer.from(content, "utf-8");
 
   await bot.sendDocument(
     chatId,
     buffer,
     {
-      caption: "📄 Ushbu arizani to'ldirib, imzolab sudga topshiring.",
+      caption: "📄 Bo'sh joylarni to'ldirib, imzolab sudga topshiring.",
       reply_markup: backToMainKeyboard(),
     },
-    { filename: `ariza_${arizaId}.txt`, contentType: "text/plain" }
+    { filename: `shablon_ariza_${catId}.txt`, contentType: "text/plain" }
   );
 }
 
@@ -335,7 +436,6 @@ Nikoh davomida _____ nafar farzand(lar) tug'ilgan:
 
 Nikohni davom ettirish imkoniyati qolmaganligi sababli, ya'ni:
 _______________________________________________
-_______________________________________________
 
 O'TINAMAN:
 
@@ -350,7 +450,6 @@ ILOVA:
 - Davlat boji to'lovi cheki
 
 Sana: _____ yil _____ oy _____ kun
-
 Imzo: _____________ / _____________________ /`;
 }
 
@@ -362,45 +461,34 @@ ____________ TUMANI (SHAHRI) FUQAROLIK ISHLARI BO'YICHA
 ____________ SUDIGA
 
 Da'vogar: ___________________________
-          (F.I.O.)
 Manzil: _____________________________
 Telefon: ____________________________
 
 Javobgar: ___________________________
-          (F.I.O.)
-Manzil: _____________________________
 Ish joyi: ___________________________
 
 ARIZA
 
-Men, _____________________ (F.I.O.), javobgar _____________________ bilan
+Men, _____________________, javobgar _____________________ bilan
 _____ yildan _____ yilgacha nikohda bo'lganman.
 
-Nikohimizdan quyidagi farzand(lar) tug'ilgan:
+Farzand(lar):
 1. _____________________________ (tug'ilgan: _____)
 2. _____________________________ (tug'ilgan: _____)
 
-Farzand(lar) hozirda mening tarbiyamda bo'lib, javobgar ularning boqishiga
-hech qanday moddiy hissa qo'shmayapti.
-
-O'zbekiston Respublikasi Oila kodeksining 99-moddasi asosida:
+Javobgar farzand(lar) boqishiga hech qanday hissa qo'shmayapti.
 
 O'TINAMAN:
 
-Javobgardan har oylik daromadining quyidagi ulushini aliment sifatida undirishni:
-- 1 nafar farzand uchun: 1/4 (25%)
-- 2 nafar farzand uchun: 1/3 (33%)
-- 3 va undan ortiq: 1/2 (50%)
-
-Farzandlar: _____ nafar — daromadining _____ ulushini
+Javobgardan aliment undirishni:
+- 1 nafar: 1/4 (25%) | 2 nafar: 1/3 (33%) | 3+: 1/2 (50%)
 
 ILOVA:
-- Nikoh (ajralish) guvohnomasi nusxasi
+- Nikoh/ajralish guvohnomasi nusxasi
 - Farzandlar tug'ilganlik guvohnomasi nusxasi
 - Davlat boji to'lovi cheki
 
 Sana: _____ yil _____ oy _____ kun
-
 Imzo: _____________ / _____________________ /`;
 }
 
@@ -412,46 +500,27 @@ ____________ TUMANI (SHAHRI) FUQAROLIK ISHLARI BO'YICHA
 ____________ SUDIGA
 
 Da'vogar: ___________________________
-Manzil: _____________________________
-Telefon: ____________________________
-
 Javobgar: ___________________________
-Manzil: _____________________________
 
 ARIZA
 
-Men, _____________________, javobgar _____________________ bilan
-_____ yildan _____ yilgacha nikohda bo'lganman.
-Nikoh _____ yil _____ oyda bekor qilingan.
+Nikoh davomida ortirilgan mulk:
 
-Nikoh davomida quyidagi mulk ortirilgan:
-
-1. Ko'chmas mulk:
-   Manzil: _____________________________
+1. Ko'chmas mulk: _____________________________
    Bahosi: _____________________________ so'm
 
-2. Avtomobil:
-   Markasi/modeli: _____________________
-   Davlat raqami: ______________________
+2. Avtomobil: ________________________________
    Bahosi: _____________________________ so'm
 
-3. Boshqa mol-mulk:
-   _______________________________________________
+3. Boshqa: ___________________________________
 
-Jami mulk qiymati taxminan: __________________ so'm
+Jami: __________________ so'm
 
-O'TINAMAN:
+O'TINAMAN: Mulkni teng (50/50) bo'lishni.
 
-Yuqorida ko'rsatilgan mulkni teng (50/50) yoki quyidagi nisbatda bo'lishni:
-_______________________________________________
-
-ILOVA:
-- Mulk hujjatlari nusxasi
-- Bahosi bo'yicha ekspert xulosasi (mavjud bo'lsa)
-- Nikoh/ajralish guvohnomasi nusxasi
+ILOVA: Mulk hujjatlari, nikoh/ajralish guvohnomasi, davlat boji cheki.
 
 Sana: _____ yil _____ oy _____ kun
-
 Imzo: _____________ / _____________________ /`;
 }
 
@@ -463,43 +532,22 @@ ____________ TUMANI (SHAHRI) FUQAROLIK ISHLARI BO'YICHA
 ____________ SUDIGA
 
 Da'vogar: ___________________________
-Manzil: _____________________________
-Telefon: ____________________________
-
 Javobgar: ___________________________
-Manzil: _____________________________
 
 ARIZA
 
-Men, _____________________, javobgar _____________________ bilan
-nikohdan ajrashganman (ajralish guvohnomasi № _____).
+Farzand: _____________________________ (tug'ilgan: _____)
+Hozir: _________________________ tarbiyasida.
 
-Farzandimiz: _____________________________
-Tug'ilgan sana: __________________________
-
-Farzandimiz hozirda _____________________ (kim) tarbiyasida.
-
-Farzandning _____ mening tarbiyamda bo'lishi uchun quyidagi asoslar mavjud:
+Farzandni mening tarbiyamga berishga asoslar:
 1. _______________________________________________
 2. _______________________________________________
-3. _______________________________________________
 
-Moddiy sharoitim: _______________________________________________
-Turar joyim: ___________________________________________________
+O'TINAMAN: Farzandni mening tarbiyamga berishni.
 
-O'TINAMAN:
-
-Farzand _____________________________ (F.I.O.) ni
-mening — _____________________________ (F.I.O.) — tarbiyamga berishni.
-
-ILOVA:
-- Farzand tug'ilganlik guvohnomasi
-- Ajralish guvohnomasi
-- Turar joy hujjatlari
-- Ish joyi ma'lumotnomasi
+ILOVA: Tug'ilganlik guvohnomasi, ajralish guvohnomasi, turar joy va ish hujjatlari.
 
 Sana: _____ yil _____ oy _____ kun
-
 Imzo: _____________ / _____________________ /`;
 }
 
@@ -511,37 +559,24 @@ ____________ TUMANI (SHAHRI) FUQAROLIK ISHLARI BO'YICHA
 ____________ SUDIGA
 
 Da'vogar: ___________________________
-Manzil: _____________________________
-Telefon: ____________________________
-
 Javobgar: ___________________________
-Manzil: _____________________________
 
 ARIZA
 
-Men, _____________________, _____ yil _____ oyda javobgar _____________________
-ga _____________________ so'm miqdorida pul qarz berdim.
+_____ yil _____ oyda javobgarga _____________________ so'm qarz berdim.
+Qaytarish muddati: _____________________
+Hujjat: _____________________
 
-Qarz berish holati: _______________________________________________
-Qaytarish muddati: _______________________________________________
-Hujjatlar (kvitansiya/shartnoma): __________________________________
-
-Qarz o'z vaqtida qaytarilmadi. Bir necha bor murojaat qildim, ammo natija bo'lmadi.
+Qarz qaytarilmadi.
 
 O'TINAMAN:
+1. Asosiy qarz: __________________ so'm.
+2. Kechikish foizi: ______________ so'm.
+3. Sud xarajatlarini undirishni.
 
-1. Javobgardan asosiy qarz: __________________ so'mni undirishni.
-2. Kechikish uchun foiz/jarimani: ____________ so'mni undirishni.
-3. Sud xarajatlarini javobgardan undirishni.
-
-ILOVA:
-- Qarz hujjati (tilxat/shartnoma) nusxasi
-- Pul o'tkazma tasdiqlari
-- Javobgarga murojaat qilganligi haqida dalillar
-- Davlat boji to'lovi cheki
+ILOVA: Qarz hujjati, o'tkazma tasdiqlari, davlat boji cheki.
 
 Sana: _____ yil _____ oy _____ kun
-
 Imzo: _____________ / _____________________ /`;
 }
 
@@ -553,40 +588,25 @@ ____________ TUMANI (SHAHRI) FUQAROLIK ISHLARI BO'YICHA
 ____________ SUDIGA
 
 Da'vogar: ___________________________
-Manzil: _____________________________
-Telefon: ____________________________
-
 Javobgar (Ish beruvchi): ______________
-Yuridik manzil: ______________________
 
 ARIZA
 
-Men, _____________________, _____ yildan beri javobgar tashkilotda
-_____________________ lavozimida ishladim.
+_____ yildan beri _____________________ lavozimida ishladim.
 
 Muammo: _______________________________________________
 (Noto'g'ri ishdan bo'shatish / Ish haqi to'lanmagan / Boshqa)
 
-Voqea sanasi: _______________________________________________
-Ish beruvchining harakati: _______________________________________
-Bu harakat qonunga zidligi: ______________________________________
+Voqea sanasi: _____________________
 
 O'TINAMAN:
+1. Ishga qayta tiklashni / To'lanmagan ish haqi: ________ so'm.
+2. Moddiy zarar: ______________ so'm.
+3. Sud xarajatlarini undirishni.
 
-1. Meni ishga qayta tiklashni (yoki)
-2. To'lanmagan ish haqini _________________ so'm miqdorida undirishni.
-3. Moddiy zarar _________________ so'mni undirishni.
-4. Ma'naviy zarar _________________ so'mni undirishni.
-5. Sud xarajatlarini javobgardan undirishni.
-
-ILOVA:
-- Mehnat shartnomasi nusxasi
-- Ishdan bo'shatish buyrug'i nusxasi (mavjud bo'lsa)
-- Ish haqi to'lovi hujjatlari
-- Davlat boji to'lovi cheki
+ILOVA: Mehnat shartnomasi, ishdan bo'shatish buyrug'i, ish haqi hujjatlari.
 
 Sana: _____ yil _____ oy _____ kun
-
 Imzo: _____________ / _____________________ /`;
 }
 
@@ -597,42 +617,25 @@ ____________ TUMANI (SHAHRI) FUQAROLIK ISHLARI BO'YICHA
 ____________ SUDIGA
 
 Da'vogar: ___________________________
-          (F.I.O., tug'ilgan sanasi)
-Manzil: _____________________________
-Telefon: ____________________________
-
 Javobgar: ___________________________
-          (F.I.O. yoki tashkilot nomi)
-Manzil: _____________________________
 
 ARIZA
-
-Men, _____________________ (F.I.O.), quyidagi masala bo'yicha sudga murojaat qilaman:
 
 Nizo mohiyati:
 _______________________________________________
 _______________________________________________
-_______________________________________________
 
-Voqealar tartibi:
-_____ yil _____ oy: ______________________________
+Voqealar:
 _____ yil _____ oy: ______________________________
 
-Huquqiy asos:
-O'zbekiston Respublikasi ___________________ Kodeksining _____-moddasi.
+Huquqiy asos: O'zbekiston Respublikasi ________ Kodeksining ___-moddasi.
 
 O'TINAMAN:
-
 1. _______________________________________________
-2. _______________________________________________
-3. Sud xarajatlarini javobgardan undirishni.
+2. Sud xarajatlarini undirishni.
 
-ILOVA:
-- Dalil hujjatlari
-- Guvohlar ro'yxati (mavjud bo'lsa)
-- Davlat boji to'lovi cheki
+ILOVA: Dalil hujjatlari, davlat boji cheki.
 
 Sana: _____ yil _____ oy _____ kun
-
 Imzo: _____________ / _____________________ /`;
 }

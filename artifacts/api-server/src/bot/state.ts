@@ -1,17 +1,19 @@
 export interface UserState {
   step:
     | "idle"
-    | "selecting_ariza"
-    | "confirming_ariza"
-    | "waiting_ariza_check"
+    | "selecting_shablon"
+    | "confirming_shablon"
+    | "waiting_shablon_check"
+    | "selecting_professional"
+    | "confirming_professional"
+    | "waiting_professional_check"
     | "selecting_consultation"
     | "confirming_consultation"
     | "waiting_consultation_check";
-  selectedArizaId?: string;
+  selectedServiceId?: string;
   pendingChatId?: number;
-  pendingUserId?: number;
   pendingUsername?: string;
-  pendingType?: "ariza" | "consultation";
+  pendingType?: "shablon" | "professional" | "consultation";
 }
 
 const userStates = new Map<number, UserState>();
