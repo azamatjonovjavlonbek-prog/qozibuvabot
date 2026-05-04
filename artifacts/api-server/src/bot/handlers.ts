@@ -10,7 +10,7 @@ import {
   CARD_OWNER,
   ADMIN_ID,
 } from "./config";
-import { getState, setState, resetState } from "./state";
+import { getState, setState, resetState, getAdminState, setAdminState, resetAdminState } from "./state";
 import {
   mainMenuKeyboard,
   arizaMenuKeyboard,
@@ -35,6 +35,56 @@ export function setupHandlers(bot: TelegramBot): void {
       chatId,
       `👋 Assalomu alaykum!\n\nSiz *QoziBuva Huquqiy Xizmatlar Bot*ga xush kelibsiz.\n\nQuyidagi xizmatlardan birini tanlang:`,
       { parse_mode: "Markdown", reply_markup: mainMenuKeyboard() }
+    );
+  });
+
+  // ── Admin: /yuborish <userId> — professional arizani foydalanuvchiga yuborish
+  bot.onText(/\/yuborish(?:\s+(\d+))?/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const adminId = msg.from?.id ?? chatId;
+
+    if (adminId !== ADMIN_ID) return;
+
+    const targetUserId = match?.[1] ? parseInt(match[1]) : null;
+
+    if (!targetUserId) {
+      await bot.sendMessage(
+        chatId,
+        `⚠️ Foydalanish: /yuborish <userId>\n\nMisol: /yuborish 123456789\n\nFoydalanuvchi ID ni to'lov cheki xabaridan topishingiz mumkin.`,
+        { parse_mode: "Markdown" }
+      );
+      return;
+    }
+
+    setAdminState(adminId, { step: "sending_ariza", targetUserId });
+    await bot.sendMessage(
+      chatId,
+      `✅ Tayyor! Endi *${targetUserId}* foydalanuvchiga yubormoqchi bo'lgan ariza faylini (Word, PDF yoki boshqa) shu chatga yuboring.\n\nBekor qilish uchun: /bekor`,
+      { parse_mode: "Markdown" }
+    );
+  });
+
+  // ── Admin: /bekor — yuborish rejimini bekor qilish
+  bot.onText(/\/bekor/, async (msg) => {
+    const chatId = msg.chat.id;
+    const adminId = msg.from?.id ?? chatId;
+    if (adminId !== ADMIN_ID) return;
+    resetAdminState(adminId);
+    await bot.sendMessage(chatId, `❌ Yuborish bekor qilindi.`);
+  });
+
+  // ── Admin: /yordam — admin buyruqlari ro'yxati
+  bot.onText(/\/yordam/, async (msg) => {
+    const chatId = msg.chat.id;
+    const adminId = msg.from?.id ?? chatId;
+    if (adminId !== ADMIN_ID) return;
+    await bot.sendMessage(
+      chatId,
+      `📋 *Admin buyruqlari:*\n\n` +
+      `/yuborish <userId> — professional arizani foydalanuvchiga yuborish\n` +
+      `/bekor — yuborish rejimini bekor qilish\n` +
+      `/yordam — shu ro'yxat`,
+      { parse_mode: "Markdown" }
     );
   });
 
@@ -141,9 +191,9 @@ export function setupHandlers(bot: TelegramBot): void {
       setState(userId, { step: "confirming_professional", selectedServiceId: proId });
       await bot.editMessageText(
         `✍️ *${pro.label} — Professional ariza*\n\n` +
-        `Yuristimiz sizning ma'lumotlaringiz asosida to'liq ariza matnini yozib beradi.\n\n` +
+        `Yuristimiz sizning holatIngizni o'rganib, sudga tayyor ariza matnini yozib beradi.\n\n` +
         `💰 Narxi: *${pro.price.toLocaleString()} so'm*\n\n` +
-        `To'lovdan so'ng administrator siz bilan bog'lanadi va kerakli ma'lumotlarni so'raydi.`,
+        `📌 To'lovdan so'ng yuristimiz siz bilan bog'lanib, kerakli ma'lumotlarni so'raydi va tayyor arizani bot orqali yuboradi.`,
         { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: confirmProfessionalKeyboard(proId, pro.price) }
       );
       return;
@@ -296,10 +346,59 @@ export function setupHandlers(bot: TelegramBot): void {
     const username = msg.from?.username
       ? `@${msg.from.username}`
       : (msg.from?.first_name ?? "Noma'lum");
-    const state = getState(userId);
 
     if (msg.text?.startsWith("/")) return;
 
+    // ── Admin fayl yuborish rejimi ─────────────────────────────────────
+    if (userId === ADMIN_ID) {
+      const adminState = getAdminState(ADMIN_ID);
+      if (adminState.step === "sending_ariza" && adminState.targetUserId) {
+        const targetUserId = adminState.targetUserId;
+        const hasDoc = !!msg.document;
+        const hasPhoto = msg.photo && msg.photo.length > 0;
+        const hasText = !!msg.text;
+
+        try {
+          if (hasDoc) {
+            await bot.sendDocument(targetUserId, msg.document!.file_id, {
+              caption: `✍️ *Professional ariza tayyor!*\n\nYuristimiz tomonidan yozilgan arizangiz yuborildi. Kerakli joylarni to'ldirib, imzolab sudga topshiring.`,
+              parse_mode: "Markdown",
+              reply_markup: backToMainKeyboard(),
+            });
+          } else if (hasPhoto) {
+            const fileId = msg.photo![msg.photo!.length - 1]!.file_id;
+            await bot.sendPhoto(targetUserId, fileId, {
+              caption: `✍️ *Professional ariza tayyor!*\n\nYuristimiz tomonidan yozilgan arizangiz yuborildi.`,
+              parse_mode: "Markdown",
+              reply_markup: backToMainKeyboard(),
+            });
+          } else if (hasText) {
+            await bot.sendMessage(targetUserId,
+              `✍️ *Professional ariza tayyor!*\n\n${msg.text}`,
+              { parse_mode: "Markdown", reply_markup: backToMainKeyboard() }
+            );
+          } else {
+            await bot.sendMessage(chatId, `⚠️ Fayl turi qo'llab-quvvatlanmaydi. Hujjat, rasm yoki matn yuboring.`);
+            return;
+          }
+
+          resetAdminState(ADMIN_ID);
+          await bot.sendMessage(chatId,
+            `✅ Ariza *${targetUserId}* foydalanuvchiga muvaffaqiyatli yuborildi!`,
+            { parse_mode: "Markdown" }
+          );
+          logger.info({ targetUserId }, "Admin professional ariza yubordi");
+        } catch (err) {
+          logger.error({ err, targetUserId }, "Admin ariza yuborishda xato");
+          await bot.sendMessage(chatId,
+            `❌ Xatolik: foydalanuvchiga yetkazib bo'lmadi (ID: ${targetUserId}).\nFoydalanuvchi botni bloklagan bo'lishi mumkin.`
+          );
+        }
+        return;
+      }
+    }
+
+    const state = getState(userId);
     const isWaiting =
       state.step === "waiting_shablon_check" ||
       state.step === "waiting_professional_check" ||
