@@ -4,8 +4,8 @@ export const CONSULTATION_HOURS = "10:00 dan 20:00 gacha";
 export const ARIZA_PRICE = 99000;
 export const CONSULTATION_PRICE = 149000;
 
-export const CARD_NUMBER = "9863 5014 9133 539";
-export const CARD_OWNER = "QoziBuva";
+export const CARD_NUMBER = "9860 3501 4913 3539";
+export const CARD_OWNER = "Javlonbek Azamatjonov";
 
 export const ADMIN_ID = 1079088129;
 
