@@ -25,6 +25,8 @@ import {
   backToMainKeyboard,
 } from "./keyboards";
 import { logger } from "../lib/logger";
+import { getTemplate, setTemplate, listTemplates } from "./templateStore";
+import { ARIZA_CATEGORIES as CATS } from "./config";
 
 const FONT_PATH = path.join(process.cwd(), "assets", "NotoSans-Regular.ttf");
 
@@ -94,13 +96,60 @@ export function setupHandlers(bot: TelegramBot): void {
     );
   });
 
-  // ── Admin: /bekor — yuborish rejimini bekor qilish
+  // ── Admin: /bekor — yuborish/o'rnatish rejimini bekor qilish
   bot.onText(/\/bekor/, async (msg) => {
     const chatId = msg.chat.id;
     const adminId = msg.from?.id ?? chatId;
     if (adminId !== ADMIN_ID) return;
     resetAdminState(adminId);
-    await bot.sendMessage(chatId, `❌ Yuborish bekor qilindi.`);
+    await bot.sendMessage(chatId, `❌ Amal bekor qilindi.`);
+  });
+
+  // ── Admin: /settemplate <catId> — shablon faylini yangilash
+  bot.onText(/\/settemplate(?:\s+(\S+))?/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const adminId = msg.from?.id ?? chatId;
+    if (adminId !== ADMIN_ID) return;
+
+    const catId = match?.[1]?.toLowerCase();
+    const validIds = CATS.map((c) => c.id);
+
+    if (!catId || !validIds.includes(catId as typeof CATS[number]["id"])) {
+      const catList = CATS.map((c) => `• \`/settemplate ${c.id}\` — ${c.label}`).join("\n");
+      await bot.sendMessage(chatId,
+        `⚠️ To'g'ri foydalanish:\n\n${catList}\n\nMisol: /settemplate divorce`,
+        { parse_mode: "Markdown" }
+      );
+      return;
+    }
+
+    const cat = CATS.find((c) => c.id === catId)!;
+    setAdminState(adminId, { step: "setting_template", targetCatId: catId });
+    await bot.sendMessage(chatId,
+      `📂 *${cat.label}* shabloni uchun yangi fayl yuboring.\n\n` +
+      `(PDF, Word yoki boshqa format — fayl asl holatda saqlanadi)\n\n` +
+      `Bekor qilish: /bekor`,
+      { parse_mode: "Markdown" }
+    );
+  });
+
+  // ── Admin: /templates — o'rnatilgan shablonlar ro'yxati
+  bot.onText(/\/templates/, async (msg) => {
+    const chatId = msg.chat.id;
+    const adminId = msg.from?.id ?? chatId;
+    if (adminId !== ADMIN_ID) return;
+
+    const stored = listTemplates();
+    const lines = CATS.map((c) => {
+      const t = stored[c.id];
+      return t
+        ? `✅ \`${c.id}\` — ${c.label}: *${t.fileName}*`
+        : `❌ \`${c.id}\` — ${c.label}: o'rnatilmagan (PDF fallback)`;
+    });
+    await bot.sendMessage(chatId,
+      `📋 *Shablon fayllar holati:*\n\n${lines.join("\n")}`,
+      { parse_mode: "Markdown" }
+    );
   });
 
   // ── Admin: /yordam — admin buyruqlari ro'yxati
@@ -112,8 +161,11 @@ export function setupHandlers(bot: TelegramBot): void {
       chatId,
       `📋 *Admin buyruqlari:*\n\n` +
       `/yuborish <userId> — professional arizani foydalanuvchiga yuborish\n` +
-      `/bekor — yuborish rejimini bekor qilish\n` +
-      `/yordam — shu ro'yxat`,
+      `/settemplate <catId> — shablon faylini yangilash\n` +
+      `/templates — o'rnatilgan fayllar holati\n` +
+      `/bekor — joriy amalni bekor qilish\n` +
+      `/yordam — shu ro'yxat\n\n` +
+      `*Shablon ID lar:* divorce | aliment | radar`,
       { parse_mode: "Markdown" }
     );
   });
@@ -353,9 +405,32 @@ export function setupHandlers(bot: TelegramBot): void {
 
     if (msg.text?.startsWith("/")) return;
 
-    // ── Admin fayl yuborish rejimi ─────────────────────────────────────
+    // ── Admin fayl yuborish / shablon o'rnatish rejimlari ─────────────
     if (userId === ADMIN_ID) {
       const adminState = getAdminState(ADMIN_ID);
+
+      // /settemplate rejimi — fayl qabul qilib saqlash
+      if (adminState.step === "setting_template" && adminState.targetCatId) {
+        const catId = adminState.targetCatId;
+        const cat = CATS.find((c) => c.id === catId);
+        if (!msg.document) {
+          await bot.sendMessage(chatId, `⚠️ Faqat fayl (hujjat) yuboring. Rasm yoki matn qabul qilinmaydi.\n\nBekor qilish: /bekor`);
+          return;
+        }
+        const fileId = msg.document.file_id;
+        const fileName = msg.document.file_name ?? `ariza_${catId}`;
+        setTemplate(catId, { fileId, fileName });
+        resetAdminState(adminId);
+        await bot.sendMessage(chatId,
+          `✅ *${cat?.label ?? catId}* shabloni muvaffaqiyatli yangilandi!\n\n` +
+          `📎 Fayl: *${fileName}*\n\n` +
+          `Endi foydalanuvchilar to'lovdan so'ng asl faylni oladilar.`,
+          { parse_mode: "Markdown" }
+        );
+        logger.info({ catId, fileName }, "Admin shablon fayl yangiladi");
+        return;
+      }
+
       if (adminState.step === "sending_ariza" && adminState.targetUserId) {
         const targetUserId = adminState.targetUserId;
         const hasDoc = !!msg.document;
@@ -487,21 +562,29 @@ async function sendShablonDocument(
   chatId: number,
   catId: string,
 ): Promise<void> {
+  const caption = `📄 Bo'sh joylarni to'ldirib, imzolab sudga topshiring.`;
+
+  // 1-ustuvorlik: admin yuklagan asl fayl
+  const stored = getTemplate(catId);
+  if (stored) {
+    await bot.sendDocument(chatId, stored.fileId, {
+      caption,
+      reply_markup: backToMainKeyboard(),
+    });
+    return;
+  }
+
+  // 2-ustuvorlik: PDF cache (fallback)
   const cached = pdfCache.get(catId);
   if (!cached) {
     await bot.sendMessage(chatId, `⚠️ Shablon topilmadi. Iltimos admin bilan bog'laning.`, { reply_markup: backToMainKeyboard() });
     return;
   }
 
-  const buffer = cached;
-
   await bot.sendDocument(
     chatId,
-    buffer,
-    {
-      caption: "📄 Bo'sh joylarni to'ldirib, imzolab sudga topshiring.",
-      reply_markup: backToMainKeyboard(),
-    },
+    cached,
+    { caption, reply_markup: backToMainKeyboard() },
     { filename: `shablon_ariza_${catId}.pdf`, contentType: "application/pdf" }
   );
 }

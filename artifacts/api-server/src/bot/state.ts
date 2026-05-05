@@ -17,8 +17,9 @@ export interface UserState {
 }
 
 export interface AdminState {
-  step: "idle" | "sending_ariza";
+  step: "idle" | "sending_ariza" | "setting_template";
   targetUserId?: number;
+  targetCatId?: string;
 }
 
 const userStates = new Map<number, UserState>();
