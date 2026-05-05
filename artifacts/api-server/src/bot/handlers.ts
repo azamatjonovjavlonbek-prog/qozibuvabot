@@ -170,6 +170,23 @@ export function setupHandlers(bot: TelegramBot): void {
     );
   });
 
+  // Helper: edit message text, fall back to new message if editing fails
+  async function safeEdit(
+    chatId: number,
+    messageId: number,
+    text: string,
+    opts: TelegramBot.EditMessageTextOptions,
+  ): Promise<void> {
+    try {
+      await bot.editMessageText(text, { chat_id: chatId, message_id: messageId, ...opts });
+    } catch {
+      await bot.sendMessage(chatId, text, {
+        parse_mode: opts.parse_mode,
+        reply_markup: opts.reply_markup as TelegramBot.InlineKeyboardMarkup | undefined,
+      });
+    }
+  }
+
   bot.on("callback_query", async (query) => {
     const chatId = query.message?.chat.id;
     const messageId = query.message?.message_id;
@@ -180,218 +197,225 @@ export function setupHandlers(bot: TelegramBot): void {
     const data = query.data ?? "";
 
     if (!chatId || !messageId) return;
-    await bot.answerCallbackQuery(query.id);
 
-    // ── Bosh menyu ──────────────────────────────────────────────────────
-    if (data === "back_main") {
-      resetState(userId);
-      await bot.editMessageText(
-        `🏠 *Bosh menyu*\n\nQuyidagi xizmatlardan birini tanlang:`,
-        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: mainMenuKeyboard() }
-      );
-      return;
-    }
+    try {
+      await bot.answerCallbackQuery(query.id);
+    } catch { /* ignore stale callback */ }
 
-    // ── Ariza bo'limi ────────────────────────────────────────────────────
-    if (data === "menu_ariza") {
-      setState(userId, { step: "idle" });
-      await bot.editMessageText(
-        `📄 *Ariza bo'limi*\n\nQuyidagi ikki xizmatdan birini tanlang:\n\n` +
-        `📝 *Shablon ariza* — tayyor shablon, ba'zi ma'lumotlarni o'zingiz to'ldirasiz.\n` +
-        `✍️ *Professional ariza* — yurist tomonidan to'liq yozib beriladi.`,
-        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: arizaMenuKeyboard() }
-      );
-      return;
-    }
-
-    // ── Shablon ariza ro'yxati ───────────────────────────────────────────
-    if (data === "menu_shablon") {
-      setState(userId, { step: "selecting_shablon" });
-      await bot.editMessageText(
-        `📝 *Shablon ariza*\n\nNarxi: *${SHABLON_PRICE.toLocaleString()} so'm*\n\nTayyor shablon faylingiz yuboriladi. Undagi bo'sh joylarni o'zingiz to'ldirасiz.\n\nQaysi mavzu bo'yicha ariza kerak?`,
-        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: shablonListKeyboard() }
-      );
-      return;
-    }
-
-    if (data.startsWith("shablon_")) {
-      const catId = data.replace("shablon_", "");
-      const cat = ARIZA_CATEGORIES.find((c) => c.id === catId);
-      if (!cat) return;
-
-      setState(userId, { step: "confirming_shablon", selectedServiceId: catId });
-      await bot.editMessageText(
-        `📝 *${cat.label} — Shablon ariza*\n\n` +
-        `Tayyor shablon faylini olasiz va undagi bo'sh joylarni o'zingiz to'ldirasiz.\n\n` +
-        `💰 Narxi: *${SHABLON_PRICE.toLocaleString()} so'm*`,
-        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: confirmShablonKeyboard(catId) }
-      );
-      return;
-    }
-
-    if (data.startsWith("pay_shablon_")) {
-      const catId = data.replace("pay_shablon_", "");
-      const cat = ARIZA_CATEGORIES.find((c) => c.id === catId);
-      if (!cat) return;
-
-      setState(userId, {
-        step: "waiting_shablon_check",
-        selectedServiceId: catId,
-        pendingChatId: chatId,
-        pendingUsername: username,
-        pendingType: "shablon",
-      });
-      await bot.editMessageText(
-        `💳 *To'lov ma'lumotlari*\n\n` +
-        `Xizmat: *${cat.label} (Shablon)*\n` +
-        `Summa: *${SHABLON_PRICE.toLocaleString()} so'm*\n\n` +
-        `🏦 Karta raqami:\n\`${CARD_NUMBER}\`\n` +
-        `👤 Karta egasi: *${CARD_OWNER}*\n\n` +
-        `✅ To'lov qilgandan so'ng *to'lov cheki (screenshot) rasmini* shu chatga yuboring.`,
-        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: cancelKeyboard() }
-      );
-      return;
-    }
-
-    // ── Professional ariza ───────────────────────────────────────────────
-    if (data === "menu_professional") {
-      setState(userId, { step: "confirming_professional", selectedServiceId: "general" });
-      await bot.editMessageText(
-        `✍️ *Professional ariza*\n\n` +
-        `Yuristimiz sizning holatIngizga mos ariza yozib beradi.\n\n` +
-        `💰 Narxi: *${PROFESSIONAL_PRICE_LABEL}*\n\n` +
-        `📌 Buyurtma bergandan so'ng yuristimiz siz bilan bog'lanib, kerakli ma'lumotlarni so'raydi va tayyor arizani bot orqali yuboradi.`,
-        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: confirmProfessionalKeyboard() }
-      );
-      return;
-    }
-
-    if (data === "pay_pro_general") {
-      setState(userId, {
-        step: "waiting_professional_check",
-        selectedServiceId: "general",
-        pendingChatId: chatId,
-        pendingUsername: username,
-        pendingType: "professional",
-      });
-      await bot.editMessageText(
-        `💳 *To'lov ma'lumotlari*\n\n` +
-        `Xizmat: *Professional ariza*\n` +
-        `Narxi: *${PROFESSIONAL_PRICE_LABEL}*\n\n` +
-        `🏦 Karta raqami:\n\`${CARD_NUMBER}\`\n` +
-        `👤 Karta egasi: *${CARD_OWNER}*\n\n` +
-        `✅ To'lov qilgandan so'ng *to'lov cheki (screenshot) rasmini* shu chatga yuboring.\n\n` +
-        `ℹ️ Yuristimiz to'lov tasdiqlangach narxni aniqlashtiradi.`,
-        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: cancelKeyboard() }
-      );
-      return;
-    }
-
-    // ── Konsultatsiya ────────────────────────────────────────────────────
-    if (data === "menu_consultation") {
-      setState(userId, { step: "selecting_consultation" });
-      await bot.editMessageText(
-        `📞 *Konsultatsiya xizmati*\n\nHuquqiy masalalaringiz bo'yicha mutaxassisimiz bilan bog'laning.\n\n` +
-        `💰 Narxi: *${CONSULTATION_PRICE.toLocaleString()} so'm*\n` +
-        `🕐 Ish vaqti: *${CONSULTATION_HOURS}*\n\n` +
-        `To'lovdan so'ng telefon raqamimiz yuboriladi.`,
-        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: confirmConsultationKeyboard() }
-      );
-      return;
-    }
-
-    if (data === "pay_consultation") {
-      setState(userId, {
-        step: "waiting_consultation_check",
-        pendingChatId: chatId,
-        pendingUsername: username,
-        pendingType: "consultation",
-      });
-      await bot.editMessageText(
-        `💳 *To'lov ma'lumotlari*\n\n` +
-        `Xizmat: *Konsultatsiya*\n` +
-        `Summa: *${CONSULTATION_PRICE.toLocaleString()} so'm*\n\n` +
-        `🏦 Karta raqami:\n\`${CARD_NUMBER}\`\n` +
-        `👤 Karta egasi: *${CARD_OWNER}*\n\n` +
-        `✅ To'lov qilgandan so'ng *to'lov cheki (screenshot) rasmini* shu chatga yuboring.`,
-        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: cancelKeyboard() }
-      );
-      return;
-    }
-
-    // ── Admin: shablon tasdiqlash  admin_ok_s:<userId>:<catId> ──────────
-    if (data.startsWith("admin_ok_s:")) {
-      const parts = data.split(":");
-      const targetUserId = parseInt(parts[1]!);
-      const catId = parts[2]!;
-      const cat = ARIZA_CATEGORIES.find((c) => c.id === catId);
-
-      await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId });
-
-      if (!cat) {
-        await bot.sendMessage(chatId, `⚠️ Kategoriya topilmadi: ${catId}`);
+    try {
+      // ── Bosh menyu ────────────────────────────────────────────────────
+      if (data === "back_main") {
+        resetState(userId);
+        await safeEdit(chatId, messageId,
+          `🏠 *Bosh menyu*\n\nQuyidagi xizmatlardan birini tanlang:`,
+          { parse_mode: "Markdown", reply_markup: mainMenuKeyboard() }
+        );
         return;
       }
 
-      await bot.sendMessage(chatId, `✅ Tasdiqlandi! Shablon ariza yuborilmoqda.`);
-      await bot.sendMessage(targetUserId,
-        `✅ *To'lovingiz tasdiqlandi!*\n\n📄 *${cat.label}* shablon arizasi quyida yuborilmoqda...`,
-        { parse_mode: "Markdown" }
-      );
-      await sendShablonDocument(bot, targetUserId, catId);
-      resetState(targetUserId);
-      return;
-    }
+      // ── Ariza bo'limi ──────────────────────────────────────────────────
+      if (data === "menu_ariza") {
+        setState(userId, { step: "idle" });
+        await safeEdit(chatId, messageId,
+          `📄 *Ariza bo'limi*\n\nQuyidagi ikki xizmatdan birini tanlang:\n\n` +
+          `📝 *Shablon ariza* — tayyor shablon, ba'zi ma'lumotlarni o'zingiz to'ldirasiz.\n` +
+          `✍️ *Professional ariza* — yurist tomonidan to'liq yozib beriladi.`,
+          { parse_mode: "Markdown", reply_markup: arizaMenuKeyboard() }
+        );
+        return;
+      }
 
-    // ── Admin: professional tasdiqlash  admin_ok_p:<userId> ─────────────
-    if (data.startsWith("admin_ok_p:")) {
-      const targetUserId = parseInt(data.split(":")[1]!);
+      // ── Shablon ariza ro'yxati ─────────────────────────────────────────
+      if (data === "menu_shablon") {
+        setState(userId, { step: "selecting_shablon" });
+        await safeEdit(chatId, messageId,
+          `📝 *Shablon ariza*\n\nNarxi: *${SHABLON_PRICE.toLocaleString()} so'm*\n\nTayyor shablon faylingiz yuboriladi. Undagi bo'sh joylarni o'zingiz to'ldirasiz.\n\nQaysi mavzu bo'yicha ariza kerak?`,
+          { parse_mode: "Markdown", reply_markup: shablonListKeyboard() }
+        );
+        return;
+      }
 
-      await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId });
-      await bot.sendMessage(chatId,
-        `✅ Tasdiqlandi!\n\n📌 Endi foydalanuvchi (ID: \`${targetUserId}\`) bilan bog'laning va ariza uchun kerakli ma'lumotlarni so'rang.\n\n` +
-        `Ariza tayyor bo'lgach: /yuborish ${targetUserId}`,
-        { parse_mode: "Markdown" }
-      );
-      await bot.sendMessage(targetUserId,
-        `✅ *To'lovingiz tasdiqlandi!*\n\n✍️ *Professional ariza* buyurtmangiz qabul qilindi.\n\n` +
-        `Yuristimiz tez orada siz bilan bog'lanib, kerakli ma'lumotlarni so'raydi. Iltimos, kutib turing.`,
-        { parse_mode: "Markdown", reply_markup: backToMainKeyboard() }
-      );
-      resetState(targetUserId);
-      return;
-    }
+      if (data.startsWith("shablon_")) {
+        const catId = data.replace("shablon_", "");
+        const cat = ARIZA_CATEGORIES.find((c) => c.id === catId);
+        if (!cat) return;
 
-    // ── Admin: konsultatsiya tasdiqlash  admin_ok_c:<userId> ────────────
-    if (data.startsWith("admin_ok_c:")) {
-      const targetUserId = parseInt(data.split(":")[1]!);
+        setState(userId, { step: "confirming_shablon", selectedServiceId: catId });
+        await safeEdit(chatId, messageId,
+          `📝 *${cat.label} — Shablon ariza*\n\n` +
+          `Tayyor shablon faylini olasiz va undagi bo'sh joylarni o'zingiz to'ldirasiz.\n\n` +
+          `💰 Narxi: *${SHABLON_PRICE.toLocaleString()} so'm*`,
+          { parse_mode: "Markdown", reply_markup: confirmShablonKeyboard(catId) }
+        );
+        return;
+      }
 
-      await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId });
-      await bot.sendMessage(chatId, `✅ Tasdiqlandi! Telefon raqam yuborildi.`);
-      await bot.sendMessage(targetUserId,
-        `✅ *To'lovingiz tasdiqlandi!*\n\n📞 Mutaxassisimiz bilan bog'laning:\n\n` +
-        `🔗 Telefon: *${CONSULTATION_PHONE}*\n` +
-        `🕐 Ish vaqti: *${CONSULTATION_HOURS}*\n\n` +
-        `Ko'rsatilgan vaqt oralig'ida qo'ng'iroq qiling! ✨`,
-        { parse_mode: "Markdown", reply_markup: backToMainKeyboard() }
-      );
-      resetState(targetUserId);
-      return;
-    }
+      if (data.startsWith("pay_shablon_")) {
+        const catId = data.replace("pay_shablon_", "");
+        const cat = ARIZA_CATEGORIES.find((c) => c.id === catId);
+        if (!cat) return;
 
-    // ── Admin: rad etish  admin_no:<userId> ─────────────────────────────
-    if (data.startsWith("admin_no:")) {
-      const targetUserId = parseInt(data.split(":")[1]!);
+        setState(userId, {
+          step: "waiting_shablon_check",
+          selectedServiceId: catId,
+          pendingChatId: chatId,
+          pendingUsername: username,
+          pendingType: "shablon",
+        });
+        await safeEdit(chatId, messageId,
+          `💳 *To'lov ma'lumotlari*\n\n` +
+          `Xizmat: *${cat.label} (Shablon)*\n` +
+          `Summa: *${SHABLON_PRICE.toLocaleString()} so'm*\n\n` +
+          `🏦 Karta raqami:\n\`${CARD_NUMBER}\`\n` +
+          `👤 Karta egasi: *${CARD_OWNER}*\n\n` +
+          `✅ To'lov qilgandan so'ng *to'lov cheki (screenshot) rasmini* shu chatga yuboring.`,
+          { parse_mode: "Markdown", reply_markup: cancelKeyboard() }
+        );
+        return;
+      }
 
-      await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId });
-      await bot.sendMessage(chatId, `❌ Rad etildi.`);
-      await bot.sendMessage(targetUserId,
-        `❌ *To'lovingiz tasdiqlanmadi.*\n\n` +
-        `Iltimos, to'g'ri karta raqamiga o'tkazganingizni tekshirib, chekni qayta yuboring.`,
-        { parse_mode: "Markdown", reply_markup: backToMainKeyboard() }
-      );
-      resetState(targetUserId);
-      return;
+      // ── Professional ariza ─────────────────────────────────────────────
+      if (data === "menu_professional") {
+        setState(userId, { step: "confirming_professional", selectedServiceId: "general" });
+        await safeEdit(chatId, messageId,
+          `✍️ *Professional ariza*\n\n` +
+          `Yuristimiz sizning holatIngizga mos ariza yozib beradi.\n\n` +
+          `💰 Narxi: *${PROFESSIONAL_PRICE_LABEL}*\n\n` +
+          `📌 Buyurtma bergandan so'ng yuristimiz siz bilan bog'lanib, kerakli ma'lumotlarni so'raydi va tayyor arizani bot orqali yuboradi.`,
+          { parse_mode: "Markdown", reply_markup: confirmProfessionalKeyboard() }
+        );
+        return;
+      }
+
+      if (data === "pay_pro_general") {
+        setState(userId, {
+          step: "waiting_professional_check",
+          selectedServiceId: "general",
+          pendingChatId: chatId,
+          pendingUsername: username,
+          pendingType: "professional",
+        });
+        await safeEdit(chatId, messageId,
+          `💳 *To'lov ma'lumotlari*\n\n` +
+          `Xizmat: *Professional ariza*\n` +
+          `Narxi: *${PROFESSIONAL_PRICE_LABEL}*\n\n` +
+          `🏦 Karta raqami:\n\`${CARD_NUMBER}\`\n` +
+          `👤 Karta egasi: *${CARD_OWNER}*\n\n` +
+          `✅ To'lov qilgandan so'ng *to'lov cheki (screenshot) rasmini* shu chatga yuboring.\n\n` +
+          `ℹ️ Yuristimiz to'lov tasdiqlangach narxni aniqlashtiradi.`,
+          { parse_mode: "Markdown", reply_markup: cancelKeyboard() }
+        );
+        return;
+      }
+
+      // ── Konsultatsiya ──────────────────────────────────────────────────
+      if (data === "menu_consultation") {
+        setState(userId, { step: "selecting_consultation" });
+        await safeEdit(chatId, messageId,
+          `📞 *Konsultatsiya xizmati*\n\nHuquqiy masalalaringiz bo'yicha mutaxassisimiz bilan bog'laning.\n\n` +
+          `💰 Narxi: *${CONSULTATION_PRICE.toLocaleString()} so'm*\n` +
+          `🕐 Ish vaqti: *${CONSULTATION_HOURS}*\n\n` +
+          `To'lovdan so'ng telefon raqamimiz yuboriladi.`,
+          { parse_mode: "Markdown", reply_markup: confirmConsultationKeyboard() }
+        );
+        return;
+      }
+
+      if (data === "pay_consultation") {
+        setState(userId, {
+          step: "waiting_consultation_check",
+          pendingChatId: chatId,
+          pendingUsername: username,
+          pendingType: "consultation",
+        });
+        await safeEdit(chatId, messageId,
+          `💳 *To'lov ma'lumotlari*\n\n` +
+          `Xizmat: *Konsultatsiya*\n` +
+          `Summa: *${CONSULTATION_PRICE.toLocaleString()} so'm*\n\n` +
+          `🏦 Karta raqami:\n\`${CARD_NUMBER}\`\n` +
+          `👤 Karta egasi: *${CARD_OWNER}*\n\n` +
+          `✅ To'lov qilgandan so'ng *to'lov cheki (screenshot) rasmini* shu chatga yuboring.`,
+          { parse_mode: "Markdown", reply_markup: cancelKeyboard() }
+        );
+        return;
+      }
+
+      // ── Admin: shablon tasdiqlash  admin_ok_s:<userId>:<catId> ────────
+      if (data.startsWith("admin_ok_s:")) {
+        const parts = data.split(":");
+        const targetUserId = parseInt(parts[1]!);
+        const catId = parts[2]!;
+        const cat = ARIZA_CATEGORIES.find((c) => c.id === catId);
+
+        try { await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId }); } catch { /* ignore */ }
+
+        if (!cat) {
+          await bot.sendMessage(chatId, `⚠️ Kategoriya topilmadi: ${catId}`);
+          return;
+        }
+
+        await bot.sendMessage(chatId, `✅ Tasdiqlandi! Shablon ariza yuborilmoqda.`);
+        await bot.sendMessage(targetUserId,
+          `✅ *To'lovingiz tasdiqlandi!*\n\n📄 *${cat.label}* shablon arizasi quyida yuborilmoqda...`,
+          { parse_mode: "Markdown" }
+        );
+        await sendShablonDocument(bot, targetUserId, catId);
+        resetState(targetUserId);
+        return;
+      }
+
+      // ── Admin: professional tasdiqlash  admin_ok_p:<userId> ───────────
+      if (data.startsWith("admin_ok_p:")) {
+        const targetUserId = parseInt(data.split(":")[1]!);
+
+        try { await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId }); } catch { /* ignore */ }
+        await bot.sendMessage(chatId,
+          `✅ Tasdiqlandi!\n\n📌 Endi foydalanuvchi (ID: \`${targetUserId}\`) bilan bog'laning va ariza uchun kerakli ma'lumotlarni so'rang.\n\n` +
+          `Ariza tayyor bo'lgach: /yuborish ${targetUserId}`,
+          { parse_mode: "Markdown" }
+        );
+        await bot.sendMessage(targetUserId,
+          `✅ *To'lovingiz tasdiqlandi!*\n\n✍️ *Professional ariza* buyurtmangiz qabul qilindi.\n\n` +
+          `Yuristimiz tez orada siz bilan bog'lanib, kerakli ma'lumotlarni so'raydi. Iltimos, kutib turing.`,
+          { parse_mode: "Markdown", reply_markup: backToMainKeyboard() }
+        );
+        resetState(targetUserId);
+        return;
+      }
+
+      // ── Admin: konsultatsiya tasdiqlash  admin_ok_c:<userId> ──────────
+      if (data.startsWith("admin_ok_c:")) {
+        const targetUserId = parseInt(data.split(":")[1]!);
+
+        try { await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId }); } catch { /* ignore */ }
+        await bot.sendMessage(chatId, `✅ Tasdiqlandi! Telefon raqam yuborildi.`);
+        await bot.sendMessage(targetUserId,
+          `✅ *To'lovingiz tasdiqlandi!*\n\n📞 Mutaxassisimiz bilan bog'laning:\n\n` +
+          `🔗 Telefon: *${CONSULTATION_PHONE}*\n` +
+          `🕐 Ish vaqti: *${CONSULTATION_HOURS}*\n\n` +
+          `Ko'rsatilgan vaqt oralig'ida qo'ng'iroq qiling! ✨`,
+          { parse_mode: "Markdown", reply_markup: backToMainKeyboard() }
+        );
+        resetState(targetUserId);
+        return;
+      }
+
+      // ── Admin: rad etish  admin_no:<userId> ───────────────────────────
+      if (data.startsWith("admin_no:")) {
+        const targetUserId = parseInt(data.split(":")[1]!);
+
+        try { await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId }); } catch { /* ignore */ }
+        await bot.sendMessage(chatId, `❌ Rad etildi.`);
+        await bot.sendMessage(targetUserId,
+          `❌ *To'lovingiz tasdiqlanmadi.*\n\n` +
+          `Iltimos, to'g'ri karta raqamiga o'tkazganingizni tekshirib, chekni qayta yuboring.`,
+          { parse_mode: "Markdown", reply_markup: backToMainKeyboard() }
+        );
+        resetState(targetUserId);
+        return;
+      }
+    } catch (err) {
+      logger.error({ err, data, userId }, "Callback query handleda xato");
     }
   });
 
@@ -404,6 +428,8 @@ export function setupHandlers(bot: TelegramBot): void {
       : (msg.from?.first_name ?? "Noma'lum");
 
     if (msg.text?.startsWith("/")) return;
+
+    try {
 
     // ── Admin fayl yuborish / shablon o'rnatish rejimlari ─────────────
     if (userId === ADMIN_ID) {
@@ -553,6 +579,9 @@ export function setupHandlers(bot: TelegramBot): void {
         { reply_markup: backToMainKeyboard() }
       );
     }
+  } catch (err) {
+    logger.error({ err, userId }, "Message handleda xato");
+  }
   });
 }
 

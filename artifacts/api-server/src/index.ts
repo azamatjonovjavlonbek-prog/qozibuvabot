@@ -2,6 +2,14 @@ import app from "./app";
 import { logger } from "./lib/logger";
 import { startBot } from "./bot/index";
 
+process.on("unhandledRejection", (reason) => {
+  logger.error({ reason }, "Unhandled promise rejection — bot davom etadi");
+});
+
+process.on("uncaughtException", (err) => {
+  logger.error({ err }, "Uncaught exception — bot davom etadi");
+});
+
 startBot();
 
 const rawPort = process.env["PORT"];
