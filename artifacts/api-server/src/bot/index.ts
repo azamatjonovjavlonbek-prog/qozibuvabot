@@ -1,6 +1,6 @@
 import TelegramBot from "node-telegram-bot-api";
 import { logger } from "../lib/logger";
-import { setupHandlers } from "./handlers";
+import { setupHandlers, warmPdfCache } from "./handlers";
 
 const TOKEN = process.env["TELEGRAM_BOT_TOKEN"];
 
@@ -26,6 +26,8 @@ export function startBot(): void {
   });
 
   logger.info("Telegram bot ishga tushdi (polling mode)");
+
+  warmPdfCache().catch((err) => logger.error({ err }, "PDF cache warm qilishda xato"));
 }
 
 export function getBot(): TelegramBot | null {

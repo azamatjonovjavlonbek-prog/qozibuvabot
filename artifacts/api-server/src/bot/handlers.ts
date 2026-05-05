@@ -30,14 +30,29 @@ const FONT_PATH = path.join(process.cwd(), "assets", "NotoSans-Regular.ttf");
 
 function generatePdfBuffer(content: string): Promise<Buffer> {
   return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({ margin: 60, size: "A4" });
+    const doc = new PDFDocument({ margin: 60, size: "A4", font: FONT_PATH });
     const chunks: Buffer[] = [];
     doc.on("data", (chunk: Buffer) => chunks.push(chunk));
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
-    doc.font(FONT_PATH).fontSize(10).text(content, { lineGap: 2 });
+    doc.fontSize(10).text(content, { lineGap: 2 });
     doc.end();
   });
+}
+
+// Pre-generate PDF buffers at startup so delivery is instant
+const pdfCache = new Map<string, Buffer>();
+
+export async function warmPdfCache(): Promise<void> {
+  const entries: Array<[string, string]> = [
+    ["divorce", generateDivorceTemplate()],
+    ["aliment", generateAlimentTemplate()],
+    ["radar",   generateRadarTemplate()],
+  ];
+  await Promise.all(entries.map(async ([id, content]) => {
+    pdfCache.set(id, await generatePdfBuffer(content));
+  }));
+  logger.info("PDF cache warmed (%d templates)", pdfCache.size);
 }
 
 export function setupHandlers(bot: TelegramBot): void {
@@ -472,19 +487,13 @@ async function sendShablonDocument(
   chatId: number,
   catId: string,
 ): Promise<void> {
-  const templates: Record<string, string> = {
-    divorce: generateDivorceTemplate(),
-    aliment: generateAlimentTemplate(),
-    radar:   generateRadarTemplate(),
-  };
-
-  const content = templates[catId];
-  if (!content) {
+  const cached = pdfCache.get(catId);
+  if (!cached) {
     await bot.sendMessage(chatId, `⚠️ Shablon topilmadi. Iltimos admin bilan bog'laning.`, { reply_markup: backToMainKeyboard() });
     return;
   }
 
-  const buffer = await generatePdfBuffer(content);
+  const buffer = cached;
 
   await bot.sendDocument(
     chatId,
