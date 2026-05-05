@@ -32,6 +32,9 @@ import { ARIZA_CATEGORIES as CATS } from "./config";
 
 const FONT_PATH = path.join(process.cwd(), "assets", "NotoSans-Regular.ttf");
 
+// adminMsgId → foydalanuvchi chatId (murojat javoblari uchun)
+const contactReplyMap = new Map<number, number>();
+
 function generatePdfBuffer(content: string): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ margin: 60, size: "A4", font: FONT_PATH });
@@ -513,6 +516,36 @@ export function setupHandlers(bot: TelegramBot): void {
     if (userId === ADMIN_ID) {
       const adminState = getAdminState(ADMIN_ID);
 
+      // ── Admin murojatga reply qilsa → foydalanuvchiga yuborish ───────
+      const repliedToId = msg.reply_to_message?.message_id;
+      if (repliedToId && contactReplyMap.has(repliedToId)) {
+        const targetChatId = contactReplyMap.get(repliedToId)!;
+        try {
+          if (msg.text) {
+            await bot.sendMessage(targetChatId,
+              `👨‍💼 *Admin javobi:*\n\n${msg.text}`,
+              { parse_mode: "Markdown", reply_markup: backToMainKeyboard() }
+            );
+          } else if (msg.document) {
+            await bot.sendDocument(targetChatId, msg.document.file_id, {
+              caption: `👨‍💼 *Admin javobi:*`,
+              parse_mode: "Markdown",
+              reply_markup: backToMainKeyboard(),
+            });
+          } else if (msg.photo?.length) {
+            await bot.sendPhoto(targetChatId, msg.photo[msg.photo.length - 1]!.file_id, {
+              caption: `👨‍💼 *Admin javobi:*`,
+              parse_mode: "Markdown",
+              reply_markup: backToMainKeyboard(),
+            });
+          }
+          await bot.sendMessage(chatId, `✅ Javobingiz foydalanuvchiga yetkazildi.`);
+        } catch {
+          await bot.sendMessage(chatId, `❌ Foydalanuvchiga yetkazib bo'lmadi. Botni bloklagan bo'lishi mumkin.`);
+        }
+        return;
+      }
+
       // /settemplate rejimi — fayl qabul qilib saqlash
       if (adminState.step === "setting_template" && adminState.targetCatId) {
         const catId = adminState.targetCatId;
@@ -591,13 +624,15 @@ export function setupHandlers(bot: TelegramBot): void {
       }
       resetState(userId);
       try {
-        await bot.sendMessage(ADMIN_ID,
+        const sent = await bot.sendMessage(ADMIN_ID,
           `💬 *Foydalanuvchi murojati*\n\n` +
           `👤 ${username}\n` +
           `🆔 ID: \`${userId}\`\n\n` +
-          `📝 Xabar:\n${msg.text}`,
+          `📝 Xabar:\n${msg.text}\n\n` +
+          `↩️ _Javob berish uchun shu xabarga Reply qiling_`,
           { parse_mode: "Markdown" }
         );
+        contactReplyMap.set(sent.message_id, chatId);
         await bot.sendMessage(chatId,
           `✅ *Xabaringiz adminga yuborildi!*\n\nTez orada javob beriladi.`,
           { parse_mode: "Markdown", reply_markup: backToMainKeyboard() }
