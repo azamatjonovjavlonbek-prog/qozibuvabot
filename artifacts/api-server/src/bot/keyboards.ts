@@ -1,9 +1,9 @@
 import TelegramBot from "node-telegram-bot-api";
 import {
   ARIZA_CATEGORIES,
-  PROFESSIONAL_TYPES,
   SHABLON_PRICE,
   CONSULTATION_PRICE,
+  PROFESSIONAL_PRICE_LABEL,
 } from "./config";
 
 export function mainMenuKeyboard(): TelegramBot.InlineKeyboardMarkup {
@@ -19,7 +19,7 @@ export function arizaMenuKeyboard(): TelegramBot.InlineKeyboardMarkup {
   return {
     inline_keyboard: [
       [{ text: `📝 Shablon ariza — ${SHABLON_PRICE.toLocaleString()} so'm`, callback_data: "menu_shablon" }],
-      [{ text: "✍️ Professional ariza — 199 000 – 399 000 so'm", callback_data: "menu_professional" }],
+      [{ text: `✍️ Professional ariza — ${PROFESSIONAL_PRICE_LABEL}`, callback_data: "menu_professional" }],
       [{ text: "🔙 Orqaga", callback_data: "back_main" }],
     ],
   };
@@ -49,30 +49,16 @@ export function confirmShablonKeyboard(
   };
 }
 
-export function professionalListKeyboard(): TelegramBot.InlineKeyboardMarkup {
-  const rows = PROFESSIONAL_TYPES.map((p) => [
-    {
-      text: `${p.label} — ${p.price.toLocaleString()} so'm`,
-      callback_data: `pro_${p.id}`,
-    },
-  ]);
-  rows.push([{ text: "🔙 Orqaga", callback_data: "menu_ariza" }]);
-  return { inline_keyboard: rows };
-}
-
-export function confirmProfessionalKeyboard(
-  proId: string,
-  price: number,
-): TelegramBot.InlineKeyboardMarkup {
+export function confirmProfessionalKeyboard(): TelegramBot.InlineKeyboardMarkup {
   return {
     inline_keyboard: [
       [
         {
-          text: `💳 To'lov qilish (${price.toLocaleString()} so'm)`,
-          callback_data: `pay_pro_${proId}`,
+          text: `💳 Buyurtma berish`,
+          callback_data: `pay_pro_general`,
         },
       ],
-      [{ text: "🔙 Orqaga", callback_data: "menu_professional" }],
+      [{ text: "🔙 Orqaga", callback_data: "menu_ariza" }],
     ],
   };
 }
@@ -108,7 +94,7 @@ export function adminApproveKeyboard(
   if (type === "shablon") {
     approveData = `admin_ok_s:${userId}:${serviceId}`;
   } else if (type === "professional") {
-    approveData = `admin_ok_p:${userId}:${serviceId}`;
+    approveData = `admin_ok_p:${userId}`;
   } else {
     approveData = `admin_ok_c:${userId}`;
   }

@@ -1,11 +1,13 @@
+import path from "path";
 import TelegramBot from "node-telegram-bot-api";
+import PDFDocument from "pdfkit";
 import {
   ARIZA_CATEGORIES,
-  PROFESSIONAL_TYPES,
   SHABLON_PRICE,
   CONSULTATION_PRICE,
   CONSULTATION_PHONE,
   CONSULTATION_HOURS,
+  PROFESSIONAL_PRICE_LABEL,
   CARD_NUMBER,
   CARD_OWNER,
   ADMIN_ID,
@@ -16,7 +18,6 @@ import {
   arizaMenuKeyboard,
   shablonListKeyboard,
   confirmShablonKeyboard,
-  professionalListKeyboard,
   confirmProfessionalKeyboard,
   confirmConsultationKeyboard,
   cancelKeyboard,
@@ -24,6 +25,20 @@ import {
   backToMainKeyboard,
 } from "./keyboards";
 import { logger } from "../lib/logger";
+
+const FONT_PATH = path.join(process.cwd(), "assets", "NotoSans-Regular.ttf");
+
+function generatePdfBuffer(content: string): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({ margin: 60, size: "A4" });
+    const chunks: Buffer[] = [];
+    doc.on("data", (chunk: Buffer) => chunks.push(chunk));
+    doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("error", reject);
+    doc.font(FONT_PATH).fontSize(10).text(content, { lineGap: 2 });
+    doc.end();
+  });
+}
 
 export function setupHandlers(bot: TelegramBot): void {
 
@@ -171,53 +186,35 @@ export function setupHandlers(bot: TelegramBot): void {
       return;
     }
 
-    // ── Professional ariza ro'yxati ──────────────────────────────────────
+    // ── Professional ariza ───────────────────────────────────────────────
     if (data === "menu_professional") {
-      setState(userId, { step: "selecting_professional" });
+      setState(userId, { step: "confirming_professional", selectedServiceId: "general" });
       await bot.editMessageText(
-        `✍️ *Professional ariza*\n\nYuristimiz sizning holatингизга mos ariza yozib beradi.\n\n` +
-        `💰 Narxi: *199 000 – 399 000 so'm* (mavzuga qarab)\n\n` +
-        `Qaysi mavzu bo'yicha ariza kerak?`,
-        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: professionalListKeyboard() }
+        `✍️ *Professional ariza*\n\n` +
+        `Yuristimiz sizning holatIngizga mos ariza yozib beradi.\n\n` +
+        `💰 Narxi: *${PROFESSIONAL_PRICE_LABEL}*\n\n` +
+        `📌 Buyurtma bergandan so'ng yuristimiz siz bilan bog'lanib, kerakli ma'lumotlarni so'raydi va tayyor arizani bot orqali yuboradi.`,
+        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: confirmProfessionalKeyboard() }
       );
       return;
     }
 
-    if (data.startsWith("pro_")) {
-      const proId = data.replace("pro_", "");
-      const pro = PROFESSIONAL_TYPES.find((p) => p.id === proId);
-      if (!pro) return;
-
-      setState(userId, { step: "confirming_professional", selectedServiceId: proId });
-      await bot.editMessageText(
-        `✍️ *${pro.label} — Professional ariza*\n\n` +
-        `Yuristimiz sizning holatIngizni o'rganib, sudga tayyor ariza matnini yozib beradi.\n\n` +
-        `💰 Narxi: *${pro.price.toLocaleString()} so'm*\n\n` +
-        `📌 To'lovdan so'ng yuristimiz siz bilan bog'lanib, kerakli ma'lumotlarni so'raydi va tayyor arizani bot orqali yuboradi.`,
-        { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: confirmProfessionalKeyboard(proId, pro.price) }
-      );
-      return;
-    }
-
-    if (data.startsWith("pay_pro_")) {
-      const proId = data.replace("pay_pro_", "");
-      const pro = PROFESSIONAL_TYPES.find((p) => p.id === proId);
-      if (!pro) return;
-
+    if (data === "pay_pro_general") {
       setState(userId, {
         step: "waiting_professional_check",
-        selectedServiceId: proId,
+        selectedServiceId: "general",
         pendingChatId: chatId,
         pendingUsername: username,
         pendingType: "professional",
       });
       await bot.editMessageText(
         `💳 *To'lov ma'lumotlari*\n\n` +
-        `Xizmat: *${pro.label} (Professional)*\n` +
-        `Summa: *${pro.price.toLocaleString()} so'm*\n\n` +
+        `Xizmat: *Professional ariza*\n` +
+        `Narxi: *${PROFESSIONAL_PRICE_LABEL}*\n\n` +
         `🏦 Karta raqami:\n\`${CARD_NUMBER}\`\n` +
         `👤 Karta egasi: *${CARD_OWNER}*\n\n` +
-        `✅ To'lov qilgandan so'ng *to'lov cheki (screenshot) rasmini* shu chatga yuboring.`,
+        `✅ To'lov qilgandan so'ng *to'lov cheki (screenshot) rasmini* shu chatga yuboring.\n\n` +
+        `ℹ️ Yuristimiz to'lov tasdiqlangach narxni aniqlashtiradi.`,
         { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: cancelKeyboard() }
       );
       return;
@@ -279,26 +276,18 @@ export function setupHandlers(bot: TelegramBot): void {
       return;
     }
 
-    // ── Admin: professional tasdiqlash  admin_ok_p:<userId>:<proId> ─────
+    // ── Admin: professional tasdiqlash  admin_ok_p:<userId> ─────────────
     if (data.startsWith("admin_ok_p:")) {
-      const parts = data.split(":");
-      const targetUserId = parseInt(parts[1]!);
-      const proId = parts[2]!;
-      const pro = PROFESSIONAL_TYPES.find((p) => p.id === proId);
+      const targetUserId = parseInt(data.split(":")[1]!);
 
       await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId });
-
-      if (!pro) {
-        await bot.sendMessage(chatId, `⚠️ Xizmat turi topilmadi: ${proId}`);
-        return;
-      }
-
       await bot.sendMessage(chatId,
-        `✅ Tasdiqlandi!\n\n📌 Endi foydalanuvchi (ID: \`${targetUserId}\`) bilan bog'laning va ariza uchun kerakli ma'lumotlarni so'rang.`,
+        `✅ Tasdiqlandi!\n\n📌 Endi foydalanuvchi (ID: \`${targetUserId}\`) bilan bog'laning va ariza uchun kerakli ma'lumotlarni so'rang.\n\n` +
+        `Ariza tayyor bo'lgach: /yuborish ${targetUserId}`,
         { parse_mode: "Markdown" }
       );
       await bot.sendMessage(targetUserId,
-        `✅ *To'lovingiz tasdiqlandi!*\n\n✍️ *${pro.label}* bo'yicha professional ariza buyurtmangiz qabul qilindi.\n\n` +
+        `✅ *To'lovingiz tasdiqlandi!*\n\n✍️ *Professional ariza* buyurtmangiz qabul qilindi.\n\n` +
         `Yuristimiz tez orada siz bilan bog'lanib, kerakli ma'lumotlarni so'raydi. Iltimos, kutib turing.`,
         { parse_mode: "Markdown", reply_markup: backToMainKeyboard() }
       );
@@ -428,22 +417,22 @@ export function setupHandlers(bot: TelegramBot): void {
       amount = SHABLON_PRICE;
       adminKeyboard = adminApproveKeyboard(userId, "shablon", state.selectedServiceId);
     } else if (state.step === "waiting_professional_check") {
-      const pro = PROFESSIONAL_TYPES.find((p) => p.id === state.selectedServiceId);
-      serviceLabel = `✍️ Professional: *${pro?.label ?? state.selectedServiceId}*`;
-      amount = pro?.price ?? 0;
-      adminKeyboard = adminApproveKeyboard(userId, "professional", state.selectedServiceId);
+      serviceLabel = `✍️ Professional ariza`;
+      amount = 0;
+      adminKeyboard = adminApproveKeyboard(userId, "professional");
     } else {
       serviceLabel = `📞 Konsultatsiya`;
       amount = CONSULTATION_PRICE;
       adminKeyboard = adminApproveKeyboard(userId, "consultation");
     }
 
+    const amountText = amount > 0 ? `💰 Summa: *${amount.toLocaleString()} so'm*\n` : `💰 Narxi: *${PROFESSIONAL_PRICE_LABEL}*\n`;
     const adminText =
       `🔔 *Yangi to'lov cheki!*\n\n` +
       `👤 Foydalanuvchi: ${username}\n` +
       `🆔 ID: \`${userId}\`\n` +
       `${serviceLabel}\n` +
-      `💰 Summa: *${amount.toLocaleString()} so'm*\n\n` +
+      `${amountText}\n` +
       `Chekni tekshirib tasdiqlang yoki rad eting:`;
 
     try {
@@ -495,7 +484,7 @@ async function sendShablonDocument(
     return;
   }
 
-  const buffer = Buffer.from(content, "utf-8");
+  const buffer = await generatePdfBuffer(content);
 
   await bot.sendDocument(
     chatId,
@@ -504,7 +493,7 @@ async function sendShablonDocument(
       caption: "📄 Bo'sh joylarni to'ldirib, imzolab sudga topshiring.",
       reply_markup: backToMainKeyboard(),
     },
-    { filename: `shablon_ariza_${catId}.txt`, contentType: "text/plain" }
+    { filename: `shablon_ariza_${catId}.pdf`, contentType: "application/pdf" }
   );
 }
 
