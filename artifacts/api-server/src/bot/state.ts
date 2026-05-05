@@ -9,7 +9,8 @@ export interface UserState {
     | "waiting_professional_check"
     | "selecting_consultation"
     | "confirming_consultation"
-    | "waiting_consultation_check";
+    | "waiting_consultation_check"
+    | "writing_to_admin";
   selectedServiceId?: string;
   pendingChatId?: number;
   pendingUsername?: string;

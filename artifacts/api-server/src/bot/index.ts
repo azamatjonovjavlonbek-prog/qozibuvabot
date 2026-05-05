@@ -17,6 +17,11 @@ export function startBot(): void {
 
   setupHandlers(bot);
 
+  bot.setMyCommands([
+    { command: "start", description: "🏠 Bosh menyu" },
+    { command: "help",  description: "ℹ️ Yordam va xizmatlar haqida" },
+  ]).catch((err) => logger.error({ err }, "setMyCommands xato"));
+
   bot.on("polling_error", (err) => {
     logger.error({ err }, "Telegram polling error");
   });

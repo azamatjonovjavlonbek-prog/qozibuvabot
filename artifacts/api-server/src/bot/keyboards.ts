@@ -9,8 +9,17 @@ import {
 export function mainMenuKeyboard(): TelegramBot.InlineKeyboardMarkup {
   return {
     inline_keyboard: [
-      [{ text: "📄 Ariza bo'limi", callback_data: "menu_ariza" }],
-      [{ text: "📞 Konsultatsiya", callback_data: "menu_consultation" }],
+      [
+        { text: "📄 Ariza bo'limi", callback_data: "menu_ariza" },
+        { text: "📞 Konsultatsiya", callback_data: "menu_consultation" },
+      ],
+      [
+        { text: "👨‍💼 Adminga murojat", callback_data: "menu_contact" },
+        { text: "ℹ️ Biz haqimizda", callback_data: "menu_about" },
+      ],
+      [
+        { text: "🗑 Chatni tozalash", callback_data: "chat_clear" },
+      ],
     ],
   };
 }
@@ -111,5 +120,14 @@ export function adminApproveKeyboard(
 export function backToMainKeyboard(): TelegramBot.InlineKeyboardMarkup {
   return {
     inline_keyboard: [[{ text: "🏠 Bosh menyu", callback_data: "back_main" }]],
+  };
+}
+
+export function contactKeyboard(): TelegramBot.InlineKeyboardMarkup {
+  return {
+    inline_keyboard: [
+      [{ text: "✏️ Xabar yozish", callback_data: "contact_write" }],
+      [{ text: "🔙 Orqaga", callback_data: "back_main" }],
+    ],
   };
 }

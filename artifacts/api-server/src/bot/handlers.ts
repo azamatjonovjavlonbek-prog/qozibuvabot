@@ -24,6 +24,7 @@ import {
   cancelKeyboard,
   adminApproveKeyboard,
   backToMainKeyboard,
+  contactKeyboard,
 } from "./keyboards";
 import { logger } from "../lib/logger";
 import { getTemplate, setTemplate, listTemplates } from "./templateStore";
@@ -171,6 +172,31 @@ export function setupHandlers(bot: TelegramBot): void {
     );
   });
 
+  // ── /help buyrug'i ──────────────────────────────────────────────────────
+  bot.onText(/\/help/, async (msg) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from?.id ?? chatId;
+    resetState(userId);
+    await bot.sendMessage(
+      chatId,
+      `ℹ️ *QoziBuva Huquqiy Xizmatlar*\n\n` +
+      `📋 *Xizmatlar:*\n` +
+      `📝 *Shablon ariza* — ${SHABLON_PRICE.toLocaleString()} so'm\n` +
+      `   Tayyor Word shablon faylini olasiz\n\n` +
+      `✍️ *Professional ariza* — ${PROFESSIONAL_PRICE_LABEL}\n` +
+      `   Yurist sizning holatIngizga mos ariza yozib beradi\n\n` +
+      `📞 *Konsultatsiya* — ${CONSULTATION_PRICE.toLocaleString()} so'm\n` +
+      `   Telefon orqali huquqiy maslahat\n\n` +
+      `📌 *Qanday ishlaydi?*\n` +
+      `1. Xizmatni tanlang\n` +
+      `2. Karta raqamiga to'lov qiling\n` +
+      `3. To'lov cheki (screenshot) yuboring\n` +
+      `4. Admin tasdiqlaydi → xizmat yuboriladi\n\n` +
+      `👨‍💼 Savol bo'lsa: "Adminga murojat" tugmasini bosing`,
+      { parse_mode: "Markdown", reply_markup: backToMainKeyboard() }
+    );
+  });
+
   // Helper: edit message text, fall back to new message if editing fails
   async function safeEdit(
     chatId: number,
@@ -210,6 +236,57 @@ export function setupHandlers(bot: TelegramBot): void {
         await safeEdit(chatId, messageId,
           `🏠 *Bosh menyu*\n\nQuyidagi xizmatlardan birini tanlang:`,
           { parse_mode: "Markdown", reply_markup: mainMenuKeyboard() }
+        );
+        return;
+      }
+
+      // ── Chatni tozalash ───────────────────────────────────────────────
+      if (data === "chat_clear") {
+        resetState(userId);
+        try { await bot.deleteMessage(chatId, messageId); } catch { /* ignore */ }
+        await bot.sendMessage(
+          chatId,
+          `🏠 *Bosh menyu*\n\nQuyidagi xizmatlardan birini tanlang:`,
+          { parse_mode: "Markdown", reply_markup: mainMenuKeyboard() }
+        );
+        return;
+      }
+
+      // ── Biz haqimizda ────────────────────────────────────────────────
+      if (data === "menu_about") {
+        await safeEdit(chatId, messageId,
+          `ℹ️ *QoziBuva Huquqiy Xizmatlar*\n\n` +
+          `Biz O'zbekiston fuqarolariga tez va sifatli huquqiy yordam ko'rsatamiz.\n\n` +
+          `⚖️ *Xizmatlarimiz:*\n` +
+          `📝 Shablon ariza — *${SHABLON_PRICE.toLocaleString()} so'm*\n` +
+          `✍️ Professional ariza — *${PROFESSIONAL_PRICE_LABEL}*\n` +
+          `📞 Konsultatsiya — *${CONSULTATION_PRICE.toLocaleString()} so'm*\n\n` +
+          `🏦 *To'lov:*\n` +
+          `Karta: \`${CARD_NUMBER}\`\n` +
+          `Egasi: *${CARD_OWNER}*\n\n` +
+          `🕐 *Ish vaqti:* ${CONSULTATION_HOURS}\n\n` +
+          `💬 Savol va takliflar uchun "Adminga murojat" tugmasini bosing.`,
+          { parse_mode: "Markdown", reply_markup: backToMainKeyboard() }
+        );
+        return;
+      }
+
+      // ── Adminga murojat ──────────────────────────────────────────────
+      if (data === "menu_contact") {
+        await safeEdit(chatId, messageId,
+          `👨‍💼 *Adminga murojat*\n\n` +
+          `Savol, taklif yoki muammongiz bo'lsa, administratorimiz tez orada javob beradi.\n\n` +
+          `✏️ Xabar yozish tugmasini bosing va so'rovingizni yozing.`,
+          { parse_mode: "Markdown", reply_markup: contactKeyboard() }
+        );
+        return;
+      }
+
+      if (data === "contact_write") {
+        setState(userId, { step: "writing_to_admin" });
+        await safeEdit(chatId, messageId,
+          `✏️ *Savolingizni yozing:*\n\nXabaringizni quyida yuboring — admin imkon qadar tez javob beradi.`,
+          { parse_mode: "Markdown", reply_markup: cancelKeyboard() }
         );
         return;
       }
@@ -505,6 +582,32 @@ export function setupHandlers(bot: TelegramBot): void {
     }
 
     const state = getState(userId);
+
+    // ── Adminga xabar yozish ───────────────────────────────────────────
+    if (state.step === "writing_to_admin") {
+      if (!msg.text) {
+        await bot.sendMessage(chatId, `✏️ Iltimos, matn xabar yuboring.`);
+        return;
+      }
+      resetState(userId);
+      try {
+        await bot.sendMessage(ADMIN_ID,
+          `💬 *Foydalanuvchi murojati*\n\n` +
+          `👤 ${username}\n` +
+          `🆔 ID: \`${userId}\`\n\n` +
+          `📝 Xabar:\n${msg.text}`,
+          { parse_mode: "Markdown" }
+        );
+        await bot.sendMessage(chatId,
+          `✅ *Xabaringiz adminga yuborildi!*\n\nTez orada javob beriladi.`,
+          { parse_mode: "Markdown", reply_markup: backToMainKeyboard() }
+        );
+      } catch {
+        await bot.sendMessage(chatId, `⚠️ Xatolik yuz berdi. Qaytadan urinib ko'ring.`, { reply_markup: backToMainKeyboard() });
+      }
+      return;
+    }
+
     const isWaiting =
       state.step === "waiting_shablon_check" ||
       state.step === "waiting_professional_check" ||
