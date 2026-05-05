@@ -605,7 +605,7 @@ async function sendShablonDocument(
   chatId: number,
   catId: string,
 ): Promise<void> {
-  const caption = `📄 Bo'sh joylarni to'ldirib, imzolab sudga topshiring.`;
+  const caption = `📄 Bo'sh joylarni yoki sariq bilan belgilangan joylarni o'zingizga moslab to'ldirib, imzolab sudga topshiring.`;
 
   // 1-ustuvorlik: diskdagi asl Word fayl
   const local = findLocalTemplate(catId);
