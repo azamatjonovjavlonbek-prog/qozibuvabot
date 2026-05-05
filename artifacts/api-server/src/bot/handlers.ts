@@ -1,3 +1,4 @@
+import fs from "fs";
 import path from "path";
 import TelegramBot from "node-telegram-bot-api";
 import PDFDocument from "pdfkit";
@@ -586,6 +587,19 @@ export function setupHandlers(bot: TelegramBot): void {
 }
 
 // ── Shablon hujjatlar ──────────────────────────────────────────────────────
+const TEMPLATES_DIR = path.join(process.cwd(), "assets", "templates");
+
+function findLocalTemplate(catId: string): { filePath: string; fileName: string } | null {
+  const extensions = [".docx", ".doc", ".pdf"];
+  for (const ext of extensions) {
+    const filePath = path.join(TEMPLATES_DIR, `${catId}${ext}`);
+    if (fs.existsSync(filePath)) {
+      return { filePath, fileName: `${catId}${ext}` };
+    }
+  }
+  return null;
+}
+
 async function sendShablonDocument(
   bot: TelegramBot,
   chatId: number,
@@ -593,7 +607,19 @@ async function sendShablonDocument(
 ): Promise<void> {
   const caption = `📄 Bo'sh joylarni to'ldirib, imzolab sudga topshiring.`;
 
-  // 1-ustuvorlik: admin yuklagan asl fayl
+  // 1-ustuvorlik: diskdagi asl Word fayl
+  const local = findLocalTemplate(catId);
+  if (local) {
+    await bot.sendDocument(
+      chatId,
+      fs.createReadStream(local.filePath),
+      { caption, reply_markup: backToMainKeyboard() },
+      { filename: local.fileName },
+    );
+    return;
+  }
+
+  // 2-ustuvorlik: admin yuklagan file_id
   const stored = getTemplate(catId);
   if (stored) {
     await bot.sendDocument(chatId, stored.fileId, {
@@ -603,7 +629,7 @@ async function sendShablonDocument(
     return;
   }
 
-  // 2-ustuvorlik: PDF cache (fallback)
+  // 3-ustuvorlik: PDF cache (fallback)
   const cached = pdfCache.get(catId);
   if (!cached) {
     await bot.sendMessage(chatId, `⚠️ Shablon topilmadi. Iltimos admin bilan bog'laning.`, { reply_markup: backToMainKeyboard() });
