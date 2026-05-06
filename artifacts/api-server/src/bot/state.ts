@@ -1,6 +1,8 @@
 export interface UserState {
   step:
     | "idle"
+    | "selecting_language"
+    | "entering_phone"
     | "selecting_shablon"
     | "confirming_shablon"
     | "waiting_shablon_check"

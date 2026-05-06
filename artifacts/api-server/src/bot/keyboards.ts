@@ -5,91 +5,114 @@ import {
   CONSULTATION_PRICE,
   PROFESSIONAL_PRICE_LABEL,
 } from "./config";
+import type { Lang } from "./userProfile";
+import { t, tCatLabel } from "./i18n";
 
-export function mainMenuKeyboard(): TelegramBot.InlineKeyboardMarkup {
+export function languageKeyboard(): TelegramBot.InlineKeyboardMarkup {
   return {
     inline_keyboard: [
       [
-        { text: "📄 Ariza bo'limi", callback_data: "menu_ariza" },
-        { text: "📞 Konsultatsiya", callback_data: "menu_consultation" },
-      ],
-      [
-        { text: "👨‍💼 Adminga murojat", callback_data: "menu_contact" },
-        { text: "ℹ️ Biz haqimizda", callback_data: "menu_about" },
-      ],
-      [
-        { text: "🗑 Chatni tozalash", callback_data: "chat_clear" },
+        { text: "🇺🇿 O'zbek (Lotin)", callback_data: "lang_latin" },
+        { text: "🇺🇿 Ўзбек (Кирилл)", callback_data: "lang_cyrillic" },
       ],
     ],
   };
 }
 
-export function arizaMenuKeyboard(): TelegramBot.InlineKeyboardMarkup {
+export function phoneKeyboard(lang: Lang): TelegramBot.ReplyKeyboardMarkup {
+  return {
+    keyboard: [[{ text: t(lang, "phone_share_btn"), request_contact: true }]],
+    one_time_keyboard: true,
+    resize_keyboard: true,
+  };
+}
+
+export function removeKeyboard(): TelegramBot.ReplyKeyboardRemove {
+  return { remove_keyboard: true };
+}
+
+export function mainMenuKeyboard(lang: Lang): TelegramBot.InlineKeyboardMarkup {
   return {
     inline_keyboard: [
-      [{ text: `📝 Shablon ariza — ${SHABLON_PRICE.toLocaleString()} so'm`, callback_data: "menu_shablon" }],
-      [{ text: `✍️ Professional ariza — ${PROFESSIONAL_PRICE_LABEL}`, callback_data: "menu_professional" }],
-      [{ text: "🔙 Orqaga", callback_data: "back_main" }],
+      [
+        { text: t(lang, "btn_ariza"),        callback_data: "menu_ariza" },
+        { text: t(lang, "btn_consultation"), callback_data: "menu_consultation" },
+      ],
+      [
+        { text: t(lang, "btn_contact"), callback_data: "menu_contact" },
+        { text: t(lang, "btn_about"),   callback_data: "menu_about" },
+      ],
+      [
+        { text: t(lang, "btn_clear"), callback_data: "chat_clear" },
+      ],
     ],
   };
 }
 
-export function shablonListKeyboard(): TelegramBot.InlineKeyboardMarkup {
+export function arizaMenuKeyboard(lang: Lang): TelegramBot.InlineKeyboardMarkup {
+  const shablonLabel = lang === "cyrillic"
+    ? `📝 Шаблон ариза — ${SHABLON_PRICE.toLocaleString()} сўм`
+    : `📝 Shablon ariza — ${SHABLON_PRICE.toLocaleString()} so'm`;
+  const proLabel = lang === "cyrillic"
+    ? `✍️ Профессионал ариза — ${PROFESSIONAL_PRICE_LABEL}`
+    : `✍️ Professional ariza — ${PROFESSIONAL_PRICE_LABEL}`;
+  return {
+    inline_keyboard: [
+      [{ text: shablonLabel,  callback_data: "menu_shablon" }],
+      [{ text: proLabel,      callback_data: "menu_professional" }],
+      [{ text: t(lang, "btn_back"), callback_data: "back_main" }],
+    ],
+  };
+}
+
+export function shablonListKeyboard(lang: Lang): TelegramBot.InlineKeyboardMarkup {
   const rows = ARIZA_CATEGORIES.map((c) => [
-    { text: c.label, callback_data: `shablon_${c.id}` },
+    { text: tCatLabel(lang, c.label), callback_data: `shablon_${c.id}` },
   ]);
-  rows.push([{ text: "🔙 Orqaga", callback_data: "menu_ariza" }]);
+  rows.push([{ text: t(lang, "btn_back"), callback_data: "menu_ariza" }]);
   return { inline_keyboard: rows };
 }
 
 export function confirmShablonKeyboard(
   categoryId: string,
+  lang: Lang,
 ): TelegramBot.InlineKeyboardMarkup {
+  const payLabel = lang === "cyrillic"
+    ? `💳 Тўлов қилиш (${SHABLON_PRICE.toLocaleString()} сўм)`
+    : `💳 To'lov qilish (${SHABLON_PRICE.toLocaleString()} so'm)`;
   return {
     inline_keyboard: [
-      [
-        {
-          text: `💳 To'lov qilish (${SHABLON_PRICE.toLocaleString()} so'm)`,
-          callback_data: `pay_shablon_${categoryId}`,
-        },
-      ],
-      [{ text: "🔙 Orqaga", callback_data: "menu_shablon" }],
+      [{ text: payLabel, callback_data: `pay_shablon_${categoryId}` }],
+      [{ text: t(lang, "btn_back"), callback_data: "menu_shablon" }],
     ],
   };
 }
 
-export function confirmProfessionalKeyboard(): TelegramBot.InlineKeyboardMarkup {
+export function confirmProfessionalKeyboard(lang: Lang): TelegramBot.InlineKeyboardMarkup {
   return {
     inline_keyboard: [
-      [
-        {
-          text: `💳 Buyurtma berish`,
-          callback_data: `pay_pro_general`,
-        },
-      ],
-      [{ text: "🔙 Orqaga", callback_data: "menu_ariza" }],
+      [{ text: t(lang, "btn_order"), callback_data: "pay_pro_general" }],
+      [{ text: t(lang, "btn_back"), callback_data: "menu_ariza" }],
     ],
   };
 }
 
-export function confirmConsultationKeyboard(): TelegramBot.InlineKeyboardMarkup {
+export function confirmConsultationKeyboard(lang: Lang): TelegramBot.InlineKeyboardMarkup {
+  const payLabel = lang === "cyrillic"
+    ? `💳 Тўлов қилиш (${CONSULTATION_PRICE.toLocaleString()} сўм)`
+    : `💳 To'lov qilish (${CONSULTATION_PRICE.toLocaleString()} so'm)`;
   return {
     inline_keyboard: [
-      [
-        {
-          text: `💳 To'lov qilish (${CONSULTATION_PRICE.toLocaleString()} so'm)`,
-          callback_data: "pay_consultation",
-        },
-      ],
-      [{ text: "🔙 Orqaga", callback_data: "back_main" }],
+      [{ text: payLabel, callback_data: "pay_consultation" }],
+      [{ text: t(lang, "btn_back"), callback_data: "back_main" }],
     ],
   };
 }
 
-export function cancelKeyboard(): TelegramBot.InlineKeyboardMarkup {
+export function cancelKeyboard(lang: Lang): TelegramBot.InlineKeyboardMarkup {
   return {
     inline_keyboard: [
-      [{ text: "❌ Bekor qilish", callback_data: "back_main" }],
+      [{ text: t(lang, "btn_cancel"), callback_data: "back_main" }],
     ],
   };
 }
@@ -117,17 +140,17 @@ export function adminApproveKeyboard(
   };
 }
 
-export function backToMainKeyboard(): TelegramBot.InlineKeyboardMarkup {
+export function backToMainKeyboard(lang: Lang = "latin"): TelegramBot.InlineKeyboardMarkup {
   return {
-    inline_keyboard: [[{ text: "🏠 Bosh menyu", callback_data: "back_main" }]],
+    inline_keyboard: [[{ text: t(lang, "btn_main"), callback_data: "back_main" }]],
   };
 }
 
-export function contactKeyboard(): TelegramBot.InlineKeyboardMarkup {
+export function contactKeyboard(lang: Lang): TelegramBot.InlineKeyboardMarkup {
   return {
     inline_keyboard: [
-      [{ text: "✏️ Xabar yozish", callback_data: "contact_write" }],
-      [{ text: "🔙 Orqaga", callback_data: "back_main" }],
+      [{ text: t(lang, "btn_write_msg"), callback_data: "contact_write" }],
+      [{ text: t(lang, "btn_back"), callback_data: "back_main" }],
     ],
   };
 }
