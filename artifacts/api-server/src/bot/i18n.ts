@@ -197,6 +197,22 @@ export function tCatLabel(lang: Lang, latinLabel: string): string {
   return map[latinLabel] ?? latinLabel;
 }
 
+export function tProPrice(lang: Lang): string {
+  return lang === "cyrillic"
+    ? "199 000 сўмдан 1 000 000 сўмгача"
+    : "199 000 so'mdan 1 000 000 so'mgacha";
+}
+
+export function tHours(lang: Lang): string {
+  return lang === "cyrillic"
+    ? "10:00 дан 20:00 гача"
+    : "10:00 dan 20:00 gacha";
+}
+
+export function tSom(lang: Lang): string {
+  return lang === "cyrillic" ? "сўм" : "so'm";
+}
+
 export function tHelp(lang: Lang, shablon: string, professional: string, consultation: string): string {
   return lang === "cyrillic"
     ? `ℹ️ *QoziBuva Ҳуқуқий Хизматлар*\n\n📋 *Хизматлар:*\n📝 *Шаблон ариза* — ${shablon}\n   Тайёр Word шаблон файлини оласиз\n\n✍️ *Профессионал ариза* — ${professional}\n   Юрист сизнинг ҳолатингизга мос ариза ёзиб беради\n\n📞 *Консультация* — ${consultation}\n   Телефон орқали ҳуқуқий маслаҳат\n\n📌 *Қандай ишлайди?*\n1. Хизматни танланг\n2. Карта рақамига тўлов қилинг\n3. Тўлов чеки (screenshot) юборинг\n4. Админ тасдиқлайди → хизмат юборилади\n\n👨‍💼 Савол бўлса: "Админга мурожат" тугмасини босинг`

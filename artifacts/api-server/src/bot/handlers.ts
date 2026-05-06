@@ -38,6 +38,7 @@ import {
   t, tMainMenu, tShablonList, tShablonConfirm, tPayShablon,
   tProfessional, tPayProfessional, tConsultation, tPayConsultation,
   tApprovedShablon, tApprovedConsultation, tCatLabel, tHelp,
+  tProPrice, tHours, tSom,
 } from "./i18n";
 
 const FONT_PATH = path.join(process.cwd(), "assets", "NotoSans-Regular.ttf");
@@ -203,9 +204,9 @@ export function setupHandlers(bot: TelegramBot): void {
       chatId,
       tHelp(
         lang,
-        `${SHABLON_PRICE.toLocaleString()} ${lang === "cyrillic" ? "сўм" : "so'm"}`,
-        PROFESSIONAL_PRICE_LABEL,
-        `${CONSULTATION_PRICE.toLocaleString()} ${lang === "cyrillic" ? "сўм" : "so'm"}`,
+        `${SHABLON_PRICE.toLocaleString()} ${tSom(lang)}`,
+        tProPrice(lang),
+        `${CONSULTATION_PRICE.toLocaleString()} ${tSom(lang)}`,
       ),
       { parse_mode: "Markdown", reply_markup: backToMainKeyboard(lang) }
     );
@@ -277,12 +278,12 @@ export function setupHandlers(bot: TelegramBot): void {
           bot, chatId, messageId,
           tMainMenu(
             lang,
-            `${SHABLON_PRICE.toLocaleString()} ${lang === "cyrillic" ? "сўм" : "so'm"}`,
-            PROFESSIONAL_PRICE_LABEL,
-            `${CONSULTATION_PRICE.toLocaleString()} ${lang === "cyrillic" ? "сўм" : "so'm"}`,
+            `${SHABLON_PRICE.toLocaleString()} ${tSom(lang)}`,
+            tProPrice(lang),
+            `${CONSULTATION_PRICE.toLocaleString()} ${tSom(lang)}`,
             CARD_NUMBER,
             CARD_OWNER,
-            CONSULTATION_HOURS,
+            tHours(lang),
           ),
           { parse_mode: "Markdown", reply_markup: backToMainKeyboard(lang) }
         );
@@ -380,7 +381,7 @@ export function setupHandlers(bot: TelegramBot): void {
         setState(userId, { step: "confirming_professional", selectedServiceId: "general" });
         await safeEdit(
           bot, chatId, messageId,
-          tProfessional(lang, PROFESSIONAL_PRICE_LABEL),
+          tProfessional(lang, tProPrice(lang)),
           { parse_mode: "Markdown", reply_markup: confirmProfessionalKeyboard(lang) }
         );
         return;
@@ -396,7 +397,7 @@ export function setupHandlers(bot: TelegramBot): void {
         });
         await safeEdit(
           bot, chatId, messageId,
-          tPayProfessional(lang, PROFESSIONAL_PRICE_LABEL, CARD_NUMBER, CARD_OWNER),
+          tPayProfessional(lang, tProPrice(lang), CARD_NUMBER, CARD_OWNER),
           { parse_mode: "Markdown", reply_markup: cancelKeyboard(lang) }
         );
         return;
@@ -409,8 +410,8 @@ export function setupHandlers(bot: TelegramBot): void {
           bot, chatId, messageId,
           tConsultation(
             lang,
-            `${CONSULTATION_PRICE.toLocaleString()} ${lang === "cyrillic" ? "сўм" : "so'm"}`,
-            CONSULTATION_HOURS,
+            `${CONSULTATION_PRICE.toLocaleString()} ${tSom(lang)}`,
+            tHours(lang),
           ),
           { parse_mode: "Markdown", reply_markup: confirmConsultationKeyboard(lang) }
         );
@@ -479,7 +480,7 @@ export function setupHandlers(bot: TelegramBot): void {
         const userLang = getLang(targetUserId);
         await bot.sendMessage(chatId, `✅ Tasdiqlandi! Telefon raqam yuborildi.`);
         await bot.sendMessage(targetUserId,
-          tApprovedConsultation(userLang, CONSULTATION_PHONE, CONSULTATION_HOURS),
+          tApprovedConsultation(userLang, CONSULTATION_PHONE, tHours(userLang)),
           { parse_mode: "Markdown", reply_markup: backToMainKeyboard(userLang) }
         );
         resetState(targetUserId);

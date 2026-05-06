@@ -6,7 +6,7 @@ import {
   PROFESSIONAL_PRICE_LABEL,
 } from "./config";
 import type { Lang } from "./userProfile";
-import { t, tCatLabel } from "./i18n";
+import { t, tCatLabel, tProPrice } from "./i18n";
 
 export function languageKeyboard(): TelegramBot.InlineKeyboardMarkup {
   return {
@@ -54,8 +54,8 @@ export function arizaMenuKeyboard(lang: Lang): TelegramBot.InlineKeyboardMarkup 
     ? `📝 Шаблон ариза — ${SHABLON_PRICE.toLocaleString()} сўм`
     : `📝 Shablon ariza — ${SHABLON_PRICE.toLocaleString()} so'm`;
   const proLabel = lang === "cyrillic"
-    ? `✍️ Профессионал ариза — ${PROFESSIONAL_PRICE_LABEL}`
-    : `✍️ Professional ariza — ${PROFESSIONAL_PRICE_LABEL}`;
+    ? `✍️ Профессионал ариза — ${tProPrice(lang)}`
+    : `✍️ Professional ariza — ${tProPrice(lang)}`;
   return {
     inline_keyboard: [
       [{ text: shablonLabel,  callback_data: "menu_shablon" }],
