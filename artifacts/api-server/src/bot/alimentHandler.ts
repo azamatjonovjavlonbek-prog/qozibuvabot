@@ -6,6 +6,31 @@ import type { Lang } from "./userProfile";
 
 type AlimentChildren = "1" | "2" | "3" | "3plus";
 
+// ── Maosh parser (moslashuvchan format) ───────────────────────────────────────
+function parseSalary(raw: string): number | null {
+  const s = raw.toLowerCase().trim();
+
+  // "mln" yoki "mlrd" qo'shimchasi bilan: "3.5 mln", "3,5mln", "1.2mlrd"
+  const mlnMatch = s.match(/^([\d][.\d,\s]*)mln/);
+  if (mlnMatch) {
+    const num = parseFloat(mlnMatch[1]!.replace(/,/g, ".").replace(/\s/g, ""));
+    if (!isNaN(num)) return Math.round(num * 1_000_000);
+  }
+  const mlrdMatch = s.match(/^([\d][.\d,\s]*)mlrd/);
+  if (mlrdMatch) {
+    const num = parseFloat(mlrdMatch[1]!.replace(/,/g, ".").replace(/\s/g, ""));
+    if (!isNaN(num)) return Math.round(num * 1_000_000_000);
+  }
+
+  // Oddiy raqam: bo'shliq, vergul yoki nuqta minglik ajratuvchi sifatida
+  // Lekin kasrli raqamni (3.5) "mlrd/mln" siz yo'q — butun son deb qabul qilamiz
+  const cleaned = s.replace(/[\s_]/g, "").replace(/,/g, "");
+  const n = Number(cleaned);
+  if (!isNaN(n) && n > 0) return Math.round(n);
+
+  return null;
+}
+
 // ── Klaviaturalar ─────────────────────────────────────────────────────────────
 
 export function alimentStatusKeyboard(lang: Lang): TelegramBot.InlineKeyboardMarkup {
@@ -310,14 +335,15 @@ export async function handleAlimentSalaryInput(
   const state = getState(userId);
   if (state.step !== "aliment_salary") return false;
 
-  const digits = text.replace(/\s/g, "").replace(/,/g, "").replace(/\./g, "");
-  const salary = parseInt(digits, 10);
   const cy = lang === "cyrillic";
+  const salary = parseSalary(text.trim());
 
-  if (isNaN(salary) || salary < 0) {
+  if (salary === null || salary <= 0) {
     await bot.sendMessage(
       chatId,
-      cy ? "⚠️ Нотўғри рақам. Фақат рақам киритинг (масалан: `3500000`)" : "⚠️ Noto'g'ri raqam. Faqat raqam kiriting (masalan: `3500000`)",
+      cy
+        ? "⚠️ Нотўғри формат. Мисоллар: `3500000`, `3 500 000`, `3.5 mln`"
+        : "⚠️ Noto'g'ri format. Misollar: `3500000`, `3 500 000`, `3.5 mln`",
       { parse_mode: "Markdown" },
     );
     return true;
