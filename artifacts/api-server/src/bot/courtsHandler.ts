@@ -107,6 +107,9 @@ export async function handleCourts(
     const c = OLIY_SUD;
     const text = formatCourtInfo(c, lang);
     await safeEdit(text, courtDetailKeyboard("courts", lang));
+    if (c.lat && c.lng) {
+      try { await bot.sendLocation(chatId, c.lat, c.lng); } catch { /* ignore */ }
+    }
     return true;
   }
 
@@ -163,6 +166,9 @@ export async function handleCourts(
 
     const text = formatCourtInfo(court, lang);
     await safeEdit(text, courtDetailKeyboard(`cr:${type}:${regionId}`, lang));
+    if (court.lat && court.lng) {
+      try { await bot.sendLocation(chatId, court.lat, court.lng); } catch { /* ignore */ }
+    }
     return true;
   }
 
