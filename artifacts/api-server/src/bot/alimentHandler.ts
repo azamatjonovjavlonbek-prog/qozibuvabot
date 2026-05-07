@@ -53,13 +53,15 @@ export function alimentConfirmKeyboard(lang: Lang): TelegramBot.InlineKeyboardMa
 
 function calcAliment(salary: number, children: AlimentChildren): {
   amount: number;
-  minimum: number;
+  minimumPerChild: number;
   fractionLabel: string;
   childCount: number;
+  isThreePlus: boolean;
 } {
   let fraction: number;
   let fractionLabel: string;
   let childCount: number;
+  const isThreePlus = children === "3plus";
 
   switch (children) {
     case "1":
@@ -77,15 +79,15 @@ function calcAliment(salary: number, children: AlimentChildren): {
       fractionLabel = "1/2 (50%)";
       childCount = 3;
       break;
-    default:
+    default: // 3plus
       fraction = 1 / 2;
       fractionLabel = "1/2 (50%)";
       childCount = 3;
   }
 
-  const amount  = Math.round(salary * fraction);
-  const minimum = Math.round(MZOT * 0.265 * childCount);
-  return { amount, minimum, fractionLabel, childCount };
+  const amount         = Math.round(salary * fraction);
+  const minimumPerChild = Math.round(MZOT * 0.265);
+  return { amount, minimumPerChild, fractionLabel, childCount, isThreePlus };
 }
 
 function fmt(n: number): string {
@@ -101,14 +103,26 @@ function buildResultText(
   children: AlimentChildren,
 ): string {
   const cy = lang === "cyrillic";
-  const { amount, minimum, fractionLabel, childCount } = calcAliment(salary, children);
-  const finalAmount = Math.max(amount, minimum);
-  const isMinApplied = amount < minimum;
+  const { amount, minimumPerChild, fractionLabel, childCount, isThreePlus } = calcAliment(salary, children);
 
-  const childrenLabel = (n: number) => {
-    if (cy) return n === 1 ? "1 та бола" : n === 2 ? "2 та бола" : "3 ва ундан ортиқ бола";
-    return n === 1 ? "1 ta bola" : n === 2 ? "2 ta bola" : "3 va undan ortiq bola";
-  };
+  // Label for children selection
+  const childrenLabel = (() => {
+    if (cy) {
+      if (children === "1")      return "1 та бола";
+      if (children === "2")      return "2 та бола";
+      if (children === "3")      return "3 та бола";
+      return "3 дан ортиқ бола";
+    }
+    if (children === "1")      return "1 ta bola";
+    if (children === "2")      return "2 ta bola";
+    if (children === "3")      return "3 ta bola";
+    return "3 dan ortiq bola";
+  })();
+
+  // Minimum: per child × known count (for 3plus, minimum is at least 3 children)
+  const minimumTotal = minimumPerChild * childCount;
+  const finalAmount  = Math.max(amount, minimumTotal);
+  const isMinApplied = amount < minimumTotal;
 
   const statusLabel = status === "employed"
     ? (cy ? "Ишлайди"   : "Ishlaydi")
@@ -118,22 +132,29 @@ function buildResultText(
     ? (cy ? `МЗОТ (${fmt(MZOT)} сўм)` : `MZOT (${fmt(MZOT)} so'm)`)
     : (cy ? `${fmt(salary)} сўм` : `${fmt(salary)} so'm`);
 
+  const threePlusMinNote = isThreePlus
+    ? (cy
+        ? `\n⚠️ _Бола сони кўп бўлса, минимал миқдор ҳам ошади (ҳар бир бола учун ${fmt(minimumPerChild)} сўм)._`
+        : `\n⚠️ _Bola soni ko'p bo'lsa, minimal miqdor ham oshadi (har bir bola uchun ${fmt(minimumPerChild)} so'm)._`)
+    : "";
+
   if (cy) {
     return (
       `🧮 *Алимент ҳисоби — Натижа*\n\n` +
       `👤 Ҳолат: *${statusLabel}*\n` +
       `💵 Маош: *${salaryLabel}*\n` +
-      `👶 Болалар: *${childrenLabel(childCount)}*\n` +
+      `👶 Болалар: *${childrenLabel}*\n` +
       `📐 Улуш: *${fractionLabel}*\n\n` +
       `━━━━━━━━━━━━━━━━━\n` +
       `💰 Ҳисобланган алимент: *${fmt(amount)} сўм/ой*\n` +
-      `🔒 Қонуний минимум: *${fmt(minimum)} сўм/ой*\n` +
+      `🔒 Қонуний минимум: *${fmt(minimumPerChild)} сўм × ${childCount} = ${fmt(minimumTotal)} сўм/ой*\n` +
       `━━━━━━━━━━━━━━━━━\n` +
       `✅ *Тўланиши керак: ${fmt(finalAmount)} сўм/ой*\n` +
       (isMinApplied
-        ? `\n⚠️ _Ҳисобланган миқдор минимумдан кам бўлгани учун минимал миқдор қўлланилди._\n`
+        ? `\n⚠️ _Ҳисобланган миқдор минимумдан кам бўлгани учун минимал миқдор қўлланилди._`
         : ``) +
-      `\n📌 _Оила кодексининг 99-моддасига асосан._\n` +
+      threePlusMinNote +
+      `\n\n📌 _Оила кодексининг 99-моддасига асосан._\n` +
       `ℹ️ _Аниқ миқдорни суд белгилайди. Бу ҳисоб тахминий._`
     );
   }
@@ -142,17 +163,18 @@ function buildResultText(
     `🧮 *Aliment hisob — Natija*\n\n` +
     `👤 Holat: *${statusLabel}*\n` +
     `💵 Maosh: *${salaryLabel}*\n` +
-    `👶 Bolalar: *${childrenLabel(childCount)}*\n` +
+    `👶 Bolalar: *${childrenLabel}*\n` +
     `📐 Ulush: *${fractionLabel}*\n\n` +
     `━━━━━━━━━━━━━━━━━\n` +
     `💰 Hisoblangan aliment: *${fmt(amount)} so'm/oy*\n` +
-    `🔒 Qonuniy minimum: *${fmt(minimum)} so'm/oy*\n` +
+    `🔒 Qonuniy minimum: *${fmt(minimumPerChild)} so'm × ${childCount} = ${fmt(minimumTotal)} so'm/oy*\n` +
     `━━━━━━━━━━━━━━━━━\n` +
     `✅ *To'lanishi kerak: ${fmt(finalAmount)} so'm/oy*\n` +
     (isMinApplied
-      ? `\n⚠️ _Hisoblangan miqdor minimumdan kam bo'lgani uchun minimal miqdor qo'llanildi._\n`
+      ? `\n⚠️ _Hisoblangan miqdor minimumdan kam bo'lgani uchun minimal miqdor qo'llanildi._`
       : ``) +
-    `\n📌 _Oila kodeksining 99-moddasiga asosan._\n` +
+    threePlusMinNote +
+    `\n\n📌 _Oila kodeksining 99-moddasiga asosan._\n` +
     `ℹ️ _Aniq miqdorni sud belgilaydi. Bu hisob taxminiy._`
   );
 }
