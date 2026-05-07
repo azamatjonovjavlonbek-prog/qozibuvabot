@@ -27,8 +27,9 @@ export async function startBot(): Promise<void> {
   setupHandlers(bot);
 
   bot.setMyCommands([
-    { command: "start", description: "🏠 Bosh menyu" },
-    { command: "help",  description: "ℹ️ Yordam va xizmatlar haqida" },
+    { command: "start", description: "Botni ishga tushirish" },
+    { command: "help",  description: "Yordam" },
+    { command: "clean", description: "Chatni tozalash" },
   ]).catch((err) => logger.error({ err }, "setMyCommands xato"));
 
   bot.on("polling_error", (err) => {

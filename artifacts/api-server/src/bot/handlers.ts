@@ -115,6 +115,32 @@ export function setupHandlers(bot: TelegramBot): void {
     );
   });
 
+  // ── /help ────────────────────────────────────────────────────────────────
+  bot.onText(/\/help/, async (msg) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from?.id ?? chatId;
+    const lang = getLang(userId);
+    const helpText = lang === "cyrillic"
+      ? `ℹ️ *Yordam*\n\n*Buyruqlar:*\n/start — Botni ishga tushirish\n/help — Yordam\n/clean — Chatni tozalash\n\n*Xizmatlar:*\nAriza bo'limi — tayyor shablon yoki professional ariza\nKonsultatsiya — yurist bilan maslahat\nSudlar manzillari — O'zbekiston sudlari\nAliment kalkulyatori — aliment miqdorini hisoblash\n\n*Savol va takliflar uchun "Adminga murojat" tugmasini bosing.*`
+      : `ℹ️ *Yordam*\n\n*Buyruqlar:*\n/start — Botni ishga tushirish\n/help — Yordam\n/clean — Chatni tozalash\n\n*Xizmatlar:*\nAriza bo'limi — tayyor shablon yoki professional ariza\nKonsultatsiya — yurist bilan maslahat\nSudlar manzillari — O'zbekiston sudlari\nAliment kalkulyatori — aliment miqdorini hisoblash\n\n*Savol va takliflar uchun "Adminga murojat" tugmasini bosing.*`;
+    await bot.sendMessage(chatId, helpText, {
+      parse_mode: "Markdown",
+      reply_markup: isRegistered(userId) ? mainMenuKeyboard(lang) : undefined,
+    });
+  });
+
+  // ── /clean ───────────────────────────────────────────────────────────────
+  bot.onText(/\/clean/, async (msg) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from?.id ?? chatId;
+    const lang = getLang(userId);
+    resetState(userId);
+    await bot.sendMessage(chatId, t(lang, "main_menu"), {
+      parse_mode: "Markdown",
+      reply_markup: isRegistered(userId) ? mainMenuKeyboard(lang) : undefined,
+    });
+  });
+
   // ── Admin: /yuborish <userId> ─────────────────────────────────────────────
   bot.onText(/\/yuborish(?:\s+(\d+))?/, async (msg, match) => {
     const chatId = msg.chat.id;
@@ -642,12 +668,12 @@ export function setupHandlers(bot: TelegramBot): void {
     // ── Bosh menyu tugmalari (reply keyboard) ────────────────────────
     if (msg.text && isRegistered(userId)) {
       const menuAction: Record<string, string> = {
-        "📄 Ariza bo'limi":     "menu_ariza",
-        "📄 Ариза бўлими":      "menu_ariza",
-        "📞 Konsultatsiya":      "menu_consultation",
-        "📞 Консультация":       "menu_consultation",
-        "🏛 Sudlar manzillari":  "courts",
-        "🏛 Судлар манзиллари":  "courts",
+        "Ariza bo'limi":        "menu_ariza",
+        "Ариза бўлими":         "menu_ariza",
+        "Konsultatsiya":         "menu_consultation",
+        "Консультация":          "menu_consultation",
+        "Sudlar manzillari":     "courts",
+        "Судлар манзиллари":     "courts",
         "Aliment kalkulyatori":  "menu_aliment",
         "Алимент калькулятори":  "menu_aliment",
         "Adminga murojat":       "menu_contact",

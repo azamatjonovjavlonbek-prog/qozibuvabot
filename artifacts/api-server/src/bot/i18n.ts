@@ -22,12 +22,12 @@ const S: Record<string, Record<Lang, string>> = {
     cyrillic: "🏠 *Бош меню*\n\nҚуйидаги хизматлардан бирини танланг:",
   },
   btn_ariza: {
-    latin:    "📄 Ariza bo'limi",
-    cyrillic: "📄 Ариза бўлими",
+    latin:    "Ariza bo'limi",
+    cyrillic: "Ариза бўлими",
   },
   btn_consultation: {
-    latin:    "📞 Konsultatsiya",
-    cyrillic: "📞 Консультация",
+    latin:    "Konsultatsiya",
+    cyrillic: "Консультация",
   },
   btn_contact: {
     latin:    "Adminga murojat",
@@ -38,8 +38,8 @@ const S: Record<string, Record<Lang, string>> = {
     cyrillic: "Биз ҳақимизда",
   },
   btn_courts: {
-    latin:    "🏛 Sudlar manzillari",
-    cyrillic: "🏛 Судлар манзиллари",
+    latin:    "Sudlar manzillari",
+    cyrillic: "Судлар манзиллари",
   },
   btn_aliment: {
     latin:    "Aliment kalkulyatori",
