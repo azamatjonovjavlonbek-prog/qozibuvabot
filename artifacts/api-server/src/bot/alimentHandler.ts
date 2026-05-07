@@ -89,7 +89,7 @@ function calcAliment(salary: number, children: AlimentChildren): {
 }
 
 function fmt(n: number): string {
-  return n.toLocaleString("uz-UZ");
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
 // ── Natija matni ──────────────────────────────────────────────────────────────
