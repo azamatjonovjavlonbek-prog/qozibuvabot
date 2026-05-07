@@ -42,8 +42,8 @@ export const REGIONS: RegionEntry[] = [
 
 export const OLIY_SUD: CourtEntry = {
   name: "O'zbekiston Respublikasi Oliy sudi",
-  address: "100047, Toshkent shahar, Chilonzor tumani, A.Ikromov ko'chasi, 1",
-  phone: "+998 71 233-22-25",
+  address: "100186, Toshkent shahar, A.Qodiriy ko'chasi, 1-uy",
+  phone: "+998 71 239-02-74",
   email: "info@supcourt.uz",
   lat: 41.32302186304097,
   lng: 69.26632559015088,
