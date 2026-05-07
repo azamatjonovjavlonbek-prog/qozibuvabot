@@ -146,12 +146,9 @@ function buildResultText(
       `Маош: *${salaryLabel}*\n` +
       `Болалар: *${childrenLabel}*\n` +
       `Улуш: *${fractionLabel}*\n\n` +
-      `━━━━━━━━━━━━━━━━━\n` +
-      `Ҳисобланган алимент: *${fmt(amount)} сўм/ой*\n` +
-      `━━━━━━━━━━━━━━━━━\n` +
       (isThreePlus
-        ? `✅ *Тўланиши керак: ${fmt(amount)} сўм/ой*\n_(ҳар бир бола учун камида ${fmt(minimumPerChild)} сўм)_\n`
-        : `✅ *Тўланиши керак: ${fmt(finalAmount)} сўм/ой*\n` +
+        ? `✅ Алимент тўлови ойига *${fmt(amount)} сўм*ни ташкил этади\n_(ҳар бир бола учун камида ${fmt(minimumPerChild)} сўм)_\n`
+        : `✅ Алимент тўлови ойига *${fmt(finalAmount)} сўм*ни ташкил этади\n` +
           (isMinApplied ? `\n⚠️ _Ҳисобланган миқдор минимумдан кам — минимал миқдор қўлланилди._\n` : ``)) +
       `\n_Оила кодексининг 99-моддасига асосан. Аниқ миқдорни суд белгилайди._`
     );
@@ -163,12 +160,9 @@ function buildResultText(
     `Maosh: *${salaryLabel}*\n` +
     `Bolalar: *${childrenLabel}*\n` +
     `Ulush: *${fractionLabel}*\n\n` +
-    `━━━━━━━━━━━━━━━━━\n` +
-    `Hisoblangan aliment: *${fmt(amount)} so'm/oy*\n` +
-    `━━━━━━━━━━━━━━━━━\n` +
     (isThreePlus
-      ? `✅ *To'lanishi kerak: ${fmt(amount)} so'm/oy*\n_(har bir bola uchun kamida ${fmt(minimumPerChild)} so'm)_\n`
-      : `✅ *To'lanishi kerak: ${fmt(finalAmount)} so'm/oy*\n` +
+      ? `✅ Aliment to'lovi oyiga *${fmt(amount)} so'm*ni tashkil etadi\n_(har bir bola uchun kamida ${fmt(minimumPerChild)} so'm)_\n`
+      : `✅ Aliment to'lovi oyiga *${fmt(finalAmount)} so'm*ni tashkil etadi\n` +
         (isMinApplied ? `\n⚠️ _Hisoblangan miqdor minimumdan kam — minimal miqdor qo'llanildi._\n` : ``)) +
     `\n_Oila kodeksining 99-moddasiga asosan. Aniq miqdorni sud belgilaydi._`
   );
