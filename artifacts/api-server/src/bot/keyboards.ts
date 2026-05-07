@@ -39,6 +39,9 @@ export function mainMenuKeyboard(lang: Lang): TelegramBot.InlineKeyboardMarkup {
         { text: t(lang, "btn_consultation"), callback_data: "menu_consultation" },
       ],
       [
+        { text: t(lang, "btn_courts"), callback_data: "courts" },
+      ],
+      [
         { text: t(lang, "btn_contact"), callback_data: "menu_contact" },
         { text: t(lang, "btn_about"),   callback_data: "menu_about" },
       ],

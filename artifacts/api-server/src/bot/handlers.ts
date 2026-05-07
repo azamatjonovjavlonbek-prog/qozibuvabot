@@ -30,6 +30,7 @@ import {
   contactKeyboard,
 } from "./keyboards";
 import { logger } from "../lib/logger";
+import { handleCourts } from "./courtsHandler";
 import { getTemplate, setTemplate, listTemplates } from "./templateStore";
 import { ARIZA_CATEGORIES as CATS } from "./config";
 import { getLang, setProfile, isRegistered, updatePhone } from "./userProfile";
@@ -231,6 +232,17 @@ export function setupHandlers(bot: TelegramBot): void {
     } catch { /* ignore stale callback */ }
 
     try {
+      // ── Sudlar manzillari ──────────────────────────────────────────────
+      if (
+        data === "courts" ||
+        data.startsWith("ct:") ||
+        data.startsWith("cr:") ||
+        data.startsWith("cd:")
+      ) {
+        await handleCourts(bot, query, data, chatId, messageId);
+        return;
+      }
+
       // ── Til tanlash ────────────────────────────────────────────────────
       if (data === "lang_latin" || data === "lang_cyrillic") {
         const selectedLang: Lang = data === "lang_latin" ? "latin" : "cyrillic";
