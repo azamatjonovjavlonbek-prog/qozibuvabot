@@ -13,8 +13,8 @@ export function alimentStatusKeyboard(lang: Lang): TelegramBot.InlineKeyboardMar
   return {
     inline_keyboard: [
       [
-        { text: cy ? "💼 Ишлайди"   : "💼 Ishlaydi",   callback_data: "aliment_status:employed" },
-        { text: cy ? "🚫 Ишламайди" : "🚫 Ishlamaydi", callback_data: "aliment_status:unemployed" },
+        { text: cy ? "Ишлайди"   : "Ishlaydi",   callback_data: "aliment_status:employed" },
+        { text: cy ? "Ишламайди" : "Ishlamaydi", callback_data: "aliment_status:unemployed" },
       ],
       [{ text: cy ? "🔙 Орқага" : "🔙 Orqaga", callback_data: "back_main" }],
     ],
@@ -26,11 +26,11 @@ export function alimentChildrenKeyboard(lang: Lang): TelegramBot.InlineKeyboardM
   return {
     inline_keyboard: [
       [
-        { text: cy ? "1️⃣ 1 та бола" : "1️⃣ 1 ta bola", callback_data: "aliment_children:1" },
-        { text: cy ? "2️⃣ 2 та бола" : "2️⃣ 2 ta bola", callback_data: "aliment_children:2" },
+        { text: cy ? "1 та бола" : "1 ta bola", callback_data: "aliment_children:1" },
+        { text: cy ? "2 та бола" : "2 ta bola", callback_data: "aliment_children:2" },
       ],
       [
-        { text: cy ? "👨‍👩‍👧‍👦 3 ва ундан ортиқ" : "👨‍👩‍👧‍👦 3 va undan ortiq", callback_data: "aliment_children:3plus" },
+        { text: cy ? "3 ва ундан ортиқ" : "3 va undan ortiq", callback_data: "aliment_children:3plus" },
       ],
       [{ text: cy ? "🔙 Орқага" : "🔙 Orqaga", callback_data: "aliment_back_to_salary" }],
     ],
@@ -41,7 +41,7 @@ export function alimentConfirmKeyboard(lang: Lang): TelegramBot.InlineKeyboardMa
   const cy = lang === "cyrillic";
   return {
     inline_keyboard: [
-      [{ text: cy ? "🧮 Ҳисоблаш" : "🧮 Hisoblash", callback_data: "aliment_calculate" }],
+      [{ text: cy ? "Ҳисоблаш" : "Hisoblash", callback_data: "aliment_calculate" }],
       [{ text: cy ? "🔙 Орқага"   : "🔙 Orqaga",    callback_data: "aliment_back_to_children" }],
       [{ text: cy ? "🏠 Бош меню" : "🏠 Bosh menyu", callback_data: "back_main" }],
     ],
@@ -133,48 +133,46 @@ function buildResultText(
   // For 3plus: show per-child minimum with a note; otherwise show total
   const minimumLine = isThreePlus
     ? (cy
-        ? `🔒 Қонуний минимум: *ҳар бир бола учун ${fmt(minimumPerChild)} сўм/ой*`
-        : `🔒 Qonuniy minimum: *har bir bola uchun ${fmt(minimumPerChild)} so'm/oy*`)
+        ? `Қонуний минимум: *ҳар бир бола учун ${fmt(minimumPerChild)} сўм/ой*`
+        : `Qonuniy minimum: *har bir bola uchun ${fmt(minimumPerChild)} so'm/oy*`)
     : (cy
-        ? `🔒 Қонуний минимум: *${fmt(minimumPerChild)} сўм × ${childCount} = ${fmt(minimumTotal)} сўм/ой*`
-        : `🔒 Qonuniy minimum: *${fmt(minimumPerChild)} so'm × ${childCount} = ${fmt(minimumTotal)} so'm/oy*`);
+        ? `Қонуний минимум: *${fmt(minimumPerChild)} сўм × ${childCount} = ${fmt(minimumTotal)} сўм/ой*`
+        : `Qonuniy minimum: *${fmt(minimumPerChild)} so'm × ${childCount} = ${fmt(minimumTotal)} so'm/oy*`);
 
   if (cy) {
     return (
-      `🧮 *Алимент ҳисоби — Натижа*\n\n` +
-      `👤 Ҳолат: *${statusLabel}*\n` +
-      `💵 Маош: *${salaryLabel}*\n` +
-      `👶 Болалар: *${childrenLabel}*\n` +
-      `📐 Улуш: *${fractionLabel}*\n\n` +
+      `*Алимент ҳисоби — Натижа*\n\n` +
+      `Ҳолат: *${statusLabel}*\n` +
+      `Маош: *${salaryLabel}*\n` +
+      `Болалар: *${childrenLabel}*\n` +
+      `Улуш: *${fractionLabel}*\n\n` +
       `━━━━━━━━━━━━━━━━━\n` +
-      `💰 Ҳисобланган алимент: *${fmt(amount)} сўм/ой*\n` +
+      `Ҳисобланган алимент: *${fmt(amount)} сўм/ой*\n` +
       `${minimumLine}\n` +
       `━━━━━━━━━━━━━━━━━\n` +
       (isThreePlus
-        ? `✅ *Тўланиши керак: ${fmt(amount)} сўм/ой* _(ҳар бир бола учун камида ${fmt(minimumPerChild)} сўм)_\n`
+        ? `✅ *Тўланиши керак: ${fmt(amount)} сўм/ой*\n_(ҳар бир бола учун камида ${fmt(minimumPerChild)} сўм)_\n`
         : `✅ *Тўланиши керак: ${fmt(finalAmount)} сўм/ой*\n` +
-          (isMinApplied ? `\n⚠️ _Ҳисобланган миқдор минимумдан кам бўлгани учун минимал миқдор қўлланилди._\n` : ``)) +
-      `\n📌 _Оила кодексининг 99-моддасига асосан._\n` +
-      `ℹ️ _Аниқ миқдорни суд белгилайди. Бу ҳисоб тахминий._`
+          (isMinApplied ? `\n⚠️ _Ҳисобланган миқдор минимумдан кам — минимал миқдор қўлланилди._\n` : ``)) +
+      `\n_Оила кодексининг 99-моддасига асосан. Аниқ миқдорни суд белгилайди._`
     );
   }
 
   return (
-    `🧮 *Aliment hisob — Natija*\n\n` +
-    `👤 Holat: *${statusLabel}*\n` +
-    `💵 Maosh: *${salaryLabel}*\n` +
-    `👶 Bolalar: *${childrenLabel}*\n` +
-    `📐 Ulush: *${fractionLabel}*\n\n` +
+    `*Aliment hisob — Natija*\n\n` +
+    `Holat: *${statusLabel}*\n` +
+    `Maosh: *${salaryLabel}*\n` +
+    `Bolalar: *${childrenLabel}*\n` +
+    `Ulush: *${fractionLabel}*\n\n` +
     `━━━━━━━━━━━━━━━━━\n` +
-    `💰 Hisoblangan aliment: *${fmt(amount)} so'm/oy*\n` +
+    `Hisoblangan aliment: *${fmt(amount)} so'm/oy*\n` +
     `${minimumLine}\n` +
     `━━━━━━━━━━━━━━━━━\n` +
     (isThreePlus
-      ? `✅ *To'lanishi kerak: ${fmt(amount)} so'm/oy* _(har bir bola uchun kamida ${fmt(minimumPerChild)} so'm)_\n`
+      ? `✅ *To'lanishi kerak: ${fmt(amount)} so'm/oy*\n_(har bir bola uchun kamida ${fmt(minimumPerChild)} so'm)_\n`
       : `✅ *To'lanishi kerak: ${fmt(finalAmount)} so'm/oy*\n` +
-        (isMinApplied ? `\n⚠️ _Hisoblangan miqdor minimumdan kam bo'lgani uchun minimal miqdor qo'llanildi._\n` : ``)) +
-    `\n📌 _Oila kodeksining 99-moddasiga asosan._\n` +
-    `ℹ️ _Aniq miqdorni sud belgilaydi. Bu hisob taxminiy._`
+        (isMinApplied ? `\n⚠️ _Hisoblangan miqdor minimumdan kam — minimal miqdor qo'llanildi._\n` : ``)) +
+    `\n_Oila kodeksining 99-moddasiga asosan. Aniq miqdorni sud belgilaydi._`
   );
 }
 
@@ -183,25 +181,25 @@ function buildResultText(
 export function tAlimentIntro(lang: Lang): string {
   const cy = lang === "cyrillic";
   return cy
-    ? `🧮 *Алимент калькулятори*\n\nОила кодексининг 99-моддасига асосан алимент миқдорини ҳисоблаш.\n\n❓ *Қарздорнинг ҳолатини танланг:*`
-    : `🧮 *Aliment kalkulyatori*\n\nOila kodeksining 99-moddasiga asosan aliment miqdorini hisoblash.\n\n❓ *Qarzdorning holatini tanlang:*`;
+    ? `*Алимент калькулятори*\n\nОила кодексининг 99-моддасига асосан алимент миқдорини ҳисоблаш.\n\nҚарздорнинг ҳолатини танланг:`
+    : `*Aliment kalkulyatori*\n\nOila kodeksining 99-moddasiga asosan aliment miqdorini hisoblash.\n\nQarzdorning holatini tanlang:`;
 }
 
 export function tAlimentSalaryPrompt(lang: Lang): string {
   const cy = lang === "cyrillic";
   return cy
-    ? `💵 *Қарздорнинг oylik маошини киритинг:*\n\nФақат рақам киритинг (масалан: \`3500000\`)`
-    : `💵 *Qarzdorning oylik maoshini kiriting:*\n\nFaqat raqam kiriting (masalan: \`3500000\`)`;
+    ? `*Қарздорнинг oylik маошини киритинг:*\n\nФақат рақам киритинг (масалан: \`3500000\`)`
+    : `*Qarzdorning oylik maoshini kiriting:*\n\nFaqat raqam kiriting (masalan: \`3500000\`)`;
 }
 
 export function tAlimentChildrenPrompt(lang: Lang, status: "employed" | "unemployed", salary?: number): string {
   const cy = lang === "cyrillic";
   const statusLine = status === "employed"
-    ? (cy ? `💼 Ишлайди | Маош: *${fmt(salary ?? 0)} сўм*` : `💼 Ishlaydi | Maosh: *${fmt(salary ?? 0)} so'm*`)
-    : (cy ? `🚫 Ишламайди | Ўртача маош: *${fmt(AVG_SALARY)} сўм*` : `🚫 Ishlamaydi | O'rtacha maosh: *${fmt(AVG_SALARY)} so'm*`);
+    ? (cy ? `Ишлайди | Маош: *${fmt(salary ?? 0)} сўм*` : `Ishlaydi | Maosh: *${fmt(salary ?? 0)} so'm*`)
+    : (cy ? `Ишламайди | Ўртача маош: *${fmt(AVG_SALARY)} сўм*` : `Ishlamaydi | O'rtacha maosh: *${fmt(AVG_SALARY)} so'm*`);
   return cy
-    ? `${statusLine}\n\n👶 *Болалар sonini tanlang:*`
-    : `${statusLine}\n\n👶 *Bolalar sonini tanlang:*`;
+    ? `${statusLine}\n\nБолалар sonini tanlang:`
+    : `${statusLine}\n\nBolalar sonini tanlang:`;
 }
 
 export function tAlimentConfirmPrompt(
@@ -213,19 +211,19 @@ export function tAlimentConfirmPrompt(
   const cy = lang === "cyrillic";
   const childrenLabel = (c: AlimentChildren) => {
     const map: Record<AlimentChildren, [string, string]> = {
-      "1":     ["1 та бола",                    "1 ta bola"],
-      "2":     ["2 та бола",                    "2 ta bola"],
-      "3":     ["3 ва ундан ортиқ бола",        "3 va undan ortiq bola"],
-      "3plus": ["3 ва ундан ортиқ бола",        "3 va undan ortiq bola"],
+      "1":     ["1 та бола",             "1 ta bola"],
+      "2":     ["2 та бола",             "2 ta bola"],
+      "3":     ["3 ва ундан ортиқ бола", "3 va undan ortiq bola"],
+      "3plus": ["3 ва ундан ортиқ бола", "3 va undan ortiq bola"],
     };
     return cy ? map[c][0] : map[c][1];
   };
   const statusLine = status === "employed"
-    ? (cy ? `💼 Ишлайди | Маош: *${fmt(salary)} сўм*` : `💼 Ishlaydi | Maosh: *${fmt(salary)} so'm*`)
-    : (cy ? `🚫 Ишламайди | Ўртача маош: *${fmt(AVG_SALARY)} сўм*` : `🚫 Ishlamaydi | O'rtacha maosh: *${fmt(AVG_SALARY)} so'm*`);
+    ? (cy ? `Ишлайди | Маош: *${fmt(salary)} сўм*` : `Ishlaydi | Maosh: *${fmt(salary)} so'm*`)
+    : (cy ? `Ишламайди | Ўртача маош: *${fmt(AVG_SALARY)} сўм*` : `Ishlamaydi | O'rtacha maosh: *${fmt(AVG_SALARY)} so'm*`);
   return cy
-    ? `${statusLine}\n👶 Болалар: *${childrenLabel(children)}*\n\n✅ Ҳисоблаш тугмасини босинг:`
-    : `${statusLine}\n👶 Bolalar: *${childrenLabel(children)}*\n\n✅ Hisoblash tugmasini bosing:`;
+    ? `${statusLine}\nБолалар: *${childrenLabel(children)}*\n\nHisoblash tugmasini bosing:`
+    : `${statusLine}\nBolalar: *${childrenLabel(children)}*\n\nHisoblash tugmasini bosing:`;
 }
 
 // ── Asosiy handler ────────────────────────────────────────────────────────────
