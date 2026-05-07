@@ -5,6 +5,7 @@ import {
 } from "./courtsData";
 import { getLang } from "./userProfile";
 import type { Lang } from "./userProfile";
+import { latinToCyrillic } from "./latinToCyrillic";
 
 // ── Keyboard helpers ──────────────────────────────────────────────────────────
 
@@ -53,13 +54,16 @@ function courtDetailKeyboard(backData: string, lang: Lang): TelegramBot.InlineKe
 
 // ── Court info message ────────────────────────────────────────────────────────
 function formatCourtInfo(court: CourtEntry, lang: Lang): string {
+  const cy = lang === "cyrillic";
+  const name    = cy ? latinToCyrillic(court.name)    : court.name;
+  const address = cy ? latinToCyrillic(court.address) : court.address;
   const lines: string[] = [
-    `🏛 *${court.name}*`,
+    `🏛 *${name}*`,
     ``,
-    `📍 *${lang === "cyrillic" ? "Манзил" : "Manzil"}:*`,
-    `${court.address}`,
+    `📍 *${cy ? "Манзил" : "Manzil"}:*`,
+    `${address}`,
     ``,
-    `📞 *${lang === "cyrillic" ? "Телефон" : "Telefon"}:* ${court.phone}`,
+    `📞 *${cy ? "Телефон" : "Telefon"}:* ${court.phone}`,
   ];
   if (court.email) {
     lines.push(`📧 *Email:* ${court.email}`);

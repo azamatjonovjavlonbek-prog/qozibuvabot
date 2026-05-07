@@ -33,7 +33,7 @@ import { logger } from "../lib/logger";
 import { handleCourts } from "./courtsHandler";
 import { getTemplate, setTemplate, listTemplates } from "./templateStore";
 import { ARIZA_CATEGORIES as CATS } from "./config";
-import { getLang, setProfile, isRegistered, updatePhone } from "./userProfile";
+import { getLang, getProfile, setProfile, isRegistered, updatePhone } from "./userProfile";
 import type { Lang } from "./userProfile";
 import {
   t, tMainMenu, tShablonList, tShablonConfirm, tPayShablon,
@@ -104,18 +104,7 @@ export function setupHandlers(bot: TelegramBot): void {
 
     resetState(userId);
 
-    // Agar oldin til tanlagan bo'lsa → bosh menyu
-    if (isRegistered(userId)) {
-      const lang = getLang(userId);
-      await bot.sendMessage(
-        chatId,
-        t(lang, "main_menu"),
-        { parse_mode: "Markdown", reply_markup: mainMenuKeyboard(lang) }
-      );
-      return;
-    }
-
-    // Yangi foydalanuvchi → til tanlash
+    // Har doim til tanlash so'raladi (qaytib kelgan foydalanuvchi ham til o'zgartira oladi)
     setState(userId, { step: "selecting_language" });
     await bot.sendMessage(
       chatId,
@@ -248,18 +237,34 @@ export function setupHandlers(bot: TelegramBot): void {
       // ── Til tanlash ────────────────────────────────────────────────────
       if (data === "lang_latin" || data === "lang_cyrillic") {
         const selectedLang: Lang = data === "lang_latin" ? "latin" : "cyrillic";
-        setProfile(userId, { lang: selectedLang });
-        setState(userId, { step: "entering_phone" });
+        const existing = getProfile(userId);
+        // Telefon raqamni saqlab, faqat tilni yangilaymiz
+        setProfile(userId, { lang: selectedLang, phone: existing?.phone });
 
-        await bot.editMessageText(
-          t(selectedLang, "phone_request"),
-          { chat_id: chatId, message_id: messageId, parse_mode: "Markdown" }
-        );
-        await bot.sendMessage(
-          chatId,
-          t(selectedLang, "phone_share_btn"),
-          { reply_markup: phoneKeyboard(selectedLang) }
-        );
+        if (existing?.phone) {
+          // Avval ro'yxatdan o'tgan — to'g'ri bosh menyuga
+          resetState(userId);
+          try {
+            await bot.editMessageText(
+              t(selectedLang, "main_menu"),
+              { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: mainMenuKeyboard(selectedLang) }
+            );
+          } catch {
+            await bot.sendMessage(chatId, t(selectedLang, "main_menu"), { parse_mode: "Markdown", reply_markup: mainMenuKeyboard(selectedLang) });
+          }
+        } else {
+          // Yangi foydalanuvchi — telefon so'raymiz
+          setState(userId, { step: "entering_phone" });
+          await bot.editMessageText(
+            t(selectedLang, "phone_request"),
+            { chat_id: chatId, message_id: messageId, parse_mode: "Markdown" }
+          );
+          await bot.sendMessage(
+            chatId,
+            t(selectedLang, "phone_share_btn"),
+            { reply_markup: phoneKeyboard(selectedLang) }
+          );
+        }
         return;
       }
 
