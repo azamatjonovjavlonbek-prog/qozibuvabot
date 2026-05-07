@@ -1,0 +1,31 @@
+kind = "slides"
+previewPath = "/bot-tahlil/"
+title = "Bot Muammolar Tahlili"
+version = "1.0.0"
+id = "artifacts/bot-tahlil"
+router = "path"
+
+[[integratedSkills]]
+name = "slides"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/bot-tahlil/" ]
+localPort = 25096
+
+[services.development]
+run = "pnpm --filter @workspace/bot-tahlil run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/bot-tahlil", "run", "build" ]
+publicDir = "artifacts/bot-tahlil/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25096"
+BASE_PATH = "/bot-tahlil/"
