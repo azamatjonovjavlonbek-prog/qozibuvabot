@@ -32,6 +32,12 @@ export async function startBot(): Promise<void> {
     { command: "clean", description: "Chatni tozalash" },
   ]).catch((err) => logger.error({ err }, "setMyCommands xato"));
 
+  fetch(`https://api.telegram.org/bot${TOKEN}/setChatMenuButton`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ menu_button: { type: "commands" } }),
+  }).catch((err) => logger.error({ err }, "setChatMenuButton xato"));
+
   bot.on("polling_error", (err) => {
     logger.error({ err }, "Telegram polling error");
   });
