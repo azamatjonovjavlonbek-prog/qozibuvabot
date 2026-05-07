@@ -26,12 +26,11 @@ export function alimentChildrenKeyboard(lang: Lang): TelegramBot.InlineKeyboardM
   return {
     inline_keyboard: [
       [
-        { text: cy ? "1️⃣ 1 та бола"    : "1️⃣ 1 ta bola",    callback_data: "aliment_children:1" },
-        { text: cy ? "2️⃣ 2 та бола"    : "2️⃣ 2 ta bola",    callback_data: "aliment_children:2" },
+        { text: cy ? "1️⃣ 1 та бола" : "1️⃣ 1 ta bola", callback_data: "aliment_children:1" },
+        { text: cy ? "2️⃣ 2 та бола" : "2️⃣ 2 ta bola", callback_data: "aliment_children:2" },
       ],
       [
-        { text: cy ? "3️⃣ 3 та бола"    : "3️⃣ 3 ta bola",    callback_data: "aliment_children:3" },
-        { text: cy ? "👨‍👩‍👧‍👦 3 дан кўп" : "👨‍👩‍👧‍👦 3 dan ko'p", callback_data: "aliment_children:3plus" },
+        { text: cy ? "👨‍👩‍👧‍👦 3 ва ундан ортиқ" : "👨‍👩‍👧‍👦 3 va undan ortiq", callback_data: "aliment_children:3plus" },
       ],
       [{ text: cy ? "🔙 Орқага" : "🔙 Orqaga", callback_data: "aliment_back_to_salary" }],
     ],
@@ -108,18 +107,17 @@ function buildResultText(
   // Label for children selection
   const childrenLabel = (() => {
     if (cy) {
-      if (children === "1")      return "1 та бола";
-      if (children === "2")      return "2 та бола";
-      if (children === "3")      return "3 та бола";
-      return "3 дан ортиқ бола";
+      if (children === "1") return "1 та бола";
+      if (children === "2") return "2 та бола";
+      return "3 ва ундан ортиқ бола";
     }
-    if (children === "1")      return "1 ta bola";
-    if (children === "2")      return "2 ta bola";
-    if (children === "3")      return "3 ta bola";
-    return "3 dan ortiq bola";
+    if (children === "1") return "1 ta bola";
+    if (children === "2") return "2 ta bola";
+    return "3 va undan ortiq bola";
   })();
 
-  // Minimum: per child × known count (for 3plus, minimum is at least 3 children)
+  // For 3plus: minimum shown per child (exact count unknown)
+  // For 1/2: total minimum = minimumPerChild × childCount
   const minimumTotal = minimumPerChild * childCount;
   const finalAmount  = Math.max(amount, minimumTotal);
   const isMinApplied = amount < minimumTotal;
@@ -132,11 +130,14 @@ function buildResultText(
     ? (cy ? `МЗОТ (${fmt(MZOT)} сўм)` : `MZOT (${fmt(MZOT)} so'm)`)
     : (cy ? `${fmt(salary)} сўм` : `${fmt(salary)} so'm`);
 
-  const threePlusMinNote = isThreePlus
+  // For 3plus: show per-child minimum with a note; otherwise show total
+  const minimumLine = isThreePlus
     ? (cy
-        ? `\n⚠️ _Бола сони кўп бўлса, минимал миқдор ҳам ошади (ҳар бир бола учун ${fmt(minimumPerChild)} сўм)._`
-        : `\n⚠️ _Bola soni ko'p bo'lsa, minimal miqdor ham oshadi (har bir bola uchun ${fmt(minimumPerChild)} so'm)._`)
-    : "";
+        ? `🔒 Қонуний минимум: *ҳар бир бола учун ${fmt(minimumPerChild)} сўм/ой*`
+        : `🔒 Qonuniy minimum: *har bir bola uchun ${fmt(minimumPerChild)} so'm/oy*`)
+    : (cy
+        ? `🔒 Қонуний минимум: *${fmt(minimumPerChild)} сўм × ${childCount} = ${fmt(minimumTotal)} сўм/ой*`
+        : `🔒 Qonuniy minimum: *${fmt(minimumPerChild)} so'm × ${childCount} = ${fmt(minimumTotal)} so'm/oy*`);
 
   if (cy) {
     return (
@@ -147,14 +148,13 @@ function buildResultText(
       `📐 Улуш: *${fractionLabel}*\n\n` +
       `━━━━━━━━━━━━━━━━━\n` +
       `💰 Ҳисобланган алимент: *${fmt(amount)} сўм/ой*\n` +
-      `🔒 Қонуний минимум: *${fmt(minimumPerChild)} сўм × ${childCount} = ${fmt(minimumTotal)} сўм/ой*\n` +
+      `${minimumLine}\n` +
       `━━━━━━━━━━━━━━━━━\n` +
-      `✅ *Тўланиши керак: ${fmt(finalAmount)} сўм/ой*\n` +
-      (isMinApplied
-        ? `\n⚠️ _Ҳисобланган миқдор минимумдан кам бўлгани учун минимал миқдор қўлланилди._`
-        : ``) +
-      threePlusMinNote +
-      `\n\n📌 _Оила кодексининг 99-моддасига асосан._\n` +
+      (isThreePlus
+        ? `✅ *Тўланиши керак: ${fmt(amount)} сўм/ой* _(ҳар бир бола учун камида ${fmt(minimumPerChild)} сўм)_\n`
+        : `✅ *Тўланиши керак: ${fmt(finalAmount)} сўм/ой*\n` +
+          (isMinApplied ? `\n⚠️ _Ҳисобланган миқдор минимумдан кам бўлгани учун минимал миқдор қўлланилди._\n` : ``)) +
+      `\n📌 _Оила кодексининг 99-моддасига асосан._\n` +
       `ℹ️ _Аниқ миқдорни суд белгилайди. Бу ҳисоб тахминий._`
     );
   }
@@ -167,14 +167,13 @@ function buildResultText(
     `📐 Ulush: *${fractionLabel}*\n\n` +
     `━━━━━━━━━━━━━━━━━\n` +
     `💰 Hisoblangan aliment: *${fmt(amount)} so'm/oy*\n` +
-    `🔒 Qonuniy minimum: *${fmt(minimumPerChild)} so'm × ${childCount} = ${fmt(minimumTotal)} so'm/oy*\n` +
+    `${minimumLine}\n` +
     `━━━━━━━━━━━━━━━━━\n` +
-    `✅ *To'lanishi kerak: ${fmt(finalAmount)} so'm/oy*\n` +
-    (isMinApplied
-      ? `\n⚠️ _Hisoblangan miqdor minimumdan kam bo'lgani uchun minimal miqdor qo'llanildi._`
-      : ``) +
-    threePlusMinNote +
-    `\n\n📌 _Oila kodeksining 99-moddasiga asosan._\n` +
+    (isThreePlus
+      ? `✅ *To'lanishi kerak: ${fmt(amount)} so'm/oy* _(har bir bola uchun kamida ${fmt(minimumPerChild)} so'm)_\n`
+      : `✅ *To'lanishi kerak: ${fmt(finalAmount)} so'm/oy*\n` +
+        (isMinApplied ? `\n⚠️ _Hisoblangan miqdor minimumdan kam bo'lgani uchun minimal miqdor qo'llanildi._\n` : ``)) +
+    `\n📌 _Oila kodeksining 99-moddasiga asosan._\n` +
     `ℹ️ _Aniq miqdorni sud belgilaydi. Bu hisob taxminiy._`
   );
 }
@@ -201,7 +200,7 @@ export function tAlimentChildrenPrompt(lang: Lang, status: "employed" | "unemplo
     ? (cy ? `💼 Ишлайди | Маош: *${fmt(salary ?? 0)} сўм*` : `💼 Ishlaydi | Maosh: *${fmt(salary ?? 0)} so'm*`)
     : (cy ? `🚫 Ишламайди | МЗОТ: *${fmt(MZOT)} сўм*` : `🚫 Ishlamaydi | MZOT: *${fmt(MZOT)} so'm*`);
   return cy
-    ? `${statusLine}\n\n👶 *Bolalar sonini tanlang:*`
+    ? `${statusLine}\n\n👶 *Болалар sonini tanlang:*`
     : `${statusLine}\n\n👶 *Bolalar sonini tanlang:*`;
 }
 
@@ -214,10 +213,10 @@ export function tAlimentConfirmPrompt(
   const cy = lang === "cyrillic";
   const childrenLabel = (c: AlimentChildren) => {
     const map: Record<AlimentChildren, [string, string]> = {
-      "1":     ["1 та бола",               "1 ta bola"],
-      "2":     ["2 та бола",               "2 ta bola"],
-      "3":     ["3 та бола",               "3 ta bola"],
-      "3plus": ["3 дан кўп бола",          "3 dan ko'p bola"],
+      "1":     ["1 та бола",                    "1 ta bola"],
+      "2":     ["2 та бола",                    "2 ta bola"],
+      "3":     ["3 ва ундан ортиқ бола",        "3 va undan ortiq bola"],
+      "3plus": ["3 ва ундан ортиқ бола",        "3 va undan ortiq bola"],
     };
     return cy ? map[c][0] : map[c][1];
   };
