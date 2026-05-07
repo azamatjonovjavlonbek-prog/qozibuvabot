@@ -713,11 +713,12 @@ export function setupHandlers(bot: TelegramBot): void {
         } else if (action === "chat_clear") {
           await bot.sendMessage(chatId, t(lang, "main_menu"), { parse_mode: "Markdown", reply_markup: mainMenuKeyboard(lang) });
         } else if (action === "menu_tahlil") {
-          setState(userId, { step: "tahlil_waiting_doc" });
-          await bot.sendMessage(chatId, t(lang, "tahlil_intro"), {
-            parse_mode: "Markdown",
-            reply_markup: backToMainKeyboard(lang),
-          });
+          await bot.sendMessage(chatId,
+            lang === "cyrillic"
+              ? "⏳ Ушбу бўлим тез кунда ишга тушади."
+              : "⏳ Ushbu bo'lim tez kunda ishga tushadi.",
+            { reply_markup: backToMainKeyboard(lang) }
+          );
         }
         return;
       }
