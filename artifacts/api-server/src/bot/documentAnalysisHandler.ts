@@ -25,6 +25,12 @@ async function extractPdfText(buf: Buffer): Promise<string> {
   return data.text.trim();
 }
 
+async function extractDocxText(buf: Buffer): Promise<string> {
+  const mammoth = (await import("mammoth")).default;
+  const result = await mammoth.extractRawText({ buffer: buf });
+  return result.value.trim();
+}
+
 const SYSTEM_PROMPT = `Siz O'zbekiston qonunchiligiga ixtisoslashgan huquqiy tahlil yordamchisisiz. 
 Foydalanuvchi sizga huquqiy hujjat (shartnoma, ariza yoki boshqa hujjat) yuklaydi.
 
@@ -103,8 +109,10 @@ export async function handleDocumentAnalysis(
       const mime = doc.mime_type ?? "";
       const isImage = mime.startsWith("image/");
       const isPdf = mime === "application/pdf";
+      const isDocx = mime === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        || doc.file_name?.toLowerCase().endsWith(".docx");
 
-      if (!isPdf && !isImage) {
+      if (!isPdf && !isDocx && !isImage) {
         await bot.deleteMessage(chatId, processingMsg.message_id).catch(() => {});
         await bot.sendMessage(chatId, t(lang, "tahlil_unsupported"), {
           parse_mode: "Markdown",
@@ -117,14 +125,13 @@ export async function handleDocumentAnalysis(
       const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
       const buf = await downloadBuffer(fileUrl);
 
-      if (isPdf) {
-        const text = await extractPdfText(buf);
+      if (isPdf || isDocx) {
+        const text = isPdf ? await extractPdfText(buf) : await extractDocxText(buf);
+        const format = isPdf ? "PDF" : "DOCX";
         if (!text || text.length < 20) {
           await bot.deleteMessage(chatId, processingMsg.message_id).catch(() => {});
           await bot.sendMessage(chatId,
-            lang === "cyrillic"
-              ? "⚠️ PDF dan matn o'qib bo'lmadi. Skanerlangan rasm sifatida yuborib ko'ring."
-              : "⚠️ PDF dan matn o'qib bo'lmadi. Skanerlangan rasm sifatida yuborib ko'ring.",
+            `⚠️ ${format} dan matn o'qib bo'lmadi. Rasm sifatida yuborib ko'ring.`,
             { reply_markup: backToMainKeyboard(lang) }
           );
           return;

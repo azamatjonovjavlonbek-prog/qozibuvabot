@@ -54,8 +54,8 @@ const S: Record<string, Record<Lang, string>> = {
     cyrillic: "Хужжат таҳлили (AI)",
   },
   tahlil_intro: {
-    latin:    "📄 *Hujjat tahlili*\n\nShartnoma, ariza yoki boshqa huquqiy hujjatingizni yuklang — AI O'zbekiston qonunchiligiga asoslanib tahlil qiladi.\n\n*Qo'llab-quvvatlanadigan format:*\n— PDF fayl\n— Rasm (JPEG/PNG)\n\nHujjatni yuboring:",
-    cyrillic: "📄 *Хужжат таҳлили*\n\nШартнома, ариза ёки бошқа ҳуқуқий ҳужжатингизни юкланг — AI Ўзбекистон қонунчилигига асосланиб таҳлил қилади.\n\n*Қўллаб-қувватланадиган формат:*\n— PDF файл\n— Расм (JPEG/PNG)\n\nҲужжатни юборинг:",
+    latin:    "📄 *Hujjat tahlili*\n\nShartnoma, ariza yoki boshqa huquqiy hujjatingizni yuklang — AI O'zbekiston qonunchiligiga asoslanib tahlil qiladi.\n\n*Qo'llab-quvvatlanadigan format:*\n— PDF fayl\n— Word hujjat (DOCX)\n— Rasm (JPEG/PNG)\n\nHujjatni yuboring:",
+    cyrillic: "📄 *Хужжат таҳлили*\n\nШартнома, ариза ёки бошқа ҳуқуқий ҳужжатингизни юкланг — AI Ўзбекистон қонунчилигига асосланиб таҳлил қилади.\n\n*Қўллаб-қувватланадиган формат:*\n— PDF файл\n— Word ҳужжат (DOCX)\n— Расм (JPEG/PNG)\n\nҲужжатни юборинг:",
   },
   tahlil_processing: {
     latin:    "⏳ Hujjat tahlil qilinmoqda... Biroz kuting.",
