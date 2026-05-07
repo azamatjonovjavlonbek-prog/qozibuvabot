@@ -13,6 +13,10 @@ export const ADMIN_ID = 1079088129;
 // Mehnatga haq to'lash eng kam miqdori (so'm) — zarurat bo'lganda yangilang
 export const MZOT = 1_271_000;
 
+// Respublika bo'yicha o'rtacha oylik nominal hisoblangan ish haqi (so'm)
+// Ishlamaydigan qarzdorlar uchun hisob asosi — zarurat bo'lganda yangilang
+export const AVG_SALARY = 6_825_900;
+
 export const ARIZA_CATEGORIES = [
   { id: "divorce", label: "Nikohdan ajratish" },
   { id: "aliment", label: "Aliment undirish" },

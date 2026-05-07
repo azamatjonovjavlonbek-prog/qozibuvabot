@@ -1,5 +1,5 @@
 import TelegramBot from "node-telegram-bot-api";
-import { MZOT } from "./config";
+import { MZOT, AVG_SALARY } from "./config";
 import { getState, setState } from "./state";
 import { getLang } from "./userProfile";
 import type { Lang } from "./userProfile";
@@ -127,7 +127,7 @@ function buildResultText(
     : (cy ? "Ишламайди" : "Ishlamaydi");
 
   const salaryLabel = status === "unemployed"
-    ? (cy ? `МЗОТ (${fmt(MZOT)} сўм)` : `MZOT (${fmt(MZOT)} so'm)`)
+    ? (cy ? `Ўртача маош (${fmt(AVG_SALARY)} сўм)` : `O'rtacha maosh (${fmt(AVG_SALARY)} so'm)`)
     : (cy ? `${fmt(salary)} сўм` : `${fmt(salary)} so'm`);
 
   // For 3plus: show per-child minimum with a note; otherwise show total
@@ -198,7 +198,7 @@ export function tAlimentChildrenPrompt(lang: Lang, status: "employed" | "unemplo
   const cy = lang === "cyrillic";
   const statusLine = status === "employed"
     ? (cy ? `💼 Ишлайди | Маош: *${fmt(salary ?? 0)} сўм*` : `💼 Ishlaydi | Maosh: *${fmt(salary ?? 0)} so'm*`)
-    : (cy ? `🚫 Ишламайди | МЗОТ: *${fmt(MZOT)} сўм*` : `🚫 Ishlamaydi | MZOT: *${fmt(MZOT)} so'm*`);
+    : (cy ? `🚫 Ишламайди | Ўртача маош: *${fmt(AVG_SALARY)} сўм*` : `🚫 Ishlamaydi | O'rtacha maosh: *${fmt(AVG_SALARY)} so'm*`);
   return cy
     ? `${statusLine}\n\n👶 *Болалар sonini tanlang:*`
     : `${statusLine}\n\n👶 *Bolalar sonini tanlang:*`;
@@ -222,7 +222,7 @@ export function tAlimentConfirmPrompt(
   };
   const statusLine = status === "employed"
     ? (cy ? `💼 Ишлайди | Маош: *${fmt(salary)} сўм*` : `💼 Ishlaydi | Maosh: *${fmt(salary)} so'm*`)
-    : (cy ? `🚫 Ишламайди | МЗОТ: *${fmt(MZOT)} сўм*` : `🚫 Ishlamaydi | MZOT: *${fmt(MZOT)} so'm*`);
+    : (cy ? `🚫 Ишламайди | Ўртача маош: *${fmt(AVG_SALARY)} сўм*` : `🚫 Ishlamaydi | O'rtacha maosh: *${fmt(AVG_SALARY)} so'm*`);
   return cy
     ? `${statusLine}\n👶 Болалар: *${childrenLabel(children)}*\n\n✅ Ҳисоблаш тугмасини босинг:`
     : `${statusLine}\n👶 Bolalar: *${childrenLabel(children)}*\n\n✅ Hisoblash tugmasini bosing:`;
@@ -270,7 +270,7 @@ export async function handleAliment(
         inline_keyboard: [[{ text: lang === "cyrillic" ? "🔙 Орқага" : "🔙 Orqaga", callback_data: "menu_aliment" }]],
       });
     } else {
-      const salary = MZOT;
+      const salary = AVG_SALARY;
       setState(userId, { ...state, step: "aliment_children", alimentStatus: "unemployed", alimentSalary: salary });
       await safeEdit(
         tAlimentChildrenPrompt(lang, "unemployed"),
