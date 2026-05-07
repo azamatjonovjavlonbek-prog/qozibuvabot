@@ -20,7 +20,7 @@ export const AVG_SALARY = 6_461_299;
 export const ARIZA_CATEGORIES = [
   { id: "divorce", label: "Nikohdan ajratish" },
   { id: "aliment", label: "Aliment undirish" },
-  { id: "radar",   label: "Jarima (radar) bekor qilish" },
+  { id: "radar",   label: "Multiradar jarima bekor qilish" },
 ] as const;
 
 export type ArizaCategoryId = (typeof ARIZA_CATEGORIES)[number]["id"];
