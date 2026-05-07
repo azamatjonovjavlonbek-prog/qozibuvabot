@@ -31,6 +31,7 @@ import {
 } from "./keyboards";
 import { logger } from "../lib/logger";
 import { handleCourts } from "./courtsHandler";
+import { handleAliment, handleAlimentSalaryInput } from "./alimentHandler";
 import { getTemplate, setTemplate, listTemplates } from "./templateStore";
 import { ARIZA_CATEGORIES as CATS } from "./config";
 import { getLang, getProfile, setProfile, isRegistered, updatePhone } from "./userProfile";
@@ -231,6 +232,19 @@ export function setupHandlers(bot: TelegramBot): void {
         data.startsWith("cd:")
       ) {
         await handleCourts(bot, query, data, chatId, messageId);
+        return;
+      }
+
+      // ── Aliment kalkulyatori ───────────────────────────────────────────
+      if (
+        data === "menu_aliment" ||
+        data === "aliment_calculate" ||
+        data === "aliment_back_to_salary" ||
+        data === "aliment_back_to_children" ||
+        data.startsWith("aliment_status:") ||
+        data.startsWith("aliment_children:")
+      ) {
+        await handleAliment(bot, userId, chatId, messageId, data);
         return;
       }
 
@@ -674,6 +688,15 @@ export function setupHandlers(bot: TelegramBot): void {
         parse_mode: "Markdown",
         reply_markup: mainMenuKeyboard(lang),
       });
+      return;
+    }
+
+    // ── Aliment: maosh kiritish ───────────────────────────────────────
+    if (state.step === "aliment_salary") {
+      if (msg.text) {
+        const handled = await handleAlimentSalaryInput(bot, userId, chatId, msg.text);
+        if (handled) return;
+      }
       return;
     }
 

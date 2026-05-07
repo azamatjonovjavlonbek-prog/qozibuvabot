@@ -10,6 +10,9 @@ export const CARD_OWNER = "Javlonbek Azamatjonov";
 
 export const ADMIN_ID = 1079088129;
 
+// Mehnatga haq to'lash eng kam miqdori (so'm) — zarurat bo'lganda yangilang
+export const MZOT = 1_050_000;
+
 export const ARIZA_CATEGORIES = [
   { id: "divorce", label: "Nikohdan ajratish" },
   { id: "aliment", label: "Aliment undirish" },

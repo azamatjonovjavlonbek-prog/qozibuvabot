@@ -41,6 +41,10 @@ const S: Record<string, Record<Lang, string>> = {
     latin:    "🏛 Sudlar manzillari",
     cyrillic: "🏛 Судлар манзиллари",
   },
+  btn_aliment: {
+    latin:    "🧮 Aliment kalkulyatori",
+    cyrillic: "🧮 Алимент калькулятори",
+  },
   btn_clear: {
     latin:    "🗑 Chatni tozalash",
     cyrillic: "🗑 Чатни тозалаш",

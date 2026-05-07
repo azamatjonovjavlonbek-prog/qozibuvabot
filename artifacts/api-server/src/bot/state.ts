@@ -12,11 +12,16 @@ export interface UserState {
     | "selecting_consultation"
     | "confirming_consultation"
     | "waiting_consultation_check"
-    | "writing_to_admin";
+    | "writing_to_admin"
+    | "aliment_salary"
+    | "aliment_children";
   selectedServiceId?: string;
   pendingChatId?: number;
   pendingUsername?: string;
   pendingType?: "shablon" | "professional" | "consultation";
+  alimentStatus?: "employed" | "unemployed";
+  alimentSalary?: number;
+  alimentChildren?: "1" | "2" | "3" | "3plus";
 }
 
 export interface AdminState {
