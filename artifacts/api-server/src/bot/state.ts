@@ -14,7 +14,8 @@ export interface UserState {
     | "waiting_consultation_check"
     | "writing_to_admin"
     | "aliment_salary"
-    | "aliment_children";
+    | "aliment_children"
+    | "tahlil_waiting_doc";
   selectedServiceId?: string;
   pendingChatId?: number;
   pendingUsername?: string;

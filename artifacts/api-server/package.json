@@ -12,13 +12,16 @@
   "dependencies": {
     "@swc/helpers": "^0.5.21",
     "@types/node-telegram-bot-api": "^0.64.14",
+    "@types/pdf-parse": "^1.1.5",
     "@workspace/api-zod": "workspace:*",
     "@workspace/db": "workspace:*",
+    "@workspace/integrations-anthropic-ai": "workspace:*",
     "cookie-parser": "^1.4.7",
     "cors": "^2",
     "drizzle-orm": "catalog:",
     "express": "^5",
     "node-telegram-bot-api": "^0.67.0",
+    "pdf-parse": "^2.4.5",
     "pdfkit": "^0.18.0",
     "pino": "^9",
     "pino-http": "^10"

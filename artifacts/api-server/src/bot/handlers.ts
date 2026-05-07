@@ -32,6 +32,7 @@ import {
 import { logger } from "../lib/logger";
 import { handleCourts, sendCourtsIntro } from "./courtsHandler";
 import { handleAliment, handleAlimentSalaryInput } from "./alimentHandler";
+import { handleDocumentAnalysis } from "./documentAnalysisHandler";
 import { getTemplate, setTemplate, listTemplates } from "./templateStore";
 import { ARIZA_CATEGORIES as CATS } from "./config";
 import { getLang, getProfile, setProfile, isRegistered, updatePhone } from "./userProfile";
@@ -682,6 +683,8 @@ export function setupHandlers(bot: TelegramBot): void {
         "Биз ҳақимизда":         "menu_about",
         "Chatni tozalash":       "chat_clear",
         "Чатни тозалаш":         "chat_clear",
+        "Hujjat tahlili (AI)":   "menu_tahlil",
+        "Хужжат таҳлили (AI)":   "menu_tahlil",
       };
       const action = menuAction[msg.text];
       if (action) {
@@ -709,9 +712,22 @@ export function setupHandlers(bot: TelegramBot): void {
           );
         } else if (action === "chat_clear") {
           await bot.sendMessage(chatId, t(lang, "main_menu"), { parse_mode: "Markdown", reply_markup: mainMenuKeyboard(lang) });
+        } else if (action === "menu_tahlil") {
+          setState(userId, { step: "tahlil_waiting_doc" });
+          await bot.sendMessage(chatId, t(lang, "tahlil_intro"), {
+            parse_mode: "Markdown",
+            reply_markup: backToMainKeyboard(lang),
+          });
         }
         return;
       }
+    }
+
+    // ── Hujjat tahlili ────────────────────────────────────────────────
+    if (state.step === "tahlil_waiting_doc") {
+      resetState(userId);
+      await handleDocumentAnalysis(bot, userId, chatId, lang, msg);
+      return;
     }
 
     // ── Aliment: maosh kiritish ───────────────────────────────────────

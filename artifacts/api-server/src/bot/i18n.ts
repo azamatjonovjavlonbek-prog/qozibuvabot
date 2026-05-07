@@ -49,6 +49,30 @@ const S: Record<string, Record<Lang, string>> = {
     latin:    "Chatni tozalash",
     cyrillic: "Чатни тозалаш",
   },
+  btn_tahlil: {
+    latin:    "Hujjat tahlili (AI)",
+    cyrillic: "Хужжат таҳлили (AI)",
+  },
+  tahlil_intro: {
+    latin:    "📄 *Hujjat tahlili*\n\nShartnoma, ariza yoki boshqa huquqiy hujjatingizni yuklang — AI O'zbekiston qonunchiligiga asoslanib tahlil qiladi.\n\n*Qo'llab-quvvatlanadigan format:*\n— PDF fayl\n— Rasm (JPEG/PNG)\n\nHujjatni yuboring:",
+    cyrillic: "📄 *Хужжат таҳлили*\n\nШартнома, ариза ёки бошқа ҳуқуқий ҳужжатингизни юкланг — AI Ўзбекистон қонунчилигига асосланиб таҳлил қилади.\n\n*Қўллаб-қувватланадиган формат:*\n— PDF файл\n— Расм (JPEG/PNG)\n\nҲужжатни юборинг:",
+  },
+  tahlil_processing: {
+    latin:    "⏳ Hujjat tahlil qilinmoqda... Biroz kuting.",
+    cyrillic: "⏳ Ҳужжат таҳлил қилинмоқда... Бироз кутинг.",
+  },
+  tahlil_unsupported: {
+    latin:    "⚠️ Faqat PDF fayl yoki rasm (JPEG/PNG) yuboring.",
+    cyrillic: "⚠️ Фақат PDF файл ёки расм (JPEG/PNG) юборинг.",
+  },
+  tahlil_error: {
+    latin:    "❌ Tahlil qilishda xatolik yuz berdi. Qaytadan urinib ko'ring.",
+    cyrillic: "❌ Таҳлил қилишда хатолик юз берди. Қайтадан уриниб кўринг.",
+  },
+  tahlil_disclaimer: {
+    latin:    "_⚠️ Diqqat: Ushbu tahlil sun'iy intellekt tomonidan tayyorlangan bo'lib, faqat tavsiyaviy xususiyatga ega. Yuridik ahamiyatga ega qarorlar qabul qilishdan oldin malakali yurist bilan maslahatlashing._",
+    cyrillic: "_⚠️ Диққат: Ушбу таҳлил сунъий интеллект томонидан тайёрланган бўлиб, фақат тавсиявий хусусиятга эга. Юридик аҳамиятга эга қарорлар қабул қилишдан олдин малакали юрист билан маслаҳатлашинг._",
+  },
   btn_back: {
     latin:    "🔙 Orqaga",
     cyrillic: "🔙 Орқага",

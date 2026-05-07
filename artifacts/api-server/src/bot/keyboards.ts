@@ -43,6 +43,9 @@ export function mainMenuKeyboard(lang: Lang): TelegramBot.ReplyKeyboardMarkup {
         { text: t(lang, "btn_aliment") },
       ],
       [
+        { text: t(lang, "btn_tahlil") },
+      ],
+      [
         { text: t(lang, "btn_contact") },
         { text: t(lang, "btn_about") },
       ],
