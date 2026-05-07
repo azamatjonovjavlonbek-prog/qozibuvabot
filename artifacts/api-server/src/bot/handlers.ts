@@ -251,30 +251,12 @@ export function setupHandlers(bot: TelegramBot): void {
       // ── Til tanlash ────────────────────────────────────────────────────
       if (data === "lang_latin" || data === "lang_cyrillic") {
         const selectedLang: Lang = data === "lang_latin" ? "latin" : "cyrillic";
-        const existing = getProfile(userId);
-        // Telefon raqamni saqlab, faqat tilni yangilaymiz
-        setProfile(userId, { lang: selectedLang, phone: existing?.phone });
-
-        if (existing?.phone) {
-          // Avval ro'yxatdan o'tgan — to'g'ri bosh menyuga
-          resetState(userId);
-          await bot.sendMessage(chatId, t(selectedLang, "main_menu"), {
-            parse_mode: "Markdown",
-            reply_markup: mainMenuKeyboard(selectedLang),
-          });
-        } else {
-          // Yangi foydalanuvchi — telefon so'raymiz
-          setState(userId, { step: "entering_phone" });
-          await bot.editMessageText(
-            t(selectedLang, "phone_request"),
-            { chat_id: chatId, message_id: messageId, parse_mode: "Markdown" }
-          );
-          await bot.sendMessage(
-            chatId,
-            t(selectedLang, "phone_share_btn"),
-            { reply_markup: phoneKeyboard(selectedLang) }
-          );
-        }
+        setProfile(userId, { lang: selectedLang });
+        resetState(userId);
+        await bot.sendMessage(chatId, t(selectedLang, "main_menu"), {
+          parse_mode: "Markdown",
+          reply_markup: mainMenuKeyboard(selectedLang),
+        });
         return;
       }
 
@@ -646,45 +628,6 @@ export function setupHandlers(bot: TelegramBot): void {
 
     const state = getState(userId);
     const lang = getLang(userId);
-
-    // ── Telefon raqam qabul qilish ─────────────────────────────────────
-    if (state.step === "entering_phone") {
-      let phone: string | undefined;
-
-      if (msg.contact) {
-        // Telegram "ulashish" tugmasi orqali
-        phone = msg.contact.phone_number;
-        if (!phone.startsWith("+")) phone = `+${phone}`;
-      } else if (msg.text) {
-        // Qo'lda kiritish — oddiy raqam formatini qabul qil
-        const digits = msg.text.replace(/\D/g, "");
-        if (digits.length >= 9) {
-          phone = digits.startsWith("998") ? `+${digits}` : `+998${digits.slice(-9)}`;
-        }
-      }
-
-      if (!phone) {
-        await bot.sendMessage(chatId,
-          t(lang, "phone_request"),
-          { parse_mode: "Markdown", reply_markup: phoneKeyboard(lang) }
-        );
-        return;
-      }
-
-      updatePhone(userId, phone);
-      resetState(userId);
-
-      // Reply klaviaturani olib tashlash + bosh menyu
-      await bot.sendMessage(chatId, t(lang, "phone_saved"), {
-        parse_mode: "Markdown",
-        reply_markup: removeKeyboard(),
-      });
-      await bot.sendMessage(chatId, t(lang, "main_menu"), {
-        parse_mode: "Markdown",
-        reply_markup: mainMenuKeyboard(lang),
-      });
-      return;
-    }
 
     // ── Bosh menyu tugmalari (reply keyboard) ────────────────────────
     if (msg.text && isRegistered(userId)) {
