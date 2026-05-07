@@ -71,6 +71,16 @@ function formatCourtInfo(court: CourtEntry, lang: Lang): string {
   return lines.join("\n");
 }
 
+// ── Har foydalanuvchining oxirgi venue/lokatsiya xabari ID si ─────────────────
+const lastVenueMsg = new Map<number, number>(); // userId → message_id
+
+async function deleteLastVenue(bot: TelegramBot, userId: number, chatId: number) {
+  const msgId = lastVenueMsg.get(userId);
+  if (!msgId) return;
+  try { await bot.deleteMessage(chatId, msgId); } catch { /* ignore */ }
+  lastVenueMsg.delete(userId);
+}
+
 // ── Main export ───────────────────────────────────────────────────────────────
 export async function handleCourts(
   bot: TelegramBot,
@@ -110,9 +120,16 @@ export async function handleCourts(
   if (data === "ct:oliy") {
     const c = OLIY_SUD;
     const text = formatCourtInfo(c, lang);
+    await deleteLastVenue(bot, userId, chatId);
     await safeEdit(text, courtDetailKeyboard("courts", lang));
     if (c.lat && c.lng) {
-      try { await bot.sendLocation(chatId, c.lat, c.lng); } catch { /* ignore */ }
+      try {
+        const cy = lang === "cyrillic";
+        const venueName    = cy ? latinToCyrillic(c.name)    : c.name;
+        const venueAddress = cy ? latinToCyrillic(c.address) : c.address;
+        const sent = await bot.sendVenue(chatId, c.lat, c.lng, venueName, venueAddress);
+        lastVenueMsg.set(userId, sent.message_id);
+      } catch { /* ignore */ }
     }
     return true;
   }
@@ -169,9 +186,16 @@ export async function handleCourts(
     if (!court) return false;
 
     const text = formatCourtInfo(court, lang);
+    await deleteLastVenue(bot, userId, chatId);
     await safeEdit(text, courtDetailKeyboard(`cr:${type}:${regionId}`, lang));
     if (court.lat && court.lng) {
-      try { await bot.sendLocation(chatId, court.lat, court.lng); } catch { /* ignore */ }
+      try {
+        const cy = lang === "cyrillic";
+        const venueName    = cy ? latinToCyrillic(court.name)    : court.name;
+        const venueAddress = cy ? latinToCyrillic(court.address) : court.address;
+        const sent = await bot.sendVenue(chatId, court.lat, court.lng, venueName, venueAddress);
+        lastVenueMsg.set(userId, sent.message_id);
+      } catch { /* ignore */ }
     }
     return true;
   }
