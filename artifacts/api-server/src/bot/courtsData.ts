@@ -45,8 +45,8 @@ export const OLIY_SUD: CourtEntry = {
   address: "100047, Toshkent shahar, Chilonzor tumani, A.Ikromov ko'chasi, 1",
   phone: "+998 71 233-22-25",
   email: "info@supcourt.uz",
-  lat: 41.2993,
-  lng: 69.2395,
+  lat: 41.32302186304097,
+  lng: 69.26632559015088,
 };
 
 // ── Jinoyat / Fuqarolik tumanlararo sudlar (bir bino) ────────────────────────
