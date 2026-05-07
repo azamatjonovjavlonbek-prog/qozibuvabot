@@ -255,7 +255,7 @@ export function setupHandlers(bot: TelegramBot): void {
         setProfile(userId, { lang: selectedLang });
         addUser(userId);
         resetState(userId);
-        await bot.sendMessage(chatId, tMenuHeader(selectedLang, getUserCount()), {
+        await bot.sendMessage(chatId, t(selectedLang, "main_menu"), {
           parse_mode: "Markdown",
           reply_markup: mainMenuKeyboard(selectedLang),
         });
@@ -265,7 +265,7 @@ export function setupHandlers(bot: TelegramBot): void {
       // ── Bosh menyu ────────────────────────────────────────────────────
       if (data === "back_main") {
         resetState(userId);
-        await bot.sendMessage(chatId, tMenuHeader(lang, getUserCount()), {
+        await bot.sendMessage(chatId, t(lang, "main_menu"), {
           parse_mode: "Markdown",
           reply_markup: mainMenuKeyboard(lang),
         });
@@ -278,7 +278,7 @@ export function setupHandlers(bot: TelegramBot): void {
         try { await bot.deleteMessage(chatId, messageId); } catch { /* ignore */ }
         await bot.sendMessage(
           chatId,
-          tMenuHeader(lang, getUserCount()),
+          t(lang, "main_menu"),
           { parse_mode: "Markdown", reply_markup: mainMenuKeyboard(lang) }
         );
         return;
@@ -682,7 +682,7 @@ export function setupHandlers(bot: TelegramBot): void {
             { parse_mode: "Markdown", reply_markup: backToMainKeyboard(lang) },
           );
         } else if (action === "chat_clear") {
-          await bot.sendMessage(chatId, tMenuHeader(lang, getUserCount()), { parse_mode: "Markdown", reply_markup: mainMenuKeyboard(lang) });
+          await bot.sendMessage(chatId, t(lang, "main_menu"), { parse_mode: "Markdown", reply_markup: mainMenuKeyboard(lang) });
         }
         return;
       }
