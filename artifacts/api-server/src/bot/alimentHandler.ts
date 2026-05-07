@@ -10,7 +10,7 @@ type AlimentChildren = "1" | "2" | "3" | "3plus";
 function parseSalary(raw: string): number | null {
   const s = raw.toLowerCase().trim();
 
-  // "mln" yoki "mlrd" qo'shimchasi bilan: "3.5 mln", "3,5mln", "1.2mlrd"
+  // "mln" yoki "mlrd" qo'shimchasi: "3.5 mln", "3,5mln", "1.2mlrd"
   const mlnMatch = s.match(/^([\d][.\d,\s]*)mln/);
   if (mlnMatch) {
     const num = parseFloat(mlnMatch[1]!.replace(/,/g, ".").replace(/\s/g, ""));
@@ -22,10 +22,16 @@ function parseSalary(raw: string): number | null {
     if (!isNaN(num)) return Math.round(num * 1_000_000_000);
   }
 
-  // Oddiy raqam: bo'shliq, vergul yoki nuqta minglik ajratuvchi sifatida
-  // Lekin kasrli raqamni (3.5) "mlrd/mln" siz yo'q — butun son deb qabul qilamiz
-  const cleaned = s.replace(/[\s_]/g, "").replace(/,/g, "");
-  const n = Number(cleaned);
+  // Nuqta minglik ajratuvchi sifatida: "3.500.000" yoki "3.500"
+  // Agar nuqtadan keyin doim 3 ta raqam kelsa — minglik ajratuvchi
+  if (/^\d{1,3}(\.\d{3})+$/.test(s)) {
+    const n = parseInt(s.replace(/\./g, ""), 10);
+    if (!isNaN(n) && n > 0) return n;
+  }
+
+  // Bo'shliq yoki apostrof ajratuvchi: "3 500 000", "3'500'000"
+  const spaced = s.replace(/[\s_']/g, "").replace(/,/g, "");
+  const n = Number(spaced);
   if (!isNaN(n) && n > 0) return Math.round(n);
 
   return null;
@@ -205,8 +211,8 @@ export function tAlimentIntro(lang: Lang): string {
 export function tAlimentSalaryPrompt(lang: Lang): string {
   const cy = lang === "cyrillic";
   return cy
-    ? `*Қарздорнинг oylik маошини киритинг:*\n\nФақат рақам киритинг (масалан: \`3500000\`)`
-    : `*Qarzdorning oylik maoshini kiriting:*\n\nFaqat raqam kiriting (masalan: \`3500000\`)`;
+    ? `*Қарздорнинг oylik маошини киритинг:*\n\nМасалан: \`3.500.000\` ёки \`3.5 mln\``
+    : `*Qarzdorning oylik maoshini kiriting:*\n\nMasalan: \`3.500.000\` yoki \`3.5 mln\``;
 }
 
 export function tAlimentChildrenPrompt(lang: Lang, status: "employed" | "unemployed", salary?: number): string {
@@ -342,8 +348,8 @@ export async function handleAlimentSalaryInput(
     await bot.sendMessage(
       chatId,
       cy
-        ? "⚠️ Нотўғри формат. Мисоллар: `3500000`, `3 500 000`, `3.5 mln`"
-        : "⚠️ Noto'g'ri format. Misollar: `3500000`, `3 500 000`, `3.5 mln`",
+        ? "⚠️ Нотўғри формат. Мисоллар: `3.500.000`, `3 500 000`, `3.5 mln`"
+        : "⚠️ Noto'g'ri format. Misollar: `3.500.000`, `3 500 000`, `3.5 mln`",
       { parse_mode: "Markdown" },
     );
     return true;
