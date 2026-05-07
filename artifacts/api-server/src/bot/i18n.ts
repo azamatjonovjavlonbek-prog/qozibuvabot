@@ -135,6 +135,12 @@ export function t(lang: Lang, key: string): string {
   return S[key]?.[lang] ?? S[key]?.latin ?? key;
 }
 
+export function tMenuHeader(lang: Lang, count: number): string {
+  return lang === "cyrillic"
+    ? `🏠 *Бош меню*\n\n👥 Жами фойдаланувчилар: *${count} нафар*\n\nҚуйидаги хизматлардан бирини танланг:`
+    : `🏠 *Bosh menyu*\n\n👥 Jami foydalanuvchilar: *${count} nafar*\n\nQuyidagi xizmatlardan birini tanlang:`;
+}
+
 export function tMainMenu(lang: Lang, shablon: string, professional: string, consultation: string, card: string, owner: string, hours: string): string {
   return lang === "cyrillic"
     ? `ℹ️ *QoziBuva Ҳуқуқий Хизматлар*\n\nБиз Ўзбекистон фуқароларига тез ва сифатли ҳуқуқий ёрдам кўрсатамиз.\n\n*Хизматлар:*\nШаблон ариза — *${shablon}*\nПрофессионал ариза — *${professional}*\nКонсультация — *${consultation}*\n\n*Тўлов:*\nКарта: \`${card}\`\nЭгаси: *${owner}*\n\nИш вақти: ${hours}\n\nСавол ва таклифлар учун "Админга мурожат" тугмасини босинг.`

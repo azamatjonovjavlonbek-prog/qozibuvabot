@@ -37,11 +37,12 @@ import { ARIZA_CATEGORIES as CATS } from "./config";
 import { getLang, getProfile, setProfile, isRegistered, updatePhone } from "./userProfile";
 import type { Lang } from "./userProfile";
 import {
-  t, tMainMenu, tShablonList, tShablonConfirm, tPayShablon,
+  t, tMainMenu, tMenuHeader, tShablonList, tShablonConfirm, tPayShablon,
   tProfessional, tPayProfessional, tConsultation, tPayConsultation,
   tApprovedShablon, tApprovedConsultation, tCatLabel, tHelp,
   tProPrice, tHours, tSom,
 } from "./i18n";
+import { addUser, getUserCount } from "./userCounter";
 
 const FONT_PATH = path.join(process.cwd(), "assets", "NotoSans-Regular.ttf");
 const FONT_BUFFER: Buffer = fs.readFileSync(FONT_PATH);
@@ -252,8 +253,9 @@ export function setupHandlers(bot: TelegramBot): void {
       if (data === "lang_latin" || data === "lang_cyrillic") {
         const selectedLang: Lang = data === "lang_latin" ? "latin" : "cyrillic";
         setProfile(userId, { lang: selectedLang });
+        addUser(userId);
         resetState(userId);
-        await bot.sendMessage(chatId, t(selectedLang, "main_menu"), {
+        await bot.sendMessage(chatId, tMenuHeader(selectedLang, getUserCount()), {
           parse_mode: "Markdown",
           reply_markup: mainMenuKeyboard(selectedLang),
         });
@@ -263,7 +265,7 @@ export function setupHandlers(bot: TelegramBot): void {
       // ── Bosh menyu ────────────────────────────────────────────────────
       if (data === "back_main") {
         resetState(userId);
-        await bot.sendMessage(chatId, t(lang, "main_menu"), {
+        await bot.sendMessage(chatId, tMenuHeader(lang, getUserCount()), {
           parse_mode: "Markdown",
           reply_markup: mainMenuKeyboard(lang),
         });
@@ -276,7 +278,7 @@ export function setupHandlers(bot: TelegramBot): void {
         try { await bot.deleteMessage(chatId, messageId); } catch { /* ignore */ }
         await bot.sendMessage(
           chatId,
-          t(lang, "main_menu"),
+          tMenuHeader(lang, getUserCount()),
           { parse_mode: "Markdown", reply_markup: mainMenuKeyboard(lang) }
         );
         return;
@@ -680,7 +682,7 @@ export function setupHandlers(bot: TelegramBot): void {
             { parse_mode: "Markdown", reply_markup: backToMainKeyboard(lang) },
           );
         } else if (action === "chat_clear") {
-          await bot.sendMessage(chatId, t(lang, "main_menu"), { parse_mode: "Markdown", reply_markup: mainMenuKeyboard(lang) });
+          await bot.sendMessage(chatId, tMenuHeader(lang, getUserCount()), { parse_mode: "Markdown", reply_markup: mainMenuKeyboard(lang) });
         }
         return;
       }
