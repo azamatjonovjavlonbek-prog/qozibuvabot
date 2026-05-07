@@ -42,13 +42,21 @@ function courtsListKeyboard(
   return { inline_keyboard: rows };
 }
 
-function locationKeyboard(type: CourtType, regionId: string, idx: number, lang: Lang): TelegramBot.InlineKeyboardMarkup {
-  return {
-    inline_keyboard: [
-      [{ text: lang === "cyrillic" ? "🔙 Орқага" : "🔙 Orqaga", callback_data: `cr:${type}:${regionId}` }],
-      [{ text: lang === "cyrillic" ? "🏠 Бош меню" : "🏠 Bosh menyu", callback_data: "back_main" }],
-    ],
-  };
+function courtDetailKeyboard(
+  backData: string,
+  locData: string | null,
+  lang: Lang,
+): TelegramBot.InlineKeyboardMarkup {
+  const rows: TelegramBot.InlineKeyboardButton[][] = [];
+  if (locData) {
+    rows.push([{
+      text: lang === "cyrillic" ? "📍 Харитада кўриш" : "📍 Xaritada ko'rish",
+      callback_data: locData,
+    }]);
+  }
+  rows.push([{ text: lang === "cyrillic" ? "🔙 Орқага" : "🔙 Orqaga", callback_data: backData }]);
+  rows.push([{ text: lang === "cyrillic" ? "🏠 Бош меню" : "🏠 Bosh menyu", callback_data: "back_main" }]);
+  return { inline_keyboard: rows };
 }
 
 // ── Court info message ────────────────────────────────────────────────────────
@@ -102,22 +110,35 @@ export async function handleCourts(
     return true;
   }
 
+  // ── Lokatsiya so'rovi — Oliy sud ─────────────────────────────────────────────
+  if (data === "loc:oliy") {
+    const c = OLIY_SUD;
+    if (c.lat && c.lng) {
+      await bot.sendLocation(chatId, c.lat, c.lng);
+    }
+    return true;
+  }
+
+  // ── Lokatsiya so'rovi — Boshqa sudlar ────────────────────────────────────────
+  if (data.startsWith("loc:")) {
+    const parts = data.split(":");
+    const type = parts[1] as CourtType;
+    const regionId = parts[2]!;
+    const idx = parseInt(parts[3]!);
+    const courts = getCourts(type, regionId);
+    const court = courts[idx];
+    if (court?.lat && court.lng) {
+      await bot.sendLocation(chatId, court.lat, court.lng);
+    }
+    return true;
+  }
+
   // ── Oliy sud (to'g'ri ma'lumot) ─────────────────────────────────────────────
   if (data === "ct:oliy") {
     const c = OLIY_SUD;
     const text = formatCourtInfo(c, lang);
-    await safeEdit(text, {
-      inline_keyboard: [
-        [{ text: lang === "cyrillic" ? "🔙 Орқага" : "🔙 Orqaga", callback_data: "courts" }],
-        [{ text: lang === "cyrillic" ? "🏠 Бош меню" : "🏠 Bosh menyu", callback_data: "back_main" }],
-      ],
-    });
-    // Location
-    if (c.lat && c.lng) {
-      try {
-        await bot.sendLocation(chatId, c.lat, c.lng);
-      } catch { /* ignore */ }
-    }
+    const locData = c.lat && c.lng ? "loc:oliy" : null;
+    await safeEdit(text, courtDetailKeyboard("courts", locData, lang));
     return true;
   }
 
@@ -173,14 +194,8 @@ export async function handleCourts(
     if (!court) return false;
 
     const text = formatCourtInfo(court, lang);
-    await safeEdit(text, locationKeyboard(type, regionId, idx, lang));
-
-    // Location xabari
-    if (court.lat && court.lng) {
-      try {
-        await bot.sendLocation(chatId, court.lat, court.lng);
-      } catch { /* ignore */ }
-    }
+    const locData = court.lat && court.lng ? `loc:${type}:${regionId}:${idx}` : null;
+    await safeEdit(text, courtDetailKeyboard(`cr:${type}:${regionId}`, locData, lang));
     return true;
   }
 

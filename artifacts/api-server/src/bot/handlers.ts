@@ -43,18 +43,20 @@ import {
 } from "./i18n";
 
 const FONT_PATH = path.join(process.cwd(), "assets", "NotoSans-Regular.ttf");
+const FONT_BUFFER: Buffer = fs.readFileSync(FONT_PATH);
 
 // adminMsgId → foydalanuvchi chatId (murojat javoblari uchun)
 const contactReplyMap = new Map<number, number>();
 
 function generatePdfBuffer(content: string): Promise<Buffer> {
   return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({ margin: 60, size: "A4", font: FONT_PATH });
+    const doc = new PDFDocument({ margin: 60, size: "A4" });
     const chunks: Buffer[] = [];
     doc.on("data", (chunk: Buffer) => chunks.push(chunk));
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
-    doc.fontSize(11).font(FONT_PATH).text(content, { lineGap: 4 });
+    doc.registerFont("NotoSans", FONT_BUFFER);
+    doc.fontSize(11).font("NotoSans").text(content, { lineGap: 4 });
     doc.end();
   });
 }

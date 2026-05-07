@@ -9,15 +9,20 @@ export interface TemplateFile {
 
 const STORE_PATH = path.join(process.cwd(), "data", "template-files.json");
 
+let _cache: Record<string, TemplateFile> | null = null;
+
 function load(): Record<string, TemplateFile> {
+  if (_cache !== null) return _cache;
   try {
     if (fs.existsSync(STORE_PATH)) {
-      return JSON.parse(fs.readFileSync(STORE_PATH, "utf-8")) as Record<string, TemplateFile>;
+      _cache = JSON.parse(fs.readFileSync(STORE_PATH, "utf-8")) as Record<string, TemplateFile>;
+      return _cache;
     }
   } catch (err) {
     logger.error({ err }, "Template store o'qishda xato");
   }
-  return {};
+  _cache = {};
+  return _cache;
 }
 
 function save(store: Record<string, TemplateFile>): void {
@@ -36,6 +41,7 @@ export function getTemplate(catId: string): TemplateFile | undefined {
 export function setTemplate(catId: string, entry: TemplateFile): void {
   const store = load();
   store[catId] = entry;
+  _cache = store;
   save(store);
   logger.info({ catId, fileName: entry.fileName }, "Template fayl yangilandi");
 }
