@@ -31,25 +31,26 @@ export function removeKeyboard(): TelegramBot.ReplyKeyboardRemove {
   return { remove_keyboard: true };
 }
 
-export function mainMenuKeyboard(lang: Lang): TelegramBot.InlineKeyboardMarkup {
+export function mainMenuKeyboard(lang: Lang): TelegramBot.ReplyKeyboardMarkup {
   return {
-    inline_keyboard: [
+    keyboard: [
       [
-        { text: t(lang, "btn_ariza"),        callback_data: "menu_ariza" },
-        { text: t(lang, "btn_consultation"), callback_data: "menu_consultation" },
+        { text: t(lang, "btn_ariza") },
+        { text: t(lang, "btn_consultation") },
       ],
       [
-        { text: t(lang, "btn_courts"),  callback_data: "courts" },
-        { text: t(lang, "btn_aliment"), callback_data: "menu_aliment" },
+        { text: t(lang, "btn_courts") },
+        { text: t(lang, "btn_aliment") },
       ],
       [
-        { text: t(lang, "btn_contact"), callback_data: "menu_contact" },
-        { text: t(lang, "btn_about"),   callback_data: "menu_about" },
+        { text: t(lang, "btn_contact") },
+        { text: t(lang, "btn_about") },
       ],
       [
-        { text: t(lang, "btn_clear"), callback_data: "chat_clear" },
+        { text: t(lang, "btn_clear") },
       ],
     ],
+    resize_keyboard: true,
   };
 }
 

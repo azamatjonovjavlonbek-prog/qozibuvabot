@@ -81,6 +81,22 @@ async function deleteLastVenue(bot: TelegramBot, userId: number, chatId: number)
   lastVenueMsg.delete(userId);
 }
 
+// ── Text-triggered entry (reply keyboard) ─────────────────────────────────────
+export async function sendCourtsIntro(
+  bot: TelegramBot,
+  chatId: number,
+  userId: number,
+): Promise<void> {
+  const lang = getLang(userId);
+  await bot.sendMessage(
+    chatId,
+    lang === "cyrillic"
+      ? "⚖️ *Судлар манзиллари*\n\nСуд турини танланг:"
+      : "⚖️ *Sudlar manzillari*\n\nSud turini tanlang:",
+    { parse_mode: "Markdown", reply_markup: courtTypesKeyboard(lang) },
+  );
+}
+
 // ── Main export ───────────────────────────────────────────────────────────────
 export async function handleCourts(
   bot: TelegramBot,

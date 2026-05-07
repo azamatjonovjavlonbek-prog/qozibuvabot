@@ -30,7 +30,7 @@ import {
   contactKeyboard,
 } from "./keyboards";
 import { logger } from "../lib/logger";
-import { handleCourts } from "./courtsHandler";
+import { handleCourts, sendCourtsIntro } from "./courtsHandler";
 import { handleAliment, handleAlimentSalaryInput } from "./alimentHandler";
 import { getTemplate, setTemplate, listTemplates } from "./templateStore";
 import { ARIZA_CATEGORIES as CATS } from "./config";
@@ -258,14 +258,10 @@ export function setupHandlers(bot: TelegramBot): void {
         if (existing?.phone) {
           // Avval ro'yxatdan o'tgan — to'g'ri bosh menyuga
           resetState(userId);
-          try {
-            await bot.editMessageText(
-              t(selectedLang, "main_menu"),
-              { chat_id: chatId, message_id: messageId, parse_mode: "Markdown", reply_markup: mainMenuKeyboard(selectedLang) }
-            );
-          } catch {
-            await bot.sendMessage(chatId, t(selectedLang, "main_menu"), { parse_mode: "Markdown", reply_markup: mainMenuKeyboard(selectedLang) });
-          }
+          await bot.sendMessage(chatId, t(selectedLang, "main_menu"), {
+            parse_mode: "Markdown",
+            reply_markup: mainMenuKeyboard(selectedLang),
+          });
         } else {
           // Yangi foydalanuvchi — telefon so'raymiz
           setState(userId, { step: "entering_phone" });
@@ -285,11 +281,10 @@ export function setupHandlers(bot: TelegramBot): void {
       // ── Bosh menyu ────────────────────────────────────────────────────
       if (data === "back_main") {
         resetState(userId);
-        await safeEdit(
-          bot, chatId, messageId,
-          t(lang, "main_menu"),
-          { parse_mode: "Markdown", reply_markup: mainMenuKeyboard(lang) }
-        );
+        await bot.sendMessage(chatId, t(lang, "main_menu"), {
+          parse_mode: "Markdown",
+          reply_markup: mainMenuKeyboard(lang),
+        });
         return;
       }
 
@@ -689,6 +684,55 @@ export function setupHandlers(bot: TelegramBot): void {
         reply_markup: mainMenuKeyboard(lang),
       });
       return;
+    }
+
+    // ── Bosh menyu tugmalari (reply keyboard) ────────────────────────
+    if (msg.text && isRegistered(userId)) {
+      const menuAction: Record<string, string> = {
+        "📄 Ariza bo'limi":     "menu_ariza",
+        "📄 Ариза бўлими":      "menu_ariza",
+        "📞 Konsultatsiya":      "menu_consultation",
+        "📞 Консультация":       "menu_consultation",
+        "🏛 Sudlar manzillari":  "courts",
+        "🏛 Судлар манзиллари":  "courts",
+        "Aliment kalkulyatori":  "menu_aliment",
+        "Алимент калькулятори":  "menu_aliment",
+        "Adminga murojat":       "menu_contact",
+        "Админга мурожат":       "menu_contact",
+        "Biz haqimizda":         "menu_about",
+        "Биз ҳақимизда":         "menu_about",
+        "Chatni tozalash":       "chat_clear",
+        "Чатни тозалаш":         "chat_clear",
+      };
+      const action = menuAction[msg.text];
+      if (action) {
+        resetState(userId);
+        if (action === "menu_ariza") {
+          await bot.sendMessage(chatId, t(lang, "ariza_menu"), { parse_mode: "Markdown", reply_markup: arizaMenuKeyboard(lang) });
+        } else if (action === "menu_consultation") {
+          setState(userId, { step: "selecting_consultation" });
+          await bot.sendMessage(chatId, tConsultation(lang, `${CONSULTATION_PRICE.toLocaleString()} ${tSom(lang)}`, tHours(lang)), { parse_mode: "Markdown", reply_markup: confirmConsultationKeyboard(lang) });
+        } else if (action === "courts") {
+          await sendCourtsIntro(bot, chatId, userId);
+        } else if (action === "menu_aliment") {
+          await handleAliment(bot, userId, chatId, msg.message_id, "menu_aliment");
+        } else if (action === "menu_contact") {
+          await bot.sendMessage(chatId, t(lang, "contact_title"), { parse_mode: "Markdown", reply_markup: contactKeyboard(lang) });
+        } else if (action === "menu_about") {
+          await bot.sendMessage(chatId,
+            tMainMenu(lang,
+              `${SHABLON_PRICE.toLocaleString()} ${tSom(lang)}`,
+              tProPrice(lang),
+              `${CONSULTATION_PRICE.toLocaleString()} ${tSom(lang)}`,
+              CARD_NUMBER, CARD_OWNER, tHours(lang),
+            ),
+            { parse_mode: "Markdown", reply_markup: backToMainKeyboard(lang) },
+          );
+        } else if (action === "chat_clear") {
+          await bot.sendMessage(chatId, t(lang, "main_menu"), { parse_mode: "Markdown", reply_markup: mainMenuKeyboard(lang) });
+        }
+        return;
+      }
     }
 
     // ── Aliment: maosh kiritish ───────────────────────────────────────
