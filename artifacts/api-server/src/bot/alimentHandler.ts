@@ -148,7 +148,6 @@ function buildResultText(
       `Улуш: *${fractionLabel}*\n\n` +
       `━━━━━━━━━━━━━━━━━\n` +
       `Ҳисобланган алимент: *${fmt(amount)} сўм/ой*\n` +
-      `${minimumLine}\n` +
       `━━━━━━━━━━━━━━━━━\n` +
       (isThreePlus
         ? `✅ *Тўланиши керак: ${fmt(amount)} сўм/ой*\n_(ҳар бир бола учун камида ${fmt(minimumPerChild)} сўм)_\n`
@@ -166,7 +165,6 @@ function buildResultText(
     `Ulush: *${fractionLabel}*\n\n` +
     `━━━━━━━━━━━━━━━━━\n` +
     `Hisoblangan aliment: *${fmt(amount)} so'm/oy*\n` +
-    `${minimumLine}\n` +
     `━━━━━━━━━━━━━━━━━\n` +
     (isThreePlus
       ? `✅ *To'lanishi kerak: ${fmt(amount)} so'm/oy*\n_(har bir bola uchun kamida ${fmt(minimumPerChild)} so'm)_\n`
