@@ -10,7 +10,9 @@ process.on("uncaughtException", (err) => {
   logger.error({ err }, "Uncaught exception — bot davom etadi");
 });
 
-startBot();
+startBot().catch((err) => {
+  logger.error({ err }, "Bot ishga tushishda xato");
+});
 
 const rawPort = process.env["PORT"];
 

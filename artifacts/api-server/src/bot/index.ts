@@ -10,8 +10,17 @@ if (!TOKEN) {
 
 let bot: TelegramBot | null = null;
 
-export function startBot(): void {
+export async function startBot(): Promise<void> {
   if (bot) return;
+
+  // Avval webhook o'chiramiz (deployed versiya bilan ziddiyatni oldini olish)
+  const tempBot = new TelegramBot(TOKEN, { polling: false });
+  try {
+    await tempBot.deleteWebHook({ drop_pending_updates: true });
+    logger.info("Webhook o'chirildi, polling boshlanyapti");
+  } catch (err) {
+    logger.warn({ err }, "Webhook o'chirishda xato (ehtimol yo'q edi)");
+  }
 
   bot = new TelegramBot(TOKEN, { polling: true });
 
