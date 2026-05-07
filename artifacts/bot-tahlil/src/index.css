@@ -6,20 +6,21 @@
   --color-bg: var(--slide-bg);
   --color-text: var(--slide-text);
   --color-muted: var(--slide-muted);
+  --color-blue: var(--slide-blue);
   --font-display: var(--font-display-family);
   --font-body: var(--font-body-family);
 }
 
 :root {
-  /* Replace these with brand colors */
-  --slide-primary: #4f46e5;
-  --slide-accent: #06b6d4;
-  --slide-bg: #f8fafc;
-  --slide-text: #0f172a;
-  --slide-muted: #64748b;
-  --font-display-family: "Inter", system-ui, sans-serif;
-  --font-body-family: "Inter", system-ui, sans-serif;
-  color-scheme: light;
+  --slide-primary: #e63946;
+  --slide-accent: #457b9d;
+  --slide-bg: #0f1117;
+  --slide-text: #f1faee;
+  --slide-muted: #8d9db6;
+  --slide-blue: #a8dadc;
+  --font-display-family: "Space Grotesk", sans-serif;
+  --font-body-family: "IBM Plex Mono", monospace;
+  color-scheme: dark;
 }
 
 html,
