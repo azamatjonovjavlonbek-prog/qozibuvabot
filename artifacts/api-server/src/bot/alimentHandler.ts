@@ -276,26 +276,13 @@ export async function handleAliment(
     return true;
   }
 
-  // ── Bolalar soni ──────────────────────────────────────────────────────────
+  // ── Bolalar soni — avtomatik hisoblash ───────────────────────────────────
   if (data.startsWith("aliment_children:")) {
     const children = data.slice("aliment_children:".length) as AlimentChildren;
     const alimentStatus = state.alimentStatus ?? "employed";
     const alimentSalary = state.alimentSalary ?? MZOT;
-    setState(userId, { ...state, step: "aliment_children", alimentStatus, alimentSalary, alimentChildren: children });
-    await safeEdit(
-      tAlimentConfirmPrompt(lang, alimentStatus, alimentSalary, children),
-      alimentConfirmKeyboard(lang),
-    );
-    return true;
-  }
-
-  // ── Hisoblash ─────────────────────────────────────────────────────────────
-  if (data === "aliment_calculate") {
-    const alimentStatus  = state.alimentStatus  ?? "employed";
-    const alimentSalary  = state.alimentSalary  ?? MZOT;
-    const alimentChildren = state.alimentChildren ?? "1";
-    setState(userId, { step: "idle" });
-    const result = buildResultText(lang, alimentStatus, alimentSalary, alimentChildren);
+    setState(userId, { step: "idle", alimentStatus, alimentSalary, alimentChildren: children });
+    const result = buildResultText(lang, alimentStatus, alimentSalary, children);
     await safeEdit(result, {
       inline_keyboard: [
         [{ text: lang === "cyrillic" ? "🔄 Қайта ҳисоблаш" : "🔄 Qayta hisoblash", callback_data: "menu_aliment" }],
@@ -311,16 +298,6 @@ export async function handleAliment(
     await safeEdit(tAlimentSalaryPrompt(lang), {
       inline_keyboard: [[{ text: lang === "cyrillic" ? "🔙 Орқага" : "🔙 Orqaga", callback_data: "menu_aliment" }]],
     });
-    return true;
-  }
-
-  // ── Orqaga: confirm → bolalar ─────────────────────────────────────────────
-  if (data === "aliment_back_to_children") {
-    setState(userId, { ...state, step: "aliment_children", alimentChildren: undefined });
-    await safeEdit(
-      tAlimentChildrenPrompt(lang, state.alimentStatus ?? "employed", state.alimentSalary),
-      alimentChildrenKeyboard(lang),
-    );
     return true;
   }
 
