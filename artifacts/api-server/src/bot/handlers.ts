@@ -629,6 +629,14 @@ export function setupHandlers(bot: TelegramBot): void {
     const state = getState(userId);
     const lang = getLang(userId);
 
+    // ── Ro'yxatdan o'tmagan foydalanuvchi ────────────────────────────
+    if (!isRegistered(userId)) {
+      await bot.sendMessage(chatId,
+        `Iltimos, botni qayta ishga tushiring: /start\n\nИлтимос, ботни қайта ишга туширинг: /start`,
+      );
+      return;
+    }
+
     // ── Bosh menyu tugmalari (reply keyboard) ────────────────────────
     if (msg.text && isRegistered(userId)) {
       const menuAction: Record<string, string> = {
