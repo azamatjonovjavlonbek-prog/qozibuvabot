@@ -116,6 +116,7 @@ const JIN: Record<string, CourtEntry[]> = {
     { name: "Jinoyat ishlar bo'yicha Buxoro tuman sudi",        address: "Buxoro tumani, Bahor ko'chasi, 25-uy",                phone: "+998 65 220-02-27", email: "j.buxoro.t@sud.uz",       lat: 39.860174, lng: 64.441550 },
     { name: "Jinoyat ishlar bo'yicha Shofirkon tuman sudi",     address: "Shofirkon tumani, Sultonobod ko'chasi, 3-uy",         phone: "+998 65 220-05-84", email: "j.shofirkon@sud.uz",      lat: 40.119275, lng: 64.505071 },
     { name: "Jinoyat ishlar bo'yicha Jondor tuman sudi",        address: "Jondor, M.Tarobiy ko'chasi, 42-uy",                   phone: "+998 65 582-18-36", email: "jib.bux.jon@sud.uz",      lat: 39.738430, lng: 64.173792 },
+    { name: "Jinoyat ishlar bo'yicha Kogon shahar sudi",        address: "Kogon shahar, Qorovulbozor shoh ko'chasi, 2-uy",      phone: "+998 65 220-02-81", email: "j.kogon@sud.uz",          lat: 39.732115, lng: 64.527760 },
   ],
   navvil: [
     { name: "Navoiy viloyat sudi",                          address: "Navoiy shahar, O'zbekiston ko'chasi, 11A-uy",      phone: "+998 79 222-01-24", email: "j.navoiy@sud.uz",      lat: 40.084929, lng: 65.373877 },
