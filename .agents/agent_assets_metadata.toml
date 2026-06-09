@@ -18,3 +18,9 @@ id = "pxoJKEHxSB1CbHDF_mdQw"
 uri = "file://railway-prebuilt.zip"
 type = "unspecified"
 title = "railway-prebuilt.zip — build kerak emas!"
+
+[[outputs]]
+id = "8irXUe2T9C3KiVUtDI3XP"
+uri = "file://railway-env.txt"
+type = "text"
+title = "railway-env.txt — Raw Editorga koʻing!"
