@@ -10,6 +10,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
     "@swc/helpers": "^0.5.21",
     "@types/node-telegram-bot-api": "^0.64.14",
     "@types/pdf-parse": "^1.1.5",

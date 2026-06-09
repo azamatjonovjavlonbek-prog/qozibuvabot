@@ -1,7 +1,11 @@
 import TelegramBot from "node-telegram-bot-api";
 import https from "https";
 import http from "http";
-import { anthropic } from "@workspace/integrations-anthropic-ai";
+import Anthropic from "@anthropic-ai/sdk";
+
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY ?? "dummy",
+});
 import { t } from "./i18n";
 import type { Lang } from "./userProfile";
 import { backToMainKeyboard } from "./keyboards";
