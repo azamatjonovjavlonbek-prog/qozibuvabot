@@ -12,3 +12,9 @@ id = "2cqcb4tlxrCwspmv_tkvc"
 uri = "file://railway-deploy.zip"
 type = "unspecified"
 title = "railway-deploy.zip — shu faylni yuklang"
+
+[[outputs]]
+id = "pxoJKEHxSB1CbHDF_mdQw"
+uri = "file://railway-prebuilt.zip"
+type = "unspecified"
+title = "railway-prebuilt.zip — build kerak emas!"
