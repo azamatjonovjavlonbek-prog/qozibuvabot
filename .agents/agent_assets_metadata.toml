@@ -6,3 +6,9 @@ id = "6mIkasGm_wPxztZ7BAKOz"
 uri = "file://qozibuva-bot-source.zip"
 type = "unspecified"
 title = "QoziBuva Bot — Barcha kodlar (ZIP)"
+
+[[outputs]]
+id = "2cqcb4tlxrCwspmv_tkvc"
+uri = "file://railway-deploy.zip"
+type = "unspecified"
+title = "Railway uchun tayyor ZIP"
