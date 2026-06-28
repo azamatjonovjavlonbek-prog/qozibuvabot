@@ -663,10 +663,14 @@ export function setupHandlers(bot: TelegramBot): void {
     const state = getState(userId);
     const lang = getLang(userId);
 
-    // ── Ro'yxatdan o'tmagan foydalanuvchi ────────────────────────────
+    // ── Ro'yxatdan o'tmagan foydalanuvchi — avtomatik /start ────────
     if (!isRegistered(userId)) {
-      await bot.sendMessage(chatId,
-        `Iltimos, botni qayta ishga tushiring: /start\n\nИлтимос, ботни қайта ишга туширинг: /start`,
+      resetState(userId);
+      setState(userId, { step: "selecting_language" });
+      await bot.sendMessage(
+        chatId,
+        `👋 Assalomu alaykum! / Ассалому алайкум!\n\n🌐 Iltimos, tilni tanlang / Илтимос, тилни танланг:`,
+        { reply_markup: languageKeyboard() }
       );
       return;
     }
