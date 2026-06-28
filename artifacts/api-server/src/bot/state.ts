@@ -23,6 +23,7 @@ export interface UserState {
   alimentStatus?: "employed" | "unemployed";
   alimentSalary?: number;
   alimentChildren?: "1" | "2" | "3" | "3plus";
+  lastActivity?: number;
 }
 
 export interface AdminState {
@@ -34,16 +35,18 @@ export interface AdminState {
 const userStates = new Map<number, UserState>();
 const adminStates = new Map<number, AdminState>();
 
+const MAX_STATE_AGE_MS = 3 * 60 * 60 * 1000;
+
 export function getState(userId: number): UserState {
   return userStates.get(userId) ?? { step: "idle" };
 }
 
 export function setState(userId: number, state: UserState): void {
-  userStates.set(userId, state);
+  userStates.set(userId, { ...state, lastActivity: Date.now() });
 }
 
 export function resetState(userId: number): void {
-  userStates.set(userId, { step: "idle" });
+  userStates.set(userId, { step: "idle", lastActivity: Date.now() });
 }
 
 export function getAdminState(adminId: number): AdminState {
@@ -56,4 +59,21 @@ export function setAdminState(adminId: number, state: AdminState): void {
 
 export function resetAdminState(adminId: number): void {
   adminStates.set(adminId, { step: "idle" });
+}
+
+export function cleanupOldStates(): void {
+  const now = Date.now();
+  let cleaned = 0;
+  for (const [userId, state] of userStates) {
+    const age = now - (state.lastActivity ?? 0);
+    if (age > MAX_STATE_AGE_MS && state.step === "idle") {
+      userStates.delete(userId);
+      cleaned++;
+    }
+  }
+  if (cleaned > 0) {
+    import("../lib/logger").then(({ logger }) =>
+      logger.info({ cleaned, remaining: userStates.size }, "Eski state'lar tozalandi")
+    );
+  }
 }

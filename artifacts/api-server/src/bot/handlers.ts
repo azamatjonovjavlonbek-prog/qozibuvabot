@@ -44,9 +44,17 @@ import {
   tProPrice, tHours, tSom,
 } from "./i18n";
 import { addUser, getUserCount } from "./userCounter";
+import { recordBotActivity } from "./index";
+import { touchProfile } from "./userProfile";
 
 const FONT_PATH = path.join(process.cwd(), "assets", "NotoSans-Regular.ttf");
-const FONT_BUFFER: Buffer = fs.readFileSync(FONT_PATH);
+let FONT_BUFFER: Buffer;
+try {
+  FONT_BUFFER = fs.readFileSync(FONT_PATH);
+} catch (err) {
+  // Font topilmasa — Helvetica bilan ishlayveradi
+  FONT_BUFFER = Buffer.alloc(0);
+}
 
 // adminMsgId → foydalanuvchi chatId (murojat javoblari uchun)
 const contactReplyMap = new Map<number, number>();
@@ -58,8 +66,12 @@ function generatePdfBuffer(content: string): Promise<Buffer> {
     doc.on("data", (chunk: Buffer) => chunks.push(chunk));
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
-    doc.registerFont("NotoSans", FONT_BUFFER);
-    doc.fontSize(11).font("NotoSans").text(content, { lineGap: 4 });
+    if (FONT_BUFFER.length > 0) {
+      doc.registerFont("NotoSans", FONT_BUFFER);
+      doc.fontSize(11).font("NotoSans").text(content, { lineGap: 4 });
+    } else {
+      doc.fontSize(11).font("Helvetica").text(content, { lineGap: 4 });
+    }
     doc.end();
   });
 }
@@ -91,55 +103,59 @@ export function setupHandlers(bot: TelegramBot): void {
 
   // ── /start ────────────────────────────────────────────────────────────────
   bot.onText(/\/start/, async (msg) => {
+    recordBotActivity();
     const chatId = msg.chat.id;
     const userId = msg.from?.id ?? chatId;
-
-    // Admin — ro'yxatdan o'tkazmaslik, to'g'ri bosh menyu
-    if (userId === ADMIN_ID) {
+    try {
+      if (userId === ADMIN_ID) {
+        resetState(userId);
+        await bot.sendMessage(chatId, `👋 Assalomu alaykum, Admin!\n\nBosh menyu:`,
+          { parse_mode: "Markdown", reply_markup: mainMenuKeyboard("latin") });
+        return;
+      }
       resetState(userId);
-      await bot.sendMessage(
-        chatId,
-        `👋 Assalomu alaykum, Admin!\n\nBosh menyu:`,
-        { parse_mode: "Markdown", reply_markup: mainMenuKeyboard("latin") }
-      );
-      return;
+      setState(userId, { step: "selecting_language" });
+      await bot.sendMessage(chatId,
+        `👋 Assalomu alaykum! / Ассалому алайкум!\n\n🌐 Iltimos, tilni tanlang / Илтимос, тилни танланг:`,
+        { reply_markup: languageKeyboard() });
+    } catch (err) {
+      logger.error({ err, userId }, "/start handleda xato");
     }
-
-    resetState(userId);
-
-    // Har doim til tanlash so'raladi (qaytib kelgan foydalanuvchi ham til o'zgartira oladi)
-    setState(userId, { step: "selecting_language" });
-    await bot.sendMessage(
-      chatId,
-      `👋 Assalomu alaykum! / Ассалому алайкум!\n\n🌐 Iltimos, tilni tanlang / Илтимос, тилни танланг:`,
-      { reply_markup: languageKeyboard() }
-    );
   });
 
   // ── /help ────────────────────────────────────────────────────────────────
   bot.onText(/\/help/, async (msg) => {
+    recordBotActivity();
     const chatId = msg.chat.id;
     const userId = msg.from?.id ?? chatId;
-    const lang = getLang(userId);
-    const helpText = lang === "cyrillic"
-      ? `ℹ️ *Yordam*\n\n*Buyruqlar:*\n/start — Botni ishga tushirish\n/help — Yordam\n/clean — Chatni tozalash\n\n*Xizmatlar:*\nAriza bo'limi — tayyor shablon yoki professional ariza\nKonsultatsiya — yurist bilan maslahat\nSudlar manzillari — O'zbekiston sudlari\nAliment kalkulyatori — aliment miqdorini hisoblash\n\n*Savol va takliflar uchun "Adminga murojat" tugmasini bosing.*`
-      : `ℹ️ *Yordam*\n\n*Buyruqlar:*\n/start — Botni ishga tushirish\n/help — Yordam\n/clean — Chatni tozalash\n\n*Xizmatlar:*\nAriza bo'limi — tayyor shablon yoki professional ariza\nKonsultatsiya — yurist bilan maslahat\nSudlar manzillari — O'zbekiston sudlari\nAliment kalkulyatori — aliment miqdorini hisoblash\n\n*Savol va takliflar uchun "Adminga murojat" tugmasini bosing.*`;
-    await bot.sendMessage(chatId, helpText, {
-      parse_mode: "Markdown",
-      reply_markup: isRegistered(userId) ? mainMenuKeyboard(lang) : undefined,
-    });
+    try {
+      const lang = getLang(userId);
+      await bot.sendMessage(chatId,
+        tHelp(lang,
+          `${SHABLON_PRICE.toLocaleString()} ${tSom(lang)}`,
+          tProPrice(lang),
+          `${CONSULTATION_PRICE.toLocaleString()} ${tSom(lang)}`),
+        { parse_mode: "Markdown", reply_markup: isRegistered(userId) ? mainMenuKeyboard(lang) : undefined });
+    } catch (err) {
+      logger.error({ err, userId }, "/help handleda xato");
+    }
   });
 
   // ── /clean ───────────────────────────────────────────────────────────────
   bot.onText(/\/clean/, async (msg) => {
+    recordBotActivity();
     const chatId = msg.chat.id;
     const userId = msg.from?.id ?? chatId;
-    const lang = getLang(userId);
-    resetState(userId);
-    await bot.sendMessage(chatId, t(lang, "main_menu"), {
-      parse_mode: "Markdown",
-      reply_markup: isRegistered(userId) ? mainMenuKeyboard(lang) : undefined,
-    });
+    try {
+      const lang = getLang(userId);
+      resetState(userId);
+      await bot.sendMessage(chatId, t(lang, "main_menu"), {
+        parse_mode: "Markdown",
+        reply_markup: isRegistered(userId) ? mainMenuKeyboard(lang) : undefined,
+      });
+    } catch (err) {
+      logger.error({ err, userId }, "/clean handleda xato");
+    }
   });
 
   // ── Admin: /yuborish <userId> ─────────────────────────────────────────────
@@ -147,63 +163,68 @@ export function setupHandlers(bot: TelegramBot): void {
     const chatId = msg.chat.id;
     const adminId = msg.from?.id ?? chatId;
     if (adminId !== ADMIN_ID) return;
-
-    const rawId = match?.[1];
-    if (!rawId) {
-      await bot.sendMessage(chatId, `⚠️ Foydalanuvchi ID kiriting: /yuborish 123456789`);
-      return;
+    try {
+      const rawId = match?.[1];
+      if (!rawId) {
+        await bot.sendMessage(chatId, `⚠️ Foydalanuvchi ID kiriting: /yuborish 123456789`);
+        return;
+      }
+      const targetUserId = parseInt(rawId);
+      if (isNaN(targetUserId)) {
+        await bot.sendMessage(chatId, `⚠️ Noto'g'ri ID: ${rawId}`);
+        return;
+      }
+      setAdminState(ADMIN_ID, { step: "sending_ariza", targetUserId });
+      await bot.sendMessage(chatId,
+        `✅ ID *${targetUserId}* uchun ariza kutilmoqda.\n\nAriza faylini yuboring (hujjat, rasm yoki matn).\n\nBekor qilish: /bekor`,
+        { parse_mode: "Markdown" });
+    } catch (err) {
+      logger.error({ err }, "/yuborish handleda xato");
     }
-    const targetUserId = parseInt(rawId);
-    if (isNaN(targetUserId)) {
-      await bot.sendMessage(chatId, `⚠️ Noto'g'ri ID: ${rawId}`);
-      return;
-    }
-
-    setAdminState(ADMIN_ID, { step: "sending_ariza", targetUserId });
-    await bot.sendMessage(chatId,
-      `✅ ID *${targetUserId}* uchun ariza kutilmoqda.\n\nAriza faylini yuboring (hujjat, rasm yoki matn).\n\nBekor qilish: /bekor`,
-      { parse_mode: "Markdown" }
-    );
   });
 
   // ── Admin: /settemplate <catId> ───────────────────────────────────────────
   bot.onText(/\/settemplate(?:\s+(\w+))?/, async (msg, match) => {
     const chatId = msg.chat.id;
     if ((msg.from?.id ?? chatId) !== ADMIN_ID) return;
-
-    const catId = match?.[1];
-    if (!catId) {
-      const list = CATS.map((c) => `• \`/settemplate ${c.id}\` — ${c.label}`).join("\n");
+    try {
+      const catId = match?.[1];
+      if (!catId) {
+        const list = CATS.map((c) => `• \`/settemplate ${c.id}\` — ${c.label}`).join("\n");
+        await bot.sendMessage(chatId,
+          `📋 *Mavjud kategoriyalar:*\n\n${list}\n\nBirini tanlang va fayl yuboring.`,
+          { parse_mode: "Markdown" });
+        return;
+      }
+      const cat = CATS.find((c) => c.id === catId);
+      if (!cat) {
+        await bot.sendMessage(chatId, `⚠️ Kategoriya topilmadi: \`${catId}\``, { parse_mode: "Markdown" });
+        return;
+      }
+      setAdminState(ADMIN_ID, { step: "setting_template", targetCatId: catId });
       await bot.sendMessage(chatId,
-        `📋 *Mavjud kategoriyalar:*\n\n${list}\n\nBirini tanlang va fayl yuboring.`,
-        { parse_mode: "Markdown" }
-      );
-      return;
+        `📎 *${cat.label}* uchun yangi shablon faylini yuboring.\n\nBekor qilish: /bekor`,
+        { parse_mode: "Markdown" });
+    } catch (err) {
+      logger.error({ err }, "/settemplate handleda xato");
     }
-    const cat = CATS.find((c) => c.id === catId);
-    if (!cat) {
-      await bot.sendMessage(chatId, `⚠️ Kategoriya topilmadi: \`${catId}\``, { parse_mode: "Markdown" });
-      return;
-    }
-    setAdminState(ADMIN_ID, { step: "setting_template", targetCatId: catId });
-    await bot.sendMessage(chatId,
-      `📎 *${cat.label}* uchun yangi shablon faylini yuboring.\n\nBekor qilish: /bekor`,
-      { parse_mode: "Markdown" }
-    );
   });
 
   // ── Admin: /listtemplates ─────────────────────────────────────────────────
   bot.onText(/\/listtemplates/, async (msg) => {
     const chatId = msg.chat.id;
     if ((msg.from?.id ?? chatId) !== ADMIN_ID) return;
-
-    const templates = listTemplates();
-    if (templates.length === 0) {
-      await bot.sendMessage(chatId, `📋 Hozircha hech qanday shablon saqlanmagan.`);
-      return;
+    try {
+      const templates = listTemplates();
+      if (templates.length === 0) {
+        await bot.sendMessage(chatId, `📋 Hozircha hech qanday shablon saqlanmagan.`);
+        return;
+      }
+      const list = templates.map((t) => `• *${t.catId}*: ${t.fileName}`).join("\n");
+      await bot.sendMessage(chatId, `📋 *Saqlangan shablonlar:*\n\n${list}`, { parse_mode: "Markdown" });
+    } catch (err) {
+      logger.error({ err }, "/listtemplates handleda xato");
     }
-    const list = templates.map((t) => `• *${t.catId}*: ${t.fileName}`).join("\n");
-    await bot.sendMessage(chatId, `📋 *Saqlangan shablonlar:*\n\n${list}`, { parse_mode: "Markdown" });
   });
 
   // ── Admin: /bekor ─────────────────────────────────────────────────────────
@@ -211,30 +232,17 @@ export function setupHandlers(bot: TelegramBot): void {
     const chatId = msg.chat.id;
     const adminId = msg.from?.id ?? chatId;
     if (adminId !== ADMIN_ID) return;
-
-    resetAdminState(ADMIN_ID);
-    await bot.sendMessage(chatId, `✅ Amal bekor qilindi.`);
-  });
-
-  // ── /help ─────────────────────────────────────────────────────────────────
-  bot.onText(/\/help/, async (msg) => {
-    const chatId = msg.chat.id;
-    const userId = msg.from?.id ?? chatId;
-    const lang = getLang(userId);
-    await bot.sendMessage(
-      chatId,
-      tHelp(
-        lang,
-        `${SHABLON_PRICE.toLocaleString()} ${tSom(lang)}`,
-        tProPrice(lang),
-        `${CONSULTATION_PRICE.toLocaleString()} ${tSom(lang)}`,
-      ),
-      { parse_mode: "Markdown", reply_markup: backToMainKeyboard(lang) }
-    );
+    try {
+      resetAdminState(ADMIN_ID);
+      await bot.sendMessage(chatId, `✅ Amal bekor qilindi.`);
+    } catch (err) {
+      logger.error({ err }, "/bekor handleda xato");
+    }
   });
 
   // ── Callback query handler ────────────────────────────────────────────────
   bot.on("callback_query", async (query) => {
+    recordBotActivity();
     const chatId = query.message?.chat.id;
     const messageId = query.message?.message_id;
     const userId = query.from.id;
@@ -245,6 +253,7 @@ export function setupHandlers(bot: TelegramBot): void {
 
     if (!chatId || !messageId) return;
 
+    touchProfile(userId);
     const lang = getLang(userId);
 
     try {
@@ -551,6 +560,7 @@ export function setupHandlers(bot: TelegramBot): void {
 
   // ── Message handler ───────────────────────────────────────────────────────
   bot.on("message", async (msg) => {
+    recordBotActivity();
     const chatId = msg.chat.id;
     const userId = msg.from?.id ?? chatId;
     const username = msg.from?.username
@@ -559,6 +569,7 @@ export function setupHandlers(bot: TelegramBot): void {
 
     if (msg.text?.startsWith("/")) return;
 
+    touchProfile(userId);
     try {
 
     // ── Admin maxsus holatlari ─────────────────────────────────────────
