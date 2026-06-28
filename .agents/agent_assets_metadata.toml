@@ -24,3 +24,9 @@ id = "8irXUe2T9C3KiVUtDI3XP"
 uri = "file://railway-env.txt"
 type = "text"
 title = "railway-env.txt — Raw Editorga koʻing!"
+
+[[outputs]]
+id = "oY1fcspyEq-qyVuAKDVUU"
+uri = "file://qozibuva-bot-malumot.pdf"
+type = "pdf"
+title = "QoziBuva Bot — To'liq Ma'lumot (PDF)"
