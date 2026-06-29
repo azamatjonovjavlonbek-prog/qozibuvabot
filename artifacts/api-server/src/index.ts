@@ -10,9 +10,13 @@ process.on("uncaughtException", (err) => {
   logger.error({ err }, "Uncaught exception — bot davom etadi");
 });
 
-startBot().catch((err) => {
-  logger.error({ err }, "Bot ishga tushishda xato");
-});
+if (process.env["NODE_ENV"] === "production") {
+  startBot().catch((err) => {
+    logger.error({ err }, "Bot ishga tushishda xato");
+  });
+} else {
+  logger.info("Development rejimi — bot polling o'chirilgan (Railway da ishlaydi)");
+}
 
 const rawPort = process.env["PORT"];
 
