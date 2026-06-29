@@ -230,7 +230,7 @@ export function tCatLabel(lang: Lang, latinLabel: string): string {
   const map: Record<string, string> = {
     "Nikohdan ajratish":         "Никоҳдан ажратиш",
     "Aliment undirish":          "Алимент ундириш",
-    "Jarima (radar) bekor qilish": "Жарима (радар) бекор қилиш",
+    "Multiradar jarima bekor qilish": "Мултирадар жарима бекор қилиш",
   };
   return map[latinLabel] ?? latinLabel;
 }
