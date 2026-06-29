@@ -30,3 +30,9 @@ id = "oY1fcspyEq-qyVuAKDVUU"
 uri = "file://qozibuva-bot-malumot.pdf"
 type = "pdf"
 title = "QoziBuva Bot — To'liq Ma'lumot (PDF)"
+
+[[outputs]]
+id = "1I7k_3uC5vEa435DT66Bw"
+uri = "file://index-only.zip"
+type = "unspecified"
+title = "index.mjs (faqat shu fayl)"
