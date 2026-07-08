@@ -43,7 +43,7 @@ import {
   tApprovedShablon, tApprovedConsultation, tCatLabel, tHelp,
   tProPrice, tHours, tSom,
 } from "./i18n";
-import { addUser, getUserCount } from "./userCounter";
+import { addUser, getUserCount, getTodayCount, getWeekCount, getMonthCount } from "./userCounter";
 import { recordBotActivity } from "./index";
 import { touchProfile } from "./userProfile";
 
@@ -109,7 +109,17 @@ export function setupHandlers(bot: TelegramBot): void {
     try {
       if (userId === ADMIN_ID) {
         resetState(userId);
-        await bot.sendMessage(chatId, `👋 Assalomu alaykum, Admin!\n\nBosh menyu:`,
+        const total = getUserCount();
+        const today = getTodayCount();
+        await bot.sendMessage(chatId,
+          `👋 Assalomu alaykum, Admin!\n\n` +
+          `📊 Foydalanuvchilar: *${total}* ta (bugun +${today})\n\n` +
+          `📌 Admin komandalari:\n` +
+          `/stat — batafsil statistika\n` +
+          `/yuborish <ID> — foydalanuvchiga fayl yuborish\n` +
+          `/settemplate <catId> — shablon o'rnatish\n` +
+          `/listtemplates — shablonlar ro'yxati\n` +
+          `/bekor — amalni bekor qilish`,
           { parse_mode: "Markdown", reply_markup: mainMenuKeyboard("latin") });
         return;
       }
@@ -224,6 +234,29 @@ export function setupHandlers(bot: TelegramBot): void {
       await bot.sendMessage(chatId, `📋 *Saqlangan shablonlar:*\n\n${list}`, { parse_mode: "Markdown" });
     } catch (err) {
       logger.error({ err }, "/listtemplates handleda xato");
+    }
+  });
+
+  // ── Admin: /stat ──────────────────────────────────────────────────────────
+  bot.onText(/\/stat/, async (msg) => {
+    const chatId = msg.chat.id;
+    if ((msg.from?.id ?? chatId) !== ADMIN_ID) return;
+    try {
+      const total   = getUserCount();
+      const today   = getTodayCount();
+      const week    = getWeekCount();
+      const month   = getMonthCount();
+      const now     = new Date().toLocaleString("uz-UZ", { timeZone: "Asia/Tashkent" });
+      await bot.sendMessage(chatId,
+        `📊 *Bot statistikasi*\n\n` +
+        `👥 Jami foydalanuvchilar: *${total}*\n` +
+        `📅 Bugun yangi: *${today}*\n` +
+        `📆 Oxirgi 7 kun: *${week}*\n` +
+        `🗓 Oxirgi 30 kun: *${month}*\n\n` +
+        `🕐 _${now}_`,
+        { parse_mode: "Markdown" });
+    } catch (err) {
+      logger.error({ err }, "/stat handleda xato");
     }
   });
 
