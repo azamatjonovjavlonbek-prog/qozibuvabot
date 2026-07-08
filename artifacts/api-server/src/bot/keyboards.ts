@@ -4,6 +4,7 @@ import {
   SHABLON_PRICE,
   CONSULTATION_PRICE,
   PROFESSIONAL_PRICE_LABEL,
+  AI_CREDIT_PRICE,
 } from "./config";
 import type { Lang } from "./userProfile";
 import { t, tCatLabel, tProPrice } from "./i18n";
@@ -44,9 +45,9 @@ export function mainMenuKeyboard(lang: Lang): TelegramBot.ReplyKeyboardMarkup {
       ],
       [
         { text: t(lang, "btn_tahlil") },
+        { text: t(lang, "btn_ai") },
       ],
       [
-        { text: t(lang, "btn_contact") },
         { text: t(lang, "btn_about") },
       ],
       [
@@ -154,10 +155,14 @@ export function backToMainKeyboard(lang: Lang = "latin"): TelegramBot.InlineKeyb
   };
 }
 
-export function contactKeyboard(lang: Lang): TelegramBot.InlineKeyboardMarkup {
+export function aiCreditsKeyboard(lang: Lang): TelegramBot.InlineKeyboardMarkup {
+  const price = AI_CREDIT_PRICE.toLocaleString();
+  const label = lang === "cyrillic"
+    ? `💳 Тўлов қилиш (${price} сўм — 5 та савол)`
+    : `💳 To'lov qilish (${price} so'm — 5 ta savol)`;
   return {
     inline_keyboard: [
-      [{ text: t(lang, "btn_write_msg"), callback_data: "contact_write" }],
+      [{ text: label, callback_data: "pay_ai_credits" }],
       [{ text: t(lang, "btn_back"), callback_data: "back_main" }],
     ],
   };

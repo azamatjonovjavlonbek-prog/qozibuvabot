@@ -12,7 +12,8 @@ export interface UserState {
     | "selecting_consultation"
     | "confirming_consultation"
     | "waiting_consultation_check"
-    | "writing_to_admin"
+    | "ai_legal_chat"
+    | "ai_legal_pay_check"
     | "aliment_salary"
     | "aliment_children"
     | "tahlil_waiting_doc";

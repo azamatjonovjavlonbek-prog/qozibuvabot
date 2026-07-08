@@ -10,6 +10,10 @@ export const CARD_OWNER = "Javlonbek Azamatjonov";
 
 export const ADMIN_ID = 1079088129;
 
+export const AI_CREDIT_PRICE = 50_000;
+export const AI_FREE_CREDITS  = 3;
+export const AI_PAID_CREDITS  = 5;
+
 // Mehnatga haq to'lash eng kam miqdori (so'm) — zarurat bo'lganda yangilang
 export const MZOT = 1_271_000;
 

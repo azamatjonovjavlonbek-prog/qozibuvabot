@@ -29,9 +29,9 @@ const S: Record<string, Record<Lang, string>> = {
     latin:    "Konsultatsiya",
     cyrillic: "Консультация",
   },
-  btn_contact: {
-    latin:    "Adminga murojat",
-    cyrillic: "Админга мурожат",
+  btn_ai: {
+    latin:    "Qozibuva AI ⚖️",
+    cyrillic: "Қозибува AI ⚖️",
   },
   btn_about: {
     latin:    "Biz haqimizda",

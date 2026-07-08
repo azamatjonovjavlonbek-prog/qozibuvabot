@@ -27,8 +27,10 @@ import {
   cancelKeyboard,
   adminApproveKeyboard,
   backToMainKeyboard,
-  contactKeyboard,
+  aiCreditsKeyboard,
 } from "./keyboards";
+import { handleAiLegalQuestion } from "./aiLegalHandler";
+import { getCredits, hasCredits, addPaidCredits, AI_CREDIT_PRICE } from "./aiCreditStore";
 import { logger } from "../lib/logger";
 import { handleCourts, sendCourtsIntro } from "./courtsHandler";
 import { handleAliment, handleAlimentSalaryInput } from "./alimentHandler";
@@ -56,8 +58,6 @@ try {
   FONT_BUFFER = Buffer.alloc(0);
 }
 
-// adminMsgId → foydalanuvchi chatId (murojat javoblari uchun)
-const contactReplyMap = new Map<number, number>();
 
 function generatePdfBuffer(content: string): Promise<Buffer> {
   return new Promise((resolve, reject) => {
@@ -226,11 +226,12 @@ export function setupHandlers(bot: TelegramBot): void {
     if ((msg.from?.id ?? chatId) !== ADMIN_ID) return;
     try {
       const templates = listTemplates();
-      if (templates.length === 0) {
+      const templateEntries = Object.entries(templates);
+      if (templateEntries.length === 0) {
         await bot.sendMessage(chatId, `📋 Hozircha hech qanday shablon saqlanmagan.`);
         return;
       }
-      const list = templates.map((t) => `• *${t.catId}*: ${t.fileName}`).join("\n");
+      const list = templateEntries.map(([catId, f]) => `• *${catId}*: ${f.fileName}`).join("\n");
       await bot.sendMessage(chatId, `📋 *Saqlangan shablonlar:*\n\n${list}`, { parse_mode: "Markdown" });
     } catch (err) {
       logger.error({ err }, "/listtemplates handleda xato");
@@ -302,6 +303,7 @@ export function setupHandlers(bot: TelegramBot): void {
         data.startsWith("cd:")
       ) {
         await safeEdit(
+          bot, chatId, messageId,
           lang === "cyrillic"
             ? "⏳ *Судлар манзиллари*\n\nБу бўлим тез кунда тўлиқ ишга тушади."
             : "⏳ *Sudlar manzillari*\n\nBu bo'lim tez kunda to'liq ishga tushadi.",
@@ -376,21 +378,15 @@ export function setupHandlers(bot: TelegramBot): void {
         return;
       }
 
-      // ── Adminga murojat ───────────────────────────────────────────────
-      if (data === "menu_contact") {
+      // ── Qozibuva AI kredit to'lovi ────────────────────────────────────
+      if (data === "pay_ai_credits") {
+        setState(userId, { step: "ai_legal_pay_check" });
+        const price = AI_CREDIT_PRICE.toLocaleString();
         await safeEdit(
           bot, chatId, messageId,
-          t(lang, "contact_title"),
-          { parse_mode: "Markdown", reply_markup: contactKeyboard(lang) }
-        );
-        return;
-      }
-
-      if (data === "contact_write") {
-        setState(userId, { step: "writing_to_admin" });
-        await safeEdit(
-          bot, chatId, messageId,
-          t(lang, "contact_write_prompt"),
+          lang === "cyrillic"
+            ? `💳 *Тўлов маълумотлари*\n\nХизмат: *Qozibuva AI — 5 та савол*\nСумма: *${price} сўм*\n\nКарта рақами:\n\`${CARD_NUMBER}\`\nКарта эгаси: *${CARD_OWNER}*\n\nТўлов қилгандан сўнг *тўлов чеки (screenshot)* расмини шу чатга юборинг.`
+            : `💳 *To'lov ma'lumotlari*\n\nXizmat: *Qozibuva AI — 5 ta savol*\nSumma: *${price} so'm*\n\nKarta raqami:\n\`${CARD_NUMBER}\`\nKarta egasi: *${CARD_OWNER}*\n\nTo'lov qilgandan so'ng *to'lov cheki (screenshot)* rasmini shu chatga yuboring.`,
           { parse_mode: "Markdown", reply_markup: cancelKeyboard(lang) }
         );
         return;
@@ -573,6 +569,23 @@ export function setupHandlers(bot: TelegramBot): void {
         return;
       }
 
+      // ── Admin: Qozibuva AI kredit tasdiqlash  admin_ok_ai:<userId> ────
+      if (data.startsWith("admin_ok_ai:")) {
+        const targetUserId = parseInt(data.split(":")[1]!);
+        const userLang = getLang(targetUserId);
+        addPaidCredits(targetUserId);
+        const newTotal = getCredits(targetUserId);
+        await bot.sendMessage(chatId, `✅ Tasdiqlandi! Foydalanuvchiga 5 ta kredit qo'shildi.`);
+        await bot.sendMessage(targetUserId,
+          userLang === "cyrillic"
+            ? `✅ *Тўловингиз тасдиқланди!*\n\n*5 та янги савол кредити* ҳисобингизга қўшилди.\nЖами кредит: *${newTotal} та*\n\n"Qozibuva AI ⚖️" тугмасини босиб давом этинг.`
+            : `✅ *To'lovingiz tasdiqlandi!*\n\n*5 ta yangi savol krediti* hisobingizga qo'shildi.\nJami kredit: *${newTotal} ta*\n\n"Qozibuva AI ⚖️" tugmasini bosib davom eting.`,
+          { parse_mode: "Markdown", reply_markup: backToMainKeyboard(userLang) }
+        );
+        resetState(targetUserId);
+        return;
+      }
+
       // ── Admin: rad etish  admin_no:<userId> ───────────────────────────
       if (data.startsWith("admin_no:")) {
         const targetUserId = parseInt(data.split(":")[1]!);
@@ -608,37 +621,6 @@ export function setupHandlers(bot: TelegramBot): void {
     // ── Admin maxsus holatlari ─────────────────────────────────────────
     if (userId === ADMIN_ID) {
       const adminState = getAdminState(ADMIN_ID);
-
-      // Admin murojatga reply qilsa → foydalanuvchiga yuborish
-      const repliedToId = msg.reply_to_message?.message_id;
-      if (repliedToId && contactReplyMap.has(repliedToId)) {
-        const targetChatId = contactReplyMap.get(repliedToId)!;
-        const userLang = getLang(targetChatId);
-        try {
-          if (msg.text) {
-            await bot.sendMessage(targetChatId,
-              `${t(userLang, "admin_reply_label")}\n\n${msg.text}`,
-              { parse_mode: "Markdown", reply_markup: backToMainKeyboard(userLang) }
-            );
-          } else if (msg.document) {
-            await bot.sendDocument(targetChatId, msg.document.file_id, {
-              caption: t(userLang, "admin_reply_label"),
-              parse_mode: "Markdown",
-              reply_markup: backToMainKeyboard(userLang),
-            });
-          } else if (msg.photo?.length) {
-            await bot.sendPhoto(targetChatId, msg.photo[msg.photo.length - 1]!.file_id, {
-              caption: t(userLang, "admin_reply_label"),
-              parse_mode: "Markdown",
-              reply_markup: backToMainKeyboard(userLang),
-            });
-          }
-          await bot.sendMessage(chatId, `✅ Javobingiz foydalanuvchiga yetkazildi.`);
-        } catch {
-          await bot.sendMessage(chatId, `❌ Foydalanuvchiga yetkazib bo'lmadi. Botni bloklagan bo'lishi mumkin.`);
-        }
-        return;
-      }
 
       // /settemplate rejimi
       if (adminState.step === "setting_template" && adminState.targetCatId) {
@@ -730,14 +712,14 @@ export function setupHandlers(bot: TelegramBot): void {
         "Судлар манзиллари":     "courts",
         "Aliment kalkulyatori":  "menu_aliment",
         "Алимент калькулятори":  "menu_aliment",
-        "Adminga murojat":       "menu_contact",
-        "Админга мурожат":       "menu_contact",
         "Biz haqimizda":         "menu_about",
         "Биз ҳақимизда":         "menu_about",
         "Chatni tozalash":       "chat_clear",
         "Чатни тозалаш":         "chat_clear",
         "Hujjat tahlili (AI)":   "menu_tahlil",
         "Хужжат таҳлили (AI)":   "menu_tahlil",
+        "Qozibuva AI ⚖️":        "menu_ai",
+        "Қозибува AI ⚖️":        "menu_ai",
       };
       const action = menuAction[msg.text];
       if (action) {
@@ -756,8 +738,27 @@ export function setupHandlers(bot: TelegramBot): void {
           );
         } else if (action === "menu_aliment") {
           await handleAliment(bot, userId, chatId, msg.message_id, "menu_aliment");
-        } else if (action === "menu_contact") {
-          await bot.sendMessage(chatId, t(lang, "contact_title"), { parse_mode: "Markdown", reply_markup: contactKeyboard(lang) });
+        } else if (action === "menu_ai") {
+          const credits = getCredits(userId);
+          const privacyNote = lang === "cyrillic"
+            ? `🔒 *Maxfiylik haqida:* Ushbu chat faqat siz va Qozibuva AI o'rtasida bo'lib, hech qanday shaxs yozishmalaringizni ko'rmaydi va ma'lumotlaringiz saqlanmaydi.`
+            : `🔒 *Maxfiylik haqida:* Ushbu chat faqat siz va Qozibuva AI o'rtasida bo'lib, hech qanday shaxs yozishmalaringizni ko'rmaydi va ma'lumotlaringiz saqlanmaydi.`;
+          if (credits > 0) {
+            setState(userId, { step: "ai_legal_chat" });
+            await bot.sendMessage(chatId,
+              (lang === "cyrillic"
+                ? `⚖️ *Qozibuva AI — Ҳуқуқий Маслаҳат*\n\n${privacyNote}\n\n📊 Кредитлар: *${credits} та* (ҳар бир савол — 1 та кредит)\n\n❓ *Ҳуқуқий саволингизни ёзинг:*\n\n_Савол фақат Ўзбекистон қонунчилигига оид бўлиши керак. Кучини йўқотган қонун нормалари асосида эмас, амалдаги қонунчилик асосида жавоб берилади._`
+                : `⚖️ *Qozibuva AI — Huquqiy Maslahat*\n\n${privacyNote}\n\n📊 Kreditlar: *${credits} ta* (har bir savol — 1 ta kredit)\n\n❓ *Huquqiy savolingizni yozing:*\n\n_Savol faqat O'zbekiston qonunchiligiga oid bo'lishi kerak. Kuchini yo'qotgan qonun normalari asosida emas, amaldagi qonunchilik asosida javob beriladi._`),
+              { parse_mode: "Markdown", reply_markup: backToMainKeyboard(lang) }
+            );
+          } else {
+            await bot.sendMessage(chatId,
+              (lang === "cyrillic"
+                ? `⚖️ *Qozibuva AI — Ҳуқуқий Маслаҳат*\n\n${privacyNote}\n\n⚠️ *Кредитларингиз тугади.*\n\nЯна *5 та савол* учун — *50 000 сўм* тўловни амалга ошириб, чекни юборинг.\nАдминистратор тасдиқлаганидан сўнг кредитлар дарҳол қўшилади.`
+                : `⚖️ *Qozibuva AI — Huquqiy Maslahat*\n\n${privacyNote}\n\n⚠️ *Kreditlaringiz tugadi.*\n\nYana *5 ta savol* uchun — *50 000 so'm* to'lovni amalga oshirib, chekni yuboring.\nAdministrator tasdiqlaganidan so'ng kreditlar darhol qo'shiladi.`),
+              { parse_mode: "Markdown", reply_markup: aiCreditsKeyboard(lang) }
+            );
+          }
         } else if (action === "menu_about") {
           await bot.sendMessage(chatId,
             tMainMenu(lang,
@@ -798,25 +799,69 @@ export function setupHandlers(bot: TelegramBot): void {
       return;
     }
 
-    // ── Adminga xabar yozish ──────────────────────────────────────────
-    if (state.step === "writing_to_admin") {
+    // ── Qozibuva AI — savol kutish ────────────────────────────────────
+    if (state.step === "ai_legal_chat") {
       if (!msg.text) {
-        await bot.sendMessage(chatId, t(lang, "contact_only_text"));
+        await bot.sendMessage(chatId,
+          lang === "cyrillic"
+            ? "⚠️ Iltimos, huquqiy savolingizni matn ko'rinishida yozing."
+            : "⚠️ Iltimos, huquqiy savolingizni matn ko'rinishida yozing.",
+          { reply_markup: backToMainKeyboard(lang) }
+        );
+        return;
+      }
+      if (!hasCredits(userId)) {
+        resetState(userId);
+        await bot.sendMessage(chatId,
+          lang === "cyrillic"
+            ? "⚠️ *Kreditlaringiz tugadi.* Yana 5 ta savol uchun \"Qozibuva AI ⚖️\" tugmasini bosing."
+            : "⚠️ *Kreditlaringiz tugadi.* Yana 5 ta savol uchun \"Qozibuva AI ⚖️\" tugmasini bosing.",
+          { parse_mode: "Markdown", reply_markup: mainMenuKeyboard(lang) }
+        );
+        return;
+      }
+      // State ni "idle" ga qaytarib qo'ymaymiz — foydalanuvchi davom etishi mumkin
+      setState(userId, { step: "ai_legal_chat" });
+      await handleAiLegalQuestion(bot, userId, chatId, lang, msg.text);
+      return;
+    }
+
+    // ── Qozibuva AI — kredit to'lov cheki ────────────────────────────
+    if (state.step === "ai_legal_pay_check") {
+      const hasPhoto = msg.photo && msg.photo.length > 0;
+      const hasDoc   = !!msg.document;
+      if (!hasPhoto && !hasDoc) {
+        await bot.sendMessage(chatId, t(lang, "send_check_prompt"), { parse_mode: "Markdown" });
         return;
       }
       resetState(userId);
+      const price = AI_CREDIT_PRICE.toLocaleString();
+      const adminKb: TelegramBot.InlineKeyboardMarkup = {
+        inline_keyboard: [[
+          { text: "✅ Tasdiqlash (+5 kredit)", callback_data: `admin_ok_ai:${userId}` },
+          { text: "❌ Rad etish",              callback_data: `admin_no:${userId}` },
+        ]],
+      };
       try {
-        const sent = await bot.sendMessage(ADMIN_ID,
-          `💬 *Foydalanuvchi murojati*\n\n` +
+        const caption =
+          `⚖️ *Qozibuva AI kredit to'lovi*\n\n` +
           `👤 ${username}\n` +
-          `🆔 ID: \`${userId}\`\n\n` +
-          `📝 Xabar:\n${msg.text}\n\n` +
-          `↩️ _Javob berish uchun shu xabarga Reply qiling_`,
-          { parse_mode: "Markdown" }
-        );
-        contactReplyMap.set(sent.message_id, chatId);
+          `🆔 ID: \`${userId}\`\n` +
+          `💳 Summa: *${price} so'm* → 5 ta savol kredit\n\n` +
+          `✅ Tasdiqlash tugmasi kredditni qo'shadi.`;
+        if (hasPhoto) {
+          await bot.sendPhoto(ADMIN_ID, msg.photo![msg.photo!.length - 1]!.file_id, {
+            caption, parse_mode: "Markdown", reply_markup: adminKb,
+          });
+        } else {
+          await bot.sendDocument(ADMIN_ID, msg.document!.file_id, {
+            caption, parse_mode: "Markdown", reply_markup: adminKb,
+          });
+        }
         await bot.sendMessage(chatId,
-          t(lang, "contact_sent"),
+          lang === "cyrillic"
+            ? "⏳ *Чекингиз юборилди!*\n\nАдминистратор тасдиқлагач, кредитлар дарҳол қўшилади. Одатда *5–10 дақиқа* ичида."
+            : "⏳ *Chekingiz yuborildi!*\n\nAdministrator tasdiqlagach, kreditlar darhol qo'shiladi. Odatda *5–10 daqiqa* ichida.",
           { parse_mode: "Markdown", reply_markup: backToMainKeyboard(lang) }
         );
       } catch {
