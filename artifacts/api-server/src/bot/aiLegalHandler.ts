@@ -23,22 +23,20 @@ MAJBURIY QOIDALAR:
 7. Kerakli huquqiy tadbirlarni aniq ko'rsating
 8. Javob o'zbek tilida bo'lsin
 9. Maqtov, uzr so'rash yoki his-tuyg'uli murojaat qilmasdan to'g'ridan-to'g'ri professional javob bering
+10. JAVOBDA EMOTIKONLAR VA BO'LIMLAR BOSHLAGICHLAR ISHLATILMASIN (⚖️, 📜, 🏛, 📋, ⚠️, ---, ** va shunga o'xshash bezaklar yo'q)
+11. Javob matniga bo'limlar qo'shilsa ham, faqat oddiy sarlavhalar bilan (masalan: "Huquqiy tahlil:", "Qonuniy asos:"), emotikon va chiziqlarsiz
+12. Javob qat'iy yuridik-huquqiy uslubda, rasmiy hujjatga o'xshash, lekin tushunarli bo'lsin
 
-JAVOB FORMATI:
-⚖️ Huquqiy tahlil:
-[holat qisqacha baholash]
+JAVOB FORMATI (professional, tekis uslub):
+[Holat qisqacha baholash]
 
-📜 Amaldagi qonuniy asos:
-[qonun nomi — XX-modda, X-qism, X-band]
+[Qonuniy asos: qonun nomi, modda raqami, qism va bandi]
 
-🏛 Sud amaliyoti:
-[agar mavjud bo'lsa — tegishli holat]
+[Sud amaliyoti — agar mavjud bo'lsa]
 
-📋 Kerakli huquqiy qadamlar:
-[nima qilish kerak, tartib bo'yicha]
+[Huquqiy tadbirlar: nima qilish kerak, tartib bo'yicha]
 
-⚠️ Muhim eslatma:
-[xavflar, muddatlar yoki boshqa nuances]`;
+[Muhim eslatmalar: muddatlar, xavflar va boshqa nuances]`;
 
 function splitMessage(text: string, maxLen: number): string[] {
   const parts: string[] = [];
@@ -86,15 +84,15 @@ export async function handleAiLegalQuestion(
 
     const creditNote = remaining > 0
       ? (lang === "cyrillic"
-          ? `\n\n💳 Қолган кредитлар: *${remaining} та* | Яна савол бериш учун хабар юборинг.`
-          : `\n\n💳 Qolgan kreditlar: *${remaining} ta* | Yana savol berish uchun xabar yuboring.`)
+          ? `\n\nQolgan kreditlar: ${remaining} ta. Yana savol berish uchun xabar yuboring.`
+          : `\n\nQolgan kreditlar: ${remaining} ta. Yana savol berish uchun xabar yuboring.`)
       : (lang === "cyrillic"
-          ? `\n\n⚠️ *Кредитларингиз тугади.* Давом этиш учун /ai буйруғини юборинг.`
-          : `\n\n⚠️ *Kreditlaringiz tugadi.* Davom etish uchun /ai buyrug'ini yuboring.`);
+          ? `\n\nKreditlaringiz tugadi. Davom etish uchun /ai buyrug'ini yuboring.`
+          : `\n\nKreditlaringiz tugadi. Davom etish uchun /ai buyrug'ini yuboring.`);
 
     const disclaimer = lang === "cyrillic"
-      ? `\n\n---\n_⚠️ Ушбу жавоб AI томонидан тайёрланган ҳуқуқий маълумот бўлиб, фақат йўналтирувчи хусусиятга эга. Муҳим қарорлар учун малакали юрист билан маслаҳатлашинг._`
-      : `\n\n---\n_⚠️ Ushbu javob AI tomonidan tayyorlangan huquqiy ma'lumot bo'lib, faqat yo'naltiruvchi xususiyatga ega. Muhim qarorlar uchun malakali yurist bilan maslahatlashing._`;
+      ? `\n\nUshbu javob AI tomonidan tayyorlangan huquqiy ma'lumot bo'lib, faqat yo'naltiruvchi xususiyatga ega. Muhim qarorlar uchun malakali yurist bilan maslahatlashing.`
+      : `\n\nUshbu javob AI tomonidan tayyorlangan huquqiy ma'lumot bo'lib, faqat yo'naltiruvchi xususiyatga ega. Muhim qarorlar uchun malakali yurist bilan maslahatlashing.`;
 
     const fullMessage = answer + creditNote + disclaimer;
     const chunks = splitMessage(fullMessage, 4000);
