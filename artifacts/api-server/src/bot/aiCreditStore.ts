@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { ADMIN_ID } from "./config";
 
 const DATA_PATH = path.join(process.cwd(), "data", "ai-credits.json");
 
@@ -54,20 +55,28 @@ function getOrCreate(userId: number): CreditRecord {
   return creditMap.get(userId)!;
 }
 
+function isAdmin(userId: number): boolean {
+  return userId === ADMIN_ID;
+}
+
 export function getCredits(userId: number): number {
+  if (isAdmin(userId)) return Infinity;
   const rec = getOrCreate(userId);
   return rec.free + rec.paid;
 }
 
 export function getFreeCredits(userId: number): number {
+  if (isAdmin(userId)) return Infinity;
   return getOrCreate(userId).free;
 }
 
 export function hasCredits(userId: number): boolean {
+  if (isAdmin(userId)) return true;
   return getCredits(userId) > 0;
 }
 
 export function useCredit(userId: number): boolean {
+  if (isAdmin(userId)) return true;
   const rec = getOrCreate(userId);
   if (rec.free > 0) { rec.free--; persist(store); return true; }
   if (rec.paid > 0) { rec.paid--; persist(store); return true; }
