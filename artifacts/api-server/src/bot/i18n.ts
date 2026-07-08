@@ -105,26 +105,6 @@ const S: Record<string, Record<Lang, string>> = {
     latin:    "📄 *Ariza bo'limi*\n\nQuyidagi ikki xizmatdan birini tanlang:\n\n*Shablon ariza* — tayyor shablon, ba'zi ma'lumotlarni o'zingiz to'ldirasiz.\n*Professional ariza* — yurist tomonidan to'liq yozib beriladi.",
     cyrillic: "📄 *Ариза бўлими*\n\nҚуйидаги икки хизматдан бирини танланг:\n\n*Шаблон ариза* — тайёр шаблон, баъзи маълумотларни ўзингиз тўлдирасиз.\n*Профессионал ариза* — юрист томонидан тўлиқ ёзиб берилади.",
   },
-  contact_title: {
-    latin:    "👨‍💼 *Adminga murojat*\n\nSavol, taklif yoki muammongiz bo'lsa, administratorimiz tez orada javob beradi.\n\nXabar yozish tugmasini bosing va so'rovingizni yozing.",
-    cyrillic: "👨‍💼 *Админга мурожат*\n\nСавол, таклиф ёки муаммоингиз бўлса, администраторимиз тез орада жавоб беради.\n\nХабар ёзиш тугмасини босинг ва сўровингизни ёзинг.",
-  },
-  contact_write_prompt: {
-    latin:    "*Savolingizni yozing:*\n\nXabaringizni quyida yuboring — admin imkon qadar tez javob beradi.",
-    cyrillic: "*Саволингизни ёзинг:*\n\nХабарингизни қуйида юборинг — админ имкон қадар тез жавоб беради.",
-  },
-  contact_sent: {
-    latin:    "✅ *Xabaringiz adminga yuborildi!*\n\nTez orada javob beriladi.",
-    cyrillic: "✅ *Хабарингиз админга юборилди!*\n\nТез орада жавоб берилади.",
-  },
-  admin_reply_label: {
-    latin:    "👨‍💼 *Admin javobi:*",
-    cyrillic: "👨‍💼 *Админ жавоби:*",
-  },
-  contact_only_text: {
-    latin:    "Iltimos, matn xabar yuboring.",
-    cyrillic: "Илтимос, матн хабар юборинг.",
-  },
   send_check_prompt: {
     latin:    "Iltimos, to'lov chekini *rasm yoki fayl* sifatida yuboring.",
     cyrillic: "Илтимос, тўлов чекини *расм ёки файл* сифатида юборинг.",
@@ -167,8 +147,8 @@ export function tMenuHeader(lang: Lang, count: number): string {
 
 export function tMainMenu(lang: Lang, shablon: string, professional: string, consultation: string, card: string, owner: string, hours: string): string {
   return lang === "cyrillic"
-    ? `ℹ️ *QoziBuva Ҳуқуқий Хизматлар*\n\nБиз Ўзбекистон фуқароларига тез ва сифатли ҳуқуқий ёрдам кўрсатамиз.\n\n*Хизматлар:*\nШаблон ариза — *${shablon}*\nПрофессионал ариза — *${professional}*\nКонсультация — *${consultation}*\n\n*Тўлов:*\nКарта: \`${card}\`\nЭгаси: *${owner}*\n\nИш вақти: ${hours}\n\nСавол ва таклифлар учун "Админга мурожат" тугмасини босинг.`
-    : `ℹ️ *QoziBuva Huquqiy Xizmatlar*\n\nBiz O'zbekiston fuqarolariga tez va sifatli huquqiy yordam ko'rsatamiz.\n\n*Xizmatlar:*\nShablon ariza — *${shablon}*\nProfessional ariza — *${professional}*\nKonsultatsiya — *${consultation}*\n\n*To'lov:*\nKarta: \`${card}\`\nEgasi: *${owner}*\n\nIsh vaqti: ${hours}\n\nSavol va takliflar uchun "Adminga murojat" tugmasini bosing.`;
+    ? `ℹ️ *QoziBuva Ҳуқуқий Хизматлар*\n\nБиз Ўзбекистон фуқароларига тез ва сифатли ҳуқуқий ёрдам кўрсатамиз.\n\n*Хизматлар:*\nШаблон ариза — *${shablon}*\nПрофессионал ариза — *${professional}*\nКонсультация — *${consultation}*\n\n*Тўлов:*\nКарта: \`${card}\`\nЭгаси: *${owner}*\n\nИш вақти: ${hours}\n\nҲуқуқий савол учун "Qozibuva AI ⚖️" тугмасини босинг.`
+    : `ℹ️ *QoziBuva Huquqiy Xizmatlar*\n\nBiz O'zbekiston fuqarolariga tez va sifatli huquqiy yordam ko'rsatamiz.\n\n*Xizmatlar:*\nShablon ariza — *${shablon}*\nProfessional ariza — *${professional}*\nKonsultatsiya — *${consultation}*\n\n*To'lov:*\nKarta: \`${card}\`\nEgasi: *${owner}*\n\nIsh vaqti: ${hours}\n\nHuquqiy savol uchun "Qozibuva AI ⚖️" tugmasini bosing.`;
 }
 
 export function tShablonList(lang: Lang, price: string): string {
@@ -253,6 +233,6 @@ export function tSom(lang: Lang): string {
 
 export function tHelp(lang: Lang, shablon: string, professional: string, consultation: string): string {
   return lang === "cyrillic"
-    ? `ℹ️ *QoziBuva Ҳуқуқий Хизматлар*\n\n*Хизматлар:*\n*Шаблон ариза* — ${shablon}\n   Тайёр Word шаблон файлини оласиз\n\n*Профессионал ариза* — ${professional}\n   Юрист сизнинг ҳолатингизга мос ариза ёзиб беради\n\n*Консультация* — ${consultation}\n   Телефон орқали ҳуқуқий маслаҳат\n\n*Қандай ишлайди?*\n1. Хизматни танланг\n2. Карта рақамига тўлов қилинг\n3. Тўлов чеки (screenshot) юборинг\n4. Админ тасдиқлайди → хизмат юборилади\n\nСавол бўлса: "Админга мурожат" тугмасини босинг`
-    : `ℹ️ *QoziBuva Huquqiy Xizmatlar*\n\n*Xizmatlar:*\n*Shablon ariza* — ${shablon}\n   Tayyor Word shablon faylini olasiz\n\n*Professional ariza* — ${professional}\n   Yurist sizning holatIngizga mos ariza yozib beradi\n\n*Konsultatsiya* — ${consultation}\n   Telefon orqali huquqiy maslahat\n\n*Qanday ishlaydi?*\n1. Xizmatni tanlang\n2. Karta raqamiga to'lov qiling\n3. To'lov cheki (screenshot) yuboring\n4. Admin tasdiqlaydi → xizmat yuboriladi\n\nSavol bo'lsa: "Adminga murojat" tugmasini bosing`;
+    ? `ℹ️ *QoziBuva Ҳуқуқий Хизматлар*\n\n*Хизматлар:*\n*Шаблон ариза* — ${shablon}\n   Тайёр Word шаблон файлини оласиз\n\n*Профессионал ариза* — ${professional}\n   Юрист сизнинг ҳолатингизга мос ариза ёзиб беради\n\n*Консультация* — ${consultation}\n   Телефон орқали ҳуқуқий маслаҳат\n\n*Qozibuva AI ⚖️* — 3 та бепул\n   Ўзбекистон қонунчилиги бўйича AI маслаҳат\n\n*Қандай ишлайди?*\n1. Хизматни танланг\n2. Карта рақамига тўлов қилинг\n3. Тўлов чеки (screenshot) юборинг\n4. Админ тасдиқлайди → хизмат юборилади`
+    : `ℹ️ *QoziBuva Huquqiy Xizmatlar*\n\n*Xizmatlar:*\n*Shablon ariza* — ${shablon}\n   Tayyor Word shablon faylini olasiz\n\n*Professional ariza* — ${professional}\n   Yurist sizning holatIngizga mos ariza yozib beradi\n\n*Konsultatsiya* — ${consultation}\n   Telefon orqali huquqiy maslahat\n\n*Qozibuva AI ⚖️* — 3 ta bepul\n   O'zbekiston qonunchiligi bo'yicha AI maslahat\n\n*Qanday ishlaydi?*\n1. Xizmatni tanlang\n2. Karta raqamiga to'lov qiling\n3. To'lov cheki (screenshot) yuboring\n4. Admin tasdiqlaydi → xizmat yuboriladi`;
 }
