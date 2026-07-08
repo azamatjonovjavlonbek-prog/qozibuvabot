@@ -5,9 +5,11 @@ import { logger } from "../lib/logger";
 import type { Lang } from "./userProfile";
 import { useCredit, getCredits } from "./aiCreditStore";
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY ?? "dummy",
-});
+function getAnthropicClient(): Anthropic {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error("ANTHROPIC_API_KEY_NOT_SET");
+  return new Anthropic({ apiKey });
+}
 
 const LEGAL_SYSTEM_PROMPT = `Siz "Qozibuva AI" — O'zbekiston milliy qonunchiligi bo'yicha professional huquqiy maslahatchi tizimisiz.
 
@@ -66,6 +68,7 @@ export async function handleAiLegalQuestion(
   );
 
   try {
+    const anthropic = getAnthropicClient();
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 4096,
@@ -108,10 +111,17 @@ export async function handleAiLegalQuestion(
   } catch (err) {
     logger.error({ err, userId }, "Qozibuva AI da xato");
     await bot.deleteMessage(chatId, processingMsg.message_id).catch(() => {});
-    await bot.sendMessage(chatId,
-      lang === "cyrillic"
-        ? "❌ Xatolik yuz berdi. Qaytadan urinib ko'ring."
-        : "❌ Xatolik yuz berdi. Qaytadan urinib ko'ring.",
+
+    const isNoKey = err instanceof Error && err.message === "ANTHROPIC_API_KEY_NOT_SET";
+    const errText = isNoKey
+      ? (lang === "cyrillic"
+          ? "⚙️ *AI xizmati hali sozlanmagan.*\n\nAdministrator `ANTHROPIC_API_KEY` ni Railway'ga qo'shishi kerak.\n\nQo'llanma: console.anthropic.com → API Keys → yangi kalit oling → Railway → Variables → `ANTHROPIC_API_KEY` ga kiriting."
+          : "⚙️ *AI xizmati hali sozlanmagan.*\n\nAdministrator `ANTHROPIC_API_KEY` ni Railway'ga qo'shishi kerak.\n\nQo'llanma: console.anthropic.com → API Keys → yangi kalit oling → Railway → Variables → `ANTHROPIC_API_KEY` ga kiriting.")
+      : (lang === "cyrillic"
+          ? "❌ Xatolik yuz berdi. Biroz kutib, qaytadan urinib ko'ring."
+          : "❌ Xatolik yuz berdi. Biroz kutib, qaytadan urinib ko'ring.");
+
+    await bot.sendMessage(chatId, errText,
       { parse_mode: "Markdown", reply_markup: backToMainKeyboard(lang) }
     );
   }
