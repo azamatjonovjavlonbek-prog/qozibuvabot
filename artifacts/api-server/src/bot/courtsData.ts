@@ -71,7 +71,7 @@ const JIN: Record<string, CourtEntry[]> = {
     { name: "Parkent tumanlararo sudi",   address: "111600, Toshkent vil., Parkent tumani, Mustaqillik ko'ch., 3",     phone: "+998 (70) 728-10-45", email: "parkent@tashvil.supcourt.uz",   lat: 41.2953, lng: 69.6767 },
   ],
   andvil: [
-    { name: "Andijon shahar tumanlararo sudi", address: "170100, Andijon shahar, A.Navoiy ko'chasi, 15-uy",             phone: "+998 (74) 223-25-67", email: "j.andijon@sud.uz",            lat: 40.7829, lng: 72.3440 },
+    { name: "Andijon shahar tumanlararo sudi", address: "170100, Andijon shahar, A.Navoiy ko'chasi, 15-uy",             phone: "+998 (74) 223-59-59", email: "j.andijon@sud.uz",            lat: 40.7829, lng: 72.3440 },
     { name: "Asaka tumanlararo sudi",          address: "170500, Andijon vil., Asaka shahar, Bog'ishamol ko'ch., 6",    phone: "+998 (74) 254-12-34", email: "asaka@andvil.supcourt.uz",     lat: 40.6343, lng: 72.2451 },
     { name: "Shahrixon tumanlararo sudi",      address: "170300, Andijon vil., Shahrixon shahar, Istiqlol ko'ch., 9",  phone: "+998 (74) 237-45-12", email: "shahrixon@andvil.supcourt.uz", lat: 40.7087, lng: 72.0557 },
     { name: "Jalolquduq tumanlararo sudi",     address: "170600, Andijon vil., Jalolquduq tumani, Hamza ko'ch., 22",   phone: "+998 (74) 258-33-10", email: "jalolquduq@andvil.supcourt.uz",lat: 40.9410, lng: 72.4870 },
@@ -87,7 +87,7 @@ const JIN: Record<string, CourtEntry[]> = {
     { name: "Quva tumanlararo sudi",             address: "151200, Farg'ona vil., Quva tumani, Istiqlol ko'ch., 6",     phone: "+998 (73) 245-26-89", email: "quva@farvil.supcourt.uz",      lat: 40.5200, lng: 71.9780 },
   ],
   namvil: [
-    { name: "Namangan shahar tumanlararo sudi", address: "160133, Namangan shahar, N.Nomongoniy ko'chasi, 10-uy",       phone: "+998 (69) 234-22-10", email: "j.namangan@sud.uz",           lat: 41.0011, lng: 71.6724 },
+    { name: "Namangan shahar tumanlararo sudi", address: "160133, Namangan shahar, N.Nomongoniy ko'chasi, 10-uy",       phone: "+998 (69) 211-17-77", email: "j.namangan@sud.uz",           lat: 41.0011, lng: 71.6724 },
     { name: "Chust tumanlararo sudi",           address: "160600, Namangan vil., Chust shahar, Istiqlol ko'ch., 5",    phone: "+998 (69) 236-34-56", email: "chust@namvil.supcourt.uz",     lat: 40.9929, lng: 71.0008 },
     { name: "Pop tumanlararo sudi",             address: "160800, Namangan vil., Pop tumani, Mustaqillik ko'ch., 14",  phone: "+998 (69) 237-45-23", email: "pop@namvil.supcourt.uz",       lat: 41.1868, lng: 71.1179 },
     { name: "Chortoq tumanlararo sudi",         address: "160400, Namangan vil., Chortoq shahar, Bog'ishamol, 8",      phone: "+998 (69) 238-12-78", email: "chortoq@namvil.supcourt.uz",   lat: 40.5892, lng: 71.8325 },
@@ -95,7 +95,7 @@ const JIN: Record<string, CourtEntry[]> = {
     { name: "To'raqo'rg'on tumanlararo sudi",   address: "160900, Namangan vil., To'raqo'rg'on tumani, Navruz, 9",     phone: "+998 (69) 240-34-67", email: "toraqorgon@namvil.supcourt.uz",lat: 40.9851, lng: 71.5308 },
   ],
   samvil: [
-    { name: "Samarqand shahar tumanlararo sudi", address: "140100, Samarqand shahar, Mingtut ko'chasi, 1-uy",          phone: "+998 (66) 233-15-89", email: "j.samarqand@sud.uz",            lat: 39.6542, lng: 66.9597 },
+    { name: "Samarqand shahar tumanlararo sudi", address: "140100, Samarqand shahar, Mingtut ko'chasi, 1-uy",          phone: "+998 (55) 706-70-05", email: "j.samarqand@sud.uz",            lat: 39.6542, lng: 66.9597 },
     { name: "Kattaqo'rg'on tumanlararo sudi",    address: "140800, Samarqand vil., Kattaqo'rg'on sh., Istiqlol, 22",  phone: "+998 (66) 491-14-67", email: "kattaqorgon@samvil.supcourt.uz", lat: 39.9006, lng: 66.2594 },
     { name: "Urgut tumanlararo sudi",            address: "141900, Samarqand vil., Urgut tumani, Mustaqillik, 7",      phone: "+998 (66) 235-45-12", email: "urgut@samvil.supcourt.uz",       lat: 39.4034, lng: 67.2554 },
     { name: "Ishtixon tumanlararo sudi",         address: "140600, Samarqand vil., Ishtixon tumani, Bog' ko'ch., 3",   phone: "+998 (66) 253-21-34", email: "ishtixon@samvil.supcourt.uz",    lat: 39.9833, lng: 66.4833 },
@@ -168,7 +168,7 @@ const JIN: Record<string, CourtEntry[]> = {
     { name: "Jinoyat ishlar bo'yicha Mo'ynoq tuman sudi",     address: "Mo'ynoq tuman, Ajiniyaz ko'chasi, 72-uy",                                   phone: "+998 (55) 102-40-46", email: "j.muynoq@sud.uz",      lat: 43.769279, lng: 59.028815 },
   ],
   jizzvil: [
-    { name: "Jizzax shahar tumanlararo sudi",  address: "130100, Jizzax shahar, Sayiljoyi ko'chasi, 63-uy",          phone: "+998 (72) 226-12-45", email: "jizzax@jizzvil.supcourt.uz",    lat: 40.1156, lng: 67.8422 },
+    { name: "Jizzax shahar tumanlararo sudi",  address: "130100, Jizzax shahar, Sayiljoyi ko'chasi, 63-uy",          phone: "+998 (55) 152-05-70", email: "jizzax@jizzvil.supcourt.uz",    lat: 40.1156, lng: 67.8422 },
     { name: "G'allaorol tumanlararo sudi",     address: "130600, Jizzax vil., G'allaorol tumani, Mustaqillik, 6",    phone: "+998 (72) 233-23-67", email: "gallaorol@jizzvil.supcourt.uz",  lat: 40.3458, lng: 67.5745 },
     { name: "Zafarobod tumanlararo sudi",      address: "130900, Jizzax vil., Zafarobod tumani, Istiqlol, 4",        phone: "+998 (72) 241-34-89", email: "zafarobod@jizzvil.supcourt.uz",  lat: 40.1500, lng: 68.6700 },
     { name: "Paxtakor tumanlararo sudi",       address: "130700, Jizzax vil., Paxtakor tumani, Bog'ishamol, 9",      phone: "+998 (72) 245-45-12", email: "paxtakor@jizzvil.supcourt.uz",   lat: 40.3167, lng: 67.9500 },
