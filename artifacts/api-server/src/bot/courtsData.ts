@@ -87,6 +87,9 @@ const JIN: Record<string, CourtEntry[]> = {
     { name: "Bo'stonliq tuman sudi",       address: "Toshkent viloyati, Bo'stonliq tumani, Fazalkent shahararchasi, Lutifiy ko'chasi, 1-uy", phone: "+998 (55) 517-02-36", email: "j.bustonliq@sud.uz",      lat: 41.5000, lng: 69.8000 },
     { name: "Bo'ka tuman sudi",            address: "Toshkent viloyati, Bo'ka tumani, Moxira Maxmudova ko'chasi, 1-uy",   phone: "+998 (55) 517-02-30", email: "j.buka@sud.uz",            lat: 41.3000, lng: 69.6000 },
     { name: "Bekobod shahar sudi",         address: "Toshkent viloyati, Bekobod shahar, Istiqlol ko'chasi, 15-uy",        phone: "+998 (55) 517-42-42", email: "j.bekobod@sud.uz",         lat: 40.2228, lng: 69.2756 },
+    { name: "Bekobod tuman sudi",          address: "Toshkent viloyati, Bekobod tumani, Zafar shaharcheasi, Mustaqillik ko'chasi, 13-uy", phone: "+998 (55) 517-02-31", email: "j.bekobod.t@sud.uz",     lat: 40.2228, lng: 69.2756 },
+    { name: "Angren shahar sudi",          address: "Toshkent viloyati, Angren shahar, Bunyodkor ko'chasi, 1-uy",          phone: "+998 (55) 517-02-35", email: "j.angren@sud.uz",          lat: 40.9500, lng: 69.9500 },
+    { name: "Toshkent viloyat sudi",       address: "Toshkent shahar, Yakkasaroy tumani, Sh.Rustaveli ko'chasi, 93-uy",     phone: "+998 (55) 510-74-74", email: "j.toshkent.v@sud.uz",      lat: 41.2995, lng: 69.2758 },
   ],
   andvil: [
     { name: "Andijon viloyat sudi",     address: "Andijon shahar, Alisher Navoiy shoh ko'chasi, 15-uy",        phone: "+998 (74) 224-42-44", email: "j.andijon@sud.uz",      lat: 40.7829, lng: 72.3440 },
