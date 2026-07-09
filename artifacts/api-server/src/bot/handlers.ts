@@ -48,6 +48,7 @@ import {
 import { addUser, getUserCount, getTodayCount, getWeekCount, getMonthCount } from "./userCounter";
 import { recordBotActivity } from "./index";
 import { touchProfile } from "./userProfile";
+import { recordEvent, getStats, getStatsByPeriod, getActiveUsersCount, getUniqueJoinUsers } from "./statsStore";
 
 const FONT_PATH = path.join(process.cwd(), "assets", "NotoSans-Regular.ttf");
 let FONT_BUFFER: Buffer;
@@ -247,13 +248,45 @@ export function setupHandlers(bot: TelegramBot): void {
       const today   = getTodayCount();
       const week    = getWeekCount();
       const month   = getMonthCount();
+      const all     = getStats();
+      const todayE  = getStatsByPeriod(1);
+      const weekE   = getStatsByPeriod(7);
+      const monthE  = getStatsByPeriod(30);
+      const active7 = getActiveUsersCount(7);
+      const active30 = getActiveUsersCount(30);
       const now     = new Date().toLocaleString("uz-UZ", { timeZone: "Asia/Tashkent" });
+
+      const f = (n: number) => n.toLocaleString("uz-UZ");
+
+      const buildSection = (label: string, allKey: string, todayKey: string, weekKey: string, monthKey: string) => {
+        const a = all[allKey] ?? 0;
+        if (a === 0) return "";
+        const t = todayE[todayKey] ?? 0;
+        const w = weekE[weekKey] ?? 0;
+        const m = monthE[monthKey] ?? 0;
+        return `  \u2022 ${label}: ${f(a)} (bugun +${f(t)}, 7kun +${f(w)}, 30kun +${f(m)})\n`;
+      };
+
+      let usage = "";
+      usage += buildSection("📝 Shablon arizalar",     "shablon_approved",     "shablon_order",     "shablon_order",     "shablon_order");
+      usage += buildSection("✍️ Professional arizalar", "professional_approved", "professional_order", "professional_order", "professional_order");
+      usage += buildSection("📞 Konsultatsiyalar",      "consultation_approved", "consultation_order", "consultation_order", "consultation_order");
+      usage += buildSection("🤖 AI savollar",            "ai_question",          "ai_question",        "ai_question",        "ai_question");
+      usage += buildSection("💳 AI kredit sotib olish", "ai_credit_purchased",  "ai_credit_purchased", "ai_credit_purchased", "ai_credit_purchased");
+      usage += buildSection("👨\u200d🦰 Aliment hisoblash",  "aliment_calc",         "aliment_calc",       "aliment_calc",       "aliment_calc");
+      usage += buildSection("🏛 Sudlar ma'lumotlari",    "courts_detail",        "courts_view",        "courts_view",        "courts_view");
+      usage += buildSection("📄 Hujjat tahlili",        "doc_analysis",         "doc_analysis",       "doc_analysis",       "doc_analysis");
+
       await bot.sendMessage(chatId,
         `📊 *Bot statistikasi*\n\n` +
-        `👥 Jami foydalanuvchilar: *${total}*\n` +
-        `📅 Bugun yangi: *${today}*\n` +
-        `📆 Oxirgi 7 kun: *${week}*\n` +
-        `🗓 Oxirgi 30 kun: *${month}*\n\n` +
+        `👥 Jami foydalanuvchilar: *${f(total)}*\n` +
+        `📅 Bugun yangi: *${f(today)}*\n` +
+        `📆 Oxirgi 7 kun: *${f(week)}*\n` +
+        `🗓 Oxirgi 30 kun: *${f(month)}*\n\n` +
+        `🔥 Faol foydalanuvchilar:\n` +
+        `  \u2022 Oxirgi 7 kun: *${f(active7)}*\n` +
+        `  \u2022 Oxirgi 30 kun: *${f(active30)}*\n\n` +
+        (usage ? `📈 Xizmatlar bo'yicha:\n${usage}\n` : "") +
         `🕐 _${now}_`,
         { parse_mode: "Markdown" });
     } catch (err) {
@@ -324,6 +357,7 @@ export function setupHandlers(bot: TelegramBot): void {
         const selectedLang: Lang = data === "lang_latin" ? "latin" : "cyrillic";
         setProfile(userId, { lang: selectedLang });
         addUser(userId);
+        recordEvent(userId, "join");
         resetState(userId);
         await bot.sendMessage(chatId, t(selectedLang, "main_menu"), {
           parse_mode: "Markdown",
@@ -431,6 +465,7 @@ export function setupHandlers(bot: TelegramBot): void {
         const cat = ARIZA_CATEGORIES.find((c) => c.id === catId);
         if (!cat) return;
 
+        recordEvent(userId, "shablon_order", catId);
         setState(userId, {
           step: "waiting_shablon_check",
           selectedServiceId: catId,
@@ -464,6 +499,7 @@ export function setupHandlers(bot: TelegramBot): void {
       }
 
       if (data === "pay_pro_general") {
+        recordEvent(userId, "professional_order");
         setState(userId, {
           step: "waiting_professional_check",
           selectedServiceId: "general",
@@ -495,6 +531,7 @@ export function setupHandlers(bot: TelegramBot): void {
       }
 
       if (data === "pay_consultation") {
+        recordEvent(userId, "consultation_order");
         setState(userId, {
           step: "waiting_consultation_check",
           pendingChatId: chatId,
@@ -527,6 +564,7 @@ export function setupHandlers(bot: TelegramBot): void {
         }
 
         await bot.sendMessage(chatId, `✅ Tasdiqlandi! Shablon ariza yuborilmoqda.`);
+        recordEvent(targetUserId, "shablon_approved", catId);
         const userLang = getLang(targetUserId);
         await bot.sendMessage(targetUserId,
           tApprovedShablon(userLang, tCatLabel(userLang, cat.label)),
@@ -542,6 +580,7 @@ export function setupHandlers(bot: TelegramBot): void {
         const targetUserId = parseInt(data.split(":")[1]!);
         const userLang = getLang(targetUserId);
         await bot.sendMessage(chatId, `✅ Tasdiqlandi! Foydalanuvchiga xabar yuborildi.`);
+        recordEvent(targetUserId, "professional_approved");
         await bot.sendMessage(targetUserId,
           t(userLang, "pro_approved_msg"),
           { parse_mode: "Markdown", reply_markup: backToMainKeyboard(userLang) }
@@ -555,6 +594,7 @@ export function setupHandlers(bot: TelegramBot): void {
         const targetUserId = parseInt(data.split(":")[1]!);
         const userLang = getLang(targetUserId);
         await bot.sendMessage(chatId, `✅ Tasdiqlandi! Telefon raqam yuborildi.`);
+        recordEvent(targetUserId, "consultation_approved");
         await bot.sendMessage(targetUserId,
           tApprovedConsultation(userLang, CONSULTATION_PHONE, tHours(userLang)),
           { parse_mode: "Markdown", reply_markup: backToMainKeyboard(userLang) }
@@ -570,6 +610,7 @@ export function setupHandlers(bot: TelegramBot): void {
         addPaidCredits(targetUserId);
         const newTotal = getCredits(targetUserId);
         await bot.sendMessage(chatId, `✅ Tasdiqlandi! Foydalanuvchiga 5 ta kredit qo'shildi.`);
+        recordEvent(targetUserId, "ai_credit_purchased");
         await bot.sendMessage(targetUserId,
           userLang === "cyrillic"
             ? `✅ *Тўловингиз тасдиқланди!*\n\n*5 та янги савол кредити* ҳисобингизга қўшилди.\nЖами кредит: *${newTotal} та*\n\n"Qozibuva AI ⚖️" тугмасини босиб давом этинг.`

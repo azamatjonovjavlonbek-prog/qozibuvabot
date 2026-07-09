@@ -36,3 +36,9 @@ id = "1I7k_3uC5vEa435DT66Bw"
 uri = "file://index-only.zip"
 type = "unspecified"
 title = "index.mjs (faqat shu fayl)"
+
+[[outputs]]
+id = "QYbg__5gQvbeZs9JU5P65"
+uri = "file://artifacts/api-server/bot-qozibuva.zip"
+type = "unspecified"
+title = "bot-qozibuva.zip — Statistika bilan yangilangan bot"

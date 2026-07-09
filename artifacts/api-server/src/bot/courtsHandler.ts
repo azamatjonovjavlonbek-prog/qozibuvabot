@@ -6,6 +6,7 @@ import {
 import { getLang } from "./userProfile";
 import type { Lang } from "./userProfile";
 import { latinToCyrillic } from "./latinToCyrillic";
+import { recordEvent } from "./statsStore";
 
 // ── Keyboard helpers ──────────────────────────────────────────────────────────
 
@@ -123,6 +124,7 @@ export async function handleCourts(
 
   // ── Bosh bo'lim ─────────────────────────────────────────────────────────────
   if (data === "courts") {
+    recordEvent(userId, "courts_view");
     await safeEdit(
       lang === "cyrillic"
         ? "⚖️ *Судлар манзиллари*\n\nСуд турини танланг:"
@@ -201,6 +203,7 @@ export async function handleCourts(
     const court = courts[idx];
     if (!court) return false;
 
+    recordEvent(userId, "courts_detail", `${type}:${regionId}:${idx}`);
     const text = formatCourtInfo(court, lang);
     await deleteLastVenue(bot, userId, chatId);
     await safeEdit(text, courtDetailKeyboard(`cr:${type}:${regionId}`, lang));

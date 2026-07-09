@@ -3,7 +3,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import { backToMainKeyboard } from "./keyboards";
 import { logger } from "../lib/logger";
 import type { Lang } from "./userProfile";
-import { useCredit, getCredits } from "./aiCreditStore";
+import { useCredit, getCredits, getFreeCredits } from "./aiCreditStore";
+import { recordEvent } from "./statsStore";
 
 function getAnthropicClient(): Anthropic {
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -79,7 +80,9 @@ export async function handleAiLegalQuestion(
 
     await bot.deleteMessage(chatId, processingMsg.message_id).catch(() => {});
 
+    const wasFree = getFreeCredits(userId) > 0;
     useCredit(userId);
+    recordEvent(userId, "ai_question", wasFree ? "free" : "paid");
     const remaining = getCredits(userId);
 
     const creditNote = remaining > 0

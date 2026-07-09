@@ -10,6 +10,7 @@ import { t } from "./i18n";
 import type { Lang } from "./userProfile";
 import { backToMainKeyboard } from "./keyboards";
 import { logger } from "../lib/logger";
+import { recordEvent } from "./statsStore";
 
 async function downloadBuffer(url: string): Promise<Buffer> {
   return new Promise((resolve, reject) => {
@@ -189,6 +190,7 @@ export async function handleDocumentAnalysis(
     }
 
     await bot.deleteMessage(chatId, processingMsg.message_id).catch(() => {});
+    recordEvent(userId, "doc_analysis");
 
     const disclaimer = t(lang, "tahlil_disclaimer");
     const fullMessage = `${analysisResult}\n\n---\n${disclaimer}`;

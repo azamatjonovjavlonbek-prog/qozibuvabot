@@ -3,6 +3,7 @@ import { MZOT, AVG_SALARY } from "./config";
 import { getState, setState } from "./state";
 import { getLang } from "./userProfile";
 import type { Lang } from "./userProfile";
+import { recordEvent } from "./statsStore";
 
 type AlimentChildren = "1" | "2" | "3" | "3plus";
 
@@ -307,6 +308,7 @@ export async function handleAliment(
     const alimentStatus = state.alimentStatus ?? "employed";
     const alimentSalary = state.alimentSalary ?? MZOT;
     setState(userId, { step: "idle", alimentStatus, alimentSalary, alimentChildren: children });
+    recordEvent(userId, "aliment_calc", `${alimentStatus},${alimentSalary},${children}`);
     const result = buildResultText(lang, alimentStatus, alimentSalary, children);
     await safeEdit(result, {
       inline_keyboard: [
