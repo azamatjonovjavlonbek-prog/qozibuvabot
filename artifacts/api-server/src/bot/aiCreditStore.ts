@@ -4,7 +4,7 @@ import { ADMIN_ID } from "./config";
 
 const DATA_PATH = path.join(process.cwd(), "data", "ai-credits.json");
 
-export const FREE_CREDITS  = 3;
+export const FREE_CREDITS  = 10;
 export const PAID_CREDITS  = 5;
 export const AI_CREDIT_PRICE = 50_000;
 
