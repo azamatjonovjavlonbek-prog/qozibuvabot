@@ -1,8 +1,8 @@
 export const CONSULTATION_PHONE = "+998918518551";
 export const CONSULTATION_HOURS = "10:00 dan 20:00 gacha";
 
-export const SHABLON_PRICE = 89000;
-export const CONSULTATION_PRICE = 149000;
+export const SHABLON_PRICE = 29000;
+export const CONSULTATION_PRICE = 99000;
 export const PROFESSIONAL_PRICE_LABEL = "199 000 so'mdan 1 000 000 so'mgacha";
 
 export const CARD_NUMBER = "9860 3501 4913 3539";
