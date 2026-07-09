@@ -42,3 +42,9 @@ id = "QYbg__5gQvbeZs9JU5P65"
 uri = "file://artifacts/api-server/bot-qozibuva.zip"
 type = "unspecified"
 title = "bot-qozibuva.zip — 4 MB, 22 fayl"
+
+[[outputs]]
+id = "AhtzNhiQXssW8wFWrrc0L"
+uri = "file://artifacts/api-server/bot-qozibuva-full.zip"
+type = "unspecified"
+title = "bot-qozibuva-full.zip — 9.4 MB (node_modules bilan)"
