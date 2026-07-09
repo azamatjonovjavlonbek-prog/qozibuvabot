@@ -52,15 +52,19 @@ export const OLIY_SUD: CourtEntry = {
 // ── Jinoyat / Fuqarolik tumanlararo sudlar (bir bino) ────────────────────────
 const JIN: Record<string, CourtEntry[]> = {
   tashsh: [
-    { name: "Bektemir tumanlararo sudi",       address: "100054, Toshkent sh., Bektemir tumani, Hamza ko'ch., 15",                phone: "+998 (71) 261-13-45", email: "bektemir@tashsh.supcourt.uz",       lat: 41.2237, lng: 69.3539 },
-    { name: "Mirzo Ulug'bek tumanlararo sudi", address: "100115, Toshkent sh., Mirzo Ulug'bek tumani, Amir Temur shoh., 108",    phone: "+998 (71) 268-31-00", email: "mirzoulugbek@tashsh.supcourt.uz",   lat: 41.3197, lng: 69.3116 },
-    { name: "Olmazor tumanlararo sudi",        address: "100058, Toshkent sh., Olmazor tumani, Olmazor ko'ch., 62",               phone: "+998 (71) 246-12-34", email: "olmazor@tashsh.supcourt.uz",        lat: 41.3464, lng: 69.2327 },
-    { name: "Shayxontohur tumanlararo sudi",   address: "100070, Toshkent sh., Shayxontohur tumani, Zarqaynar ko'ch., 11",       phone: "+998 (71) 241-15-67", email: "shayxontohur@tashsh.supcourt.uz",   lat: 41.3122, lng: 69.2581 },
-    { name: "Chilonzor tumanlararo sudi",      address: "100115, Toshkent sh., Chilonzor tumani, Bunyodkor ko'ch., 3",            phone: "+998 (71) 277-20-11", email: "chilonzor@tashsh.supcourt.uz",      lat: 41.2874, lng: 69.2050 },
-    { name: "Yunusobod tumanlararo sudi",      address: "100187, Toshkent sh., Yunusobod tumani, Amir Temur ko'ch., 9a",          phone: "+998 (71) 264-28-50", email: "yunusobod@tashsh.supcourt.uz",      lat: 41.3494, lng: 69.2983 },
-    { name: "Yashnobod tumanlararo sudi",      address: "100041, Toshkent sh., Yashnobod tumani, Farob ko'ch., 22",               phone: "+998 (71) 256-43-21", email: "yashnobod@tashsh.supcourt.uz",      lat: 41.3094, lng: 69.3458 },
-    { name: "Sergeli tumanlararo sudi",        address: "100072, Toshkent sh., Sergeli tumani, Eski Toshkent yo'li, 45",          phone: "+998 (71) 289-32-10", email: "sergeli@tashsh.supcourt.uz",        lat: 41.2069, lng: 69.2200 },
-    { name: "Sirg'ali tumanlararo sudi",       address: "100052, Toshkent sh., Sirg'ali tumani, Halqaro ko'ch., 18",              phone: "+998 (71) 299-11-22", email: "sirgali@tashsh.supcourt.uz",        lat: 41.2480, lng: 69.3754 },
+    { name: "Bektemir tuman sudi",          address: "Toshkent shahar, Bektemir tumani, X.Boyqaro ko'chasi, 9a uy",            phone: "+998 (71) 501-00-82", email: "j.bektemir@sud.uz",      lat: 41.2237, lng: 69.3539 },
+    { name: "Mirzo Ulug'bek tuman sudi",  address: "Toshkent shahar, Sayram 7-tor ko'chasi, 2-uy",                          phone: "+998 (71) 501-00-69", email: "j.m-ulugbek@sud.uz",     lat: 41.3197, lng: 69.3116 },
+    { name: "Mirobod tuman sudi",         address: "Toshkent shahar, Mirobod tumani, Fidokor ko'chasi, 38-uy",               phone: "+998 (71) 501-00-64", email: "j.mirobod@sud.uz",       lat: 41.2995, lng: 69.2758 },
+    { name: "Olmazor tuman sudi",         address: "Toshkent shahar, Kichik halqa yo'li ko'chasi, 9-uy",                      phone: "+998 (71) 501-00-37", email: "j.olmazor@sud.uz",       lat: 41.3464, lng: 69.2327 },
+    { name: "Sergeli tuman sudi",         address: "Toshkent shahar, Sirg'ali tumani, Yangi Sirg'ali ko'chasi",               phone: "+998 (71) 501-00-46", email: "j.sergeli@sud.uz",       lat: 41.2069, lng: 69.2200 },
+    { name: "Toshkent shahar sudi",       address: "Toshkent shahri, Alisher Navoiy ko'chasi, 23 uy",                       phone: "+998 (71) 501-11-15", email: "j.toshkent@sud.uz",      lat: 41.2993, lng: 69.2395 },
+    { name: "Uchtepa tuman sudi",         address: "Toshkent shahar, Foziltepa ko'chasi, 42a-uy",                           phone: "+998 (71) 501-00-93", email: "j.uchtepa@sud.uz",       lat: 41.2874, lng: 69.2050 },
+    { name: "Chilonzor tuman sudi",       address: "Toshkent shahar, Sharq tongi ko'chasi, 1-a",                            phone: "+998 (71) 501-00-45", email: "j.chilonzor@sud.uz",     lat: 41.2874, lng: 69.2050 },
+    { name: "Shayxontohur tuman sudi",    address: "Toshkent shahar, Shayxontohur tumani, Beruniy 3/4-uy",                   phone: "+998 (71) 501-00-31", email: "j.shayxontoxur@sud.uz",  lat: 41.3122, lng: 69.2581 },
+    { name: "Yunusobod tuman sudi",       address: "Toshkent shahar, A.Temur ko'chasi, 133-uy",                              phone: "+998 (71) 501-00-59", email: "j.yunusobod@sud.uz",     lat: 41.3494, lng: 69.2983 },
+    { name: "Yakkasaroy tuman sudi",      address: "Toshkent shahar, Shota Rustaveli ko'chasi, 62-uy",                        phone: "+998 (71) 501-00-86", email: "j.yakkasaroy@sud.uz",    lat: 41.2995, lng: 69.2758 },
+    { name: "Yangihayot tuman sudi",      address: "Toshkent shahar, Yangihayot tumani, Lutflkor ko'chasi, 33-uy",            phone: "+998 (71) 501-06-03", email: "j.yangihayot@sud.uz",    lat: 41.3094, lng: 69.3458 },
+    { name: "Yashnobod tuman sudi",       address: "Toshkent shahar, Yashnobod tumani, Taraqqiyot 1-berk ko'chasi, 8-uy",   phone: "+998 (71) 501-00-43", email: "j.yashnobod@sud.uz",     lat: 41.3094, lng: 69.3458 },
   ],
   tashvil: [
     { name: "Zangiota tumanlararo sudi",  address: "110700, Toshkent vil., Zangiota tumani, Ko'yluk ko'ch., 8",         phone: "+998 (70) 748-10-20", email: "zangiota@tashvil.supcourt.uz",  lat: 41.1983, lng: 69.2450 },
