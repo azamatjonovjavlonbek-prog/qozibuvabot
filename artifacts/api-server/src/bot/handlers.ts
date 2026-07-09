@@ -302,14 +302,8 @@ export function setupHandlers(bot: TelegramBot): void {
         data.startsWith("cr:") ||
         data.startsWith("cd:")
       ) {
-        await safeEdit(
-          bot, chatId, messageId,
-          lang === "cyrillic"
-            ? "⏳ *Судлар манзиллари*\n\nБу бўлим тез кунда тўлиқ ишга тушади."
-            : "⏳ *Sudlar manzillari*\n\nBu bo'lim tez kunda to'liq ishga tushadi.",
-          { parse_mode: "Markdown", reply_markup: backToMainKeyboard(lang) }
-        );
-        return;
+        const handled = await handleCourts(bot, query, data, chatId, messageId);
+        if (handled) return;
       }
 
       // ── Aliment kalkulyatori ───────────────────────────────────────────
@@ -730,12 +724,7 @@ export function setupHandlers(bot: TelegramBot): void {
           setState(userId, { step: "selecting_consultation" });
           await bot.sendMessage(chatId, tConsultation(lang, `${CONSULTATION_PRICE.toLocaleString()} ${tSom(lang)}`, tHours(lang)), { parse_mode: "Markdown", reply_markup: confirmConsultationKeyboard(lang) });
         } else if (action === "courts") {
-          await bot.sendMessage(chatId,
-            lang === "cyrillic"
-              ? "⏳ *Судлар манзиллари*\n\nБу бўлим тез кунда тўлиқ ишга тушади."
-              : "⏳ *Sudlar manzillari*\n\nBu bo'lim tez kunda to'liq ishga tushadi.",
-            { parse_mode: "Markdown", reply_markup: backToMainKeyboard(lang) }
-          );
+          await sendCourtsIntro(bot, chatId, userId);
         } else if (action === "menu_aliment") {
           await handleAliment(bot, userId, chatId, msg.message_id, "menu_aliment");
         } else if (action === "menu_ai") {
