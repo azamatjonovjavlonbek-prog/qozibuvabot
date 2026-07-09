@@ -54,3 +54,15 @@ id = "NAqLDUAFLk7cCCg6MggbH"
 uri = "file://artifacts/api-server/bot-qozibuva-v3.zip"
 type = "unspecified"
 title = "bot-qozibuva-v3.zip — 4 MB, 24 fayl (railway.toml bilan)"
+
+[[outputs]]
+id = "-zTTCGMhvsHCBai8ip3SR"
+uri = "file://artifacts/api-server/bot-qozibuva-v4.zip"
+type = "unspecified"
+title = "bot-qozibuva-v4.zip — 4 MB (to'g'rilangan, papkasiz)"
+
+[[outputs]]
+id = "3d8K-78v7kRwKuW6_lgAU"
+uri = "file://artifacts/api-server/bot-qozibuva-v5.zip"
+type = "unspecified"
+title = "bot-qozibuva-v5.zip — 4.7 MB (pdfkit bundled, node_modules yo'q)"

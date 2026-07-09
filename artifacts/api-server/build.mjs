@@ -60,7 +60,7 @@ async function buildAll() {
       "@mikro-orm/*",
       "@grpc/*",
       "@swc/*",
-      "pdfkit",
+      // "pdfkit", // bundled directly — no need for node_modules at runtime
       "@aws-sdk/*",
       "@azure/*",
       "@opentelemetry/*",
