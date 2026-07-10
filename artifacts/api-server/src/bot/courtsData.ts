@@ -371,7 +371,7 @@ const FUQ: Record<string, CourtEntry[]> = {
   xorvil: [
     { name: "Xorazm viloyat sudi",          address: "Urganch shahri, Mashʼal ko'chasi, 3-uy",          phone: "+998 (62) 228-12-27, +998 (62) 228-12-44", email: "f.xorazm@sud.uz",  jadval: "jadval2.sud.uz" },
     { name: "Urganch tumanlararo sudi",     address: "Urganch shahri, Mashʼal ko'chasi, 3-uy",          phone: "+998 (62) 226-01-70",                      email: "f.urganch@sud.uz", jadval: "jadval2.sud.uz" },
-    { name: "Bo'got tumanlararo sudi",      address: "Bo'got tumani, Navruz ko'chasi, 104-uy",          phone: "+998 (62) 315-10-18",                      email: "f.bogot@sud.uz",   jadval: "jadval2.sud.uz" },
+    { name: "Bo'got tumanlararo sudi",      address: "Bo'got tumani, Navro'z ko'chasi, 104-uy",          phone: "+998 (62) 315-10-18",                      email: "f.bogot@sud.uz",   jadval: "jadval2.sud.uz" },
     { name: "Shovot tumanlararo sudi",      address: "Shovot tumani, Turkiston ko'chasi, 3-uy",         phone: "+998 (62) 345-27-71",                      email: "f.shovot@sud.uz",  jadval: "jadval2.sud.uz" },
   ],
   farvil: [
