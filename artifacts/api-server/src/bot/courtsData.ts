@@ -329,7 +329,7 @@ const FUQ: Record<string, CourtEntry[]> = {
     { name: "Zarbdor tumanlararo sudi",     address: "Zomin tumani, Bo'ston qishlog'i",                                phone: "+998 (55) 152-05-74, 25413", email: "f.zomin@sud.uz",       jadval: "jadval2.sud.uz" },
     { name: "Forish tuman sudi",            address: "Forish tumani, Oqtepa KFY, Tutak qishlog'i",                     phone: "+998 (55) 152-05-73, 25561", email: "f.forish@sud.uz",      jadval: "jadval2.sud.uz" },
   ],
-  qashvil: [
+  kashvil: [
     { name: "Qashqadaryo viloyat sudi",     address: "Qarshi shahri, Abdulla Oripov ko'chasi, 10A-uy",                 phone: "+998 (55) 404-69-10, 70011", email: "f.qashqadaryo@sud.uz", jadval: "jadval2.sud.uz" },
     { name: "G'uzor tumanlararo sudi",      address: "G'uzor tumani, O'zbekiston ko'chasi, 72-uy",                    phone: "+998 (55) 404-69-18, 70071", email: "f.guzor@sud.uz",       jadval: "jadval2.sud.uz" },
     { name: "Kasbi tumanlararo sudi",       address: "Kasbi tumani, Mug'lon shaharchasi, Mustaqillik ko'chasi, 14-uy", phone: "+998 (55) 404-69-23, 70321", email: "f.kasbi@sud.uz",       jadval: "jadval2.sud.uz" },
@@ -339,7 +339,7 @@ const FUQ: Record<string, CourtEntry[]> = {
     { name: "Shahrisabz tumanlararo sudi",  address: "Shahrisabz shahri, Ipak yo'li ko'chasi, 140-uy",                phone: "+998 (55) 404-69-17, 70671", email: "f.shaxrisabz@sud.uz",  jadval: "jadval2.sud.uz" },
     { name: "Yakkabog' tumanlararo sudi",   address: "Yakkabog' tumani, A. Temur ko'chasi",                           phone: "+998 (55) 404-69-33, 70786", email: "f.yakkabog@sud.uz",    jadval: "jadval2.sud.uz" },
   ],
-  qrresp: [
+  qrvil: [
     { name: "Qoraqalpog'iston Respublikasi sudi", address: "Nukus shahri, Dosliq guzari MFY, I.Karimov ko'chasi, 122-uy",             phone: "+998 (55) 102-40-42, 95044", email: "f.qr@sud.uz",       jadval: "jadval2.sud.uz" },
     { name: "Amudaryo tuman sudi",                address: "Amudaryo tumani, Mang'it shahar, «Do'stlik» MFY, Gurlan ko'chasi",        phone: "+998 (55) 102-40-32, 95106", email: "f.amudaryo@sud.uz", jadval: "jadval2.sud.uz" },
     { name: "Beruniy tumanlararo sudi",           address: "Beruniy tumani, Beruniy ko'chasi, raqamsiz uy",                           phone: "+998 (55) 102-40-63, 95167", email: "f.beruniy@sud.uz",  jadval: "jadval2.sud.uz" },
@@ -361,12 +361,21 @@ const FUQ: Record<string, CourtEntry[]> = {
     { name: "Chust tumanlararo sudi",         address: "Chust shahri, Chustiy ko'chasi, 5-uy",                  phone: "+998 (69) 211-12-51, 50326",        email: "f.chust@sud.uz",      jadval: "jadval2.sud.uz" },
     { name: "Yangiqo'rg'on tumanlararo sudi", address: "Yangiqo'rg'on shahri, Chortoq ko'chasi, 15-uy",        phone: "+998 (69) 211-12-53, 50425",        email: "f.yangiqurgon@sud.uz",jadval: "jadval2.sud.uz" },
   ],
-  sirdvil: [
+  sirvil: [
     { name: "Sirdarё viloyat sudi",      address: "Guliston shahar, Islom Karimov ko'chasi, 75-uy",              phone: "+998 (55) 651-75-00, 20011", email: "f.sirdaryo@sud.uz",   jadval: "jadval2.sud.uz" },
     { name: "Guliston tumanlararo sudi", address: "Sirdarё viloyati, Guliston shahar, I.Karimov ko'chasi, 1-uy", phone: "+998 (55) 651-35-52, 20177", email: "f.guliston@sud.uz",   jadval: "jadval2.sud.uz" },
     { name: "Boёvut tumanlararo sudi",   address: "Boёvut shaharchasi, Tinchlik ko'chasi, 26-uy",                phone: "+998 (55) 651-35-45, 20062", email: "f.boyovut@sud.uz",    jadval: "jadval2.sud.uz" },
     { name: "Oqoltin tumanlararo sudi",  address: "Sardoba shaharchasi, Guliston ko'chasi, 7-uy",                phone: "+998 (55) 651-35-36, 20263", email: "f.oqoltin@sud.uz",    jadval: "jadval2.sud.uz" },
     { name: "Sirdarё tumanlararo sudi",  address: "Sirdarё shahar, Zavqbash ko'chasi, 1A-uy",                   phone: "+998 (55) 651-35-57, 20419", email: "f.sirdaryo.t@sud.uz", jadval: "jadval2.sud.uz" },
+  ],
+  farvil: [
+    { name: "Farg'ona viloyat sudi",          address: "Farg'ona shahri, Yangisoy ko'chasi, 2-uy",                       phone: "+998 (73) 249-15-20, 40620", email: "f.fargona@sud.uz",    jadval: "jadval2.sud.uz" },
+    { name: "Farg'ona tumanlararo sudi",      address: "Farg'ona shahri, Xo'jand ko'chasi, 12A-uy",                     phone: "+998 (73) 249-15-21, 40634", email: "f.fargona.t@sud.uz",  jadval: "jadval2.sud.uz" },
+    { name: "Qo'qon tumanlararo sudi",        address: "Qo'qon shahri, Imom Buxoriy ko'chasi, 37-uy",                  phone: "+998 (73) 249-15-22, 40656", email: "f.quqon@sud.uz",       jadval: "jadval2.sud.uz" },
+    { name: "Marg'ilon tumanlararo sudi",     address: "Marg'ilon shahri, Nurafshon ko'chasi, 7-uy",                   phone: "+998 (73) 249-15-24, 40705", email: "f.margilon@sud.uz",    jadval: "jadval2.sud.uz" },
+    { name: "Rishton tumanlararo sudi",       address: "Rishton tumani, Markaz MFY, B.Roshidoniy ko'chasi, 187A-uy",   phone: "+998 (73) 249-15-25, 40729", email: "f.rishton@sud.uz",     jadval: "jadval2.sud.uz" },
+    { name: "So'x tuman sudi",               address: "So'x tumani, Ravon MFY, A.Temur ko'chasi, 187-uy",             phone: "+998 (73) 249-15-26, 40752", email: "f.sux@sud.uz",         jadval: "jadval2.sud.uz" },
+    { name: "O'zbekiston tumanlararo sudi",  address: "O'zbekiston tumani, Konizar qishlog'i, A.Navoiy ko'chasi, 18-uy", phone: "+998 (73) 249-15-23, 40679", email: "f.uzbekiston@sud.uz", jadval: "jadval2.sud.uz" },
   ],
   tashsh: [
     { name: "Toshkent shahar sudi",              address: "Toshkent shahar, Chilonzor tumani, Cho'pon-Ota ko'chasi, 6-uy",  phone: "+998 (55) 501-00-23, 02629", email: "f.toshkent@sud.uz",       jadval: "jadval2.sud.uz" },
