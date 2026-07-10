@@ -320,6 +320,15 @@ const FUQ: Record<string, CourtEntry[]> = {
     { name: "Peshku tumanlararo sudi",      address: "Peshku tumani, Amir Temur ko'chasi, 5-uy",                phone: "+998 (65) 220-06-15, 81055", email: "f.peshku@sud.uz",     jadval: "jadval2.sud.uz" },
     { name: "Romitan tumanlararo sudi",     address: "Romitan tumani, A.Temur ko'chasi, 40-uy",                 phone: "+998 (65) 220-07-11, 80958", email: "f.romitan@sud.uz",    jadval: "jadval2.sud.uz" },
   ],
+  jizzvil: [
+    { name: "Jizzax viloyat sudi",          address: "Jizzax shahri, O.Azimov ko'chasi, 15-uy",                        phone: "+998 (55) 152-05-71, 25035", email: "f.jizzah@sud.uz",      jadval: "jadval2.sud.uz" },
+    { name: "G'allaorol tumanlararo sudi",  address: "G'allaorol tumani, Sarbozor MFY, Shodlik ko'chasi, 17-uy",       phone: "+998 (55) 152-05-99, 25159", email: "f.gallaorol@sud.uz",   jadval: "jadval2.sud.uz" },
+    { name: "Do'stlik tumanlararo sudi",    address: "Do'stlik tumani, Do'stlik shahar, A.Navoiy MFY",                 phone: "+998 (55) 152-05-81, 25213", email: "f.dustlik@sud.uz",     jadval: "jadval2.sud.uz" },
+    { name: "Jizzax tumanlararo sudi",      address: "Jizzax shahri, Xalqlar do'stligi shoh ko'chasi",                 phone: "+998 (55) 152-05-69, 25271", email: "f.jizzah.t@sud.uz",    jadval: "jadval2.sud.uz" },
+    { name: "Paxtakor tuman sudi",          address: "Paxtakor tumani, Yunus Rajabiy ko'chasi, 1-uy",                  phone: "+998 (55) 152-05-64, 25507", email: "m.paxtakor@sud.uz",    jadval: "jadval2.sud.uz" },
+    { name: "Zarbdor tumanlararo sudi",     address: "Zomin tumani, Bo'ston qishlog'i",                                phone: "+998 (55) 152-05-74, 25413", email: "f.zomin@sud.uz",       jadval: "jadval2.sud.uz" },
+    { name: "Forish tuman sudi",            address: "Forish tumani, Oqtepa KFY, Tutak qishlog'i",                     phone: "+998 (55) 152-05-73, 25561", email: "f.forish@sud.uz",      jadval: "jadval2.sud.uz" },
+  ],
 };
 
 // ── Ma'muriy sudlar ───────────────────────────────────────────────────────────
