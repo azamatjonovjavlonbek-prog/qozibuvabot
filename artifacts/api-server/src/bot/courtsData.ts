@@ -5,6 +5,7 @@ export interface CourtEntry {
   address: string;
   phone: string;
   email?: string;
+  jadval?: string;
   lat?: number;
   lng?: number;
 }
@@ -299,6 +300,19 @@ const JIN: Record<string, CourtEntry[]> = {
   ],
 };
 
+// ── Fuqarolik ishlar bo'yicha tumanlararo sudlar ──────────────────────────────
+const FUQ: Record<string, CourtEntry[]> = {
+  andvil: [
+    { name: "Andijon viloyat sudi",          address: "Andijon shahar, Alisher Navoiy shoh ko'chasi, 15-uy",              phone: "+998 (74) 224-42-44", email: "f.andijon@sud.uz",      jadval: "jadval2.sud.uz" },
+    { name: "Andijon tumanlararo sudi",      address: "Andijon tumani, Toshkent ko'chasi, 4-uy",                         phone: "+998 (74) 224-37-17", email: "f.andijon.t@sud.uz",    jadval: "jadval2.sud.uz" },
+    { name: "Asaka tumanlararo sudi",        address: "Asaka tumani, Ergashobod MFY, Ergashobod ko'chasi, 37-uy",        phone: "+998 (74) 224-37-27", email: "f.asaka@sud.uz",        jadval: "jadval2.sud.uz" },
+    { name: "Bo'ston tumanlararo sudi",      address: "Bo'ston tumani, Pilla kor MFY, Mustaqillik ko'chasi, 32-uy",       phone: "+998 (74) 224-37-47", email: "f.buz@sud.uz",          jadval: "jadval2.sud.uz" },
+    { name: "Izboskan tumanlararo sudi",     address: "Izboskan tumani, Po'ytug' shahri, Mirzo Ulug'bek ko'chasi, 2-uy", phone: "+998 (74) 224-37-57", email: "f.izboskan@sud.uz",     jadval: "jadval2.sud.uz" },
+    { name: "Qo'rg'ontepa tumanlararo sudi", address: "Qo'rg'ontepa shahri, Mustaqillik ko'chasi, 50 \u00ab\u0430\u00bb-uy", phone: "+998 (74) 224-37-67", email: "f.qurgontepa@sud.uz",   jadval: "jadval2.sud.uz" },
+    { name: "Xo'jaobod tumanlararo sudi",    address: "Xo'jaobod tumani, Anxor ko'chasi, 2-uy",                         phone: "+998 (74) 224-37-87", email: "f.xujaobod@sud.uz",     jadval: "jadval2.sud.uz" },
+  ],
+};
+
 // ── Ma'muriy sudlar ───────────────────────────────────────────────────────────
 const MAM: Record<string, CourtEntry[]> = {
   tashsh: [
@@ -376,7 +390,7 @@ export function getCourts(type: CourtType, regionId: string): CourtEntry[] {
   // Fuqarolik ishlari tumanlararo sudlari jinoyat sudlari bilan bitta
   const map: Record<CourtType, Record<string, CourtEntry[]>> = {
     jin: JIN,
-    fuq: JIN,
+    fuq: FUQ,
     mam: MAM,
     iqt: IQT,
   };

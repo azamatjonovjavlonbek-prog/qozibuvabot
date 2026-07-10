@@ -64,10 +64,13 @@ function formatCourtInfo(court: CourtEntry, lang: Lang): string {
     `📍 *${cy ? "Манзил" : "Manzil"}:*`,
     `${address}`,
     ``,
-    `📞 *${cy ? "Телефон" : "Telefon"}:* ${court.phone}`,
+    `📞 *${cy ? "Телефон" : "Telefon"}:* [${court.phone}](tel:${court.phone.replace(/[\s()-]/g, "")})`,
   ];
   if (court.email) {
     lines.push(`📧 *Email:* ${court.email}`);
+  }
+  if (court.jadval) {
+    lines.push(`📅 *${cy ? "Жадвал" : "Jadval"}:* [${court.jadval}](https://${court.jadval})`);
   }
   return lines.join("\n");
 }
