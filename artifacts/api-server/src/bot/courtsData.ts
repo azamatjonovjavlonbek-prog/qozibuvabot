@@ -354,6 +354,13 @@ const FUQ: Record<string, CourtEntry[]> = {
     { name: "Uchquduq tuman sudi",          address: "Uchquduq tumani, A.Temur ko'chasi, 46-uy",                      phone: "+998 (79) 222-01-44, 85472", email: "f.uchquduq@sud.uz",   jadval: "jadval2.sud.uz" },
     { name: "Xatirchi tuman sudi",          address: "Xatirchi tumani, Yangrabad qo'rg'oni, Pulkan ko'chasi, 60-uy",  phone: "+998 (79) 222-02-36, 85503", email: "f.xatirchi@sud.uz",   jadval: "jadval2.sud.uz" },
   ],
+  namvil: [
+    { name: "Namangan viloyat sudi",          address: "Namangan shahri, Lutfiy ko'chasi, 6-uy",                 phone: "+998 (69) 211-10-56, 50040, 50038", email: "f.namangan@sud.uz",   jadval: "jadval2.sud.uz" },
+    { name: "Namangan tumanlararo sudi",      address: "Namangan shahar, Marg'ilon ko'chasi, 105-uy",           phone: "+998 (69) 211-12-32, 50138",        email: "f.namangan.t@sud.uz", jadval: "jadval2.sud.uz" },
+    { name: "Uchqo'rg'on tumanlararo sudi",  address: "Uchqo'rg'on shahri, Nodira ko'chasi, 4-uy",             phone: "+998 (69) 211-12-46, 50225",        email: "f.uchqurgon@sud.uz",  jadval: "jadval2.sud.uz" },
+    { name: "Chust tumanlararo sudi",         address: "Chust shahri, Chustiy ko'chasi, 5-uy",                  phone: "+998 (69) 211-12-51, 50326",        email: "f.chust@sud.uz",      jadval: "jadval2.sud.uz" },
+    { name: "Yangiqo'rg'on tumanlararo sudi", address: "Yangiqo'rg'on shahri, Chortoq ko'chasi, 15-uy",        phone: "+998 (69) 211-12-53, 50425",        email: "f.yangiqurgon@sud.uz",jadval: "jadval2.sud.uz" },
+  ],
 };
 
 // ── Ma'muriy sudlar ───────────────────────────────────────────────────────────
