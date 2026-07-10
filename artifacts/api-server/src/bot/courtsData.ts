@@ -368,6 +368,12 @@ const FUQ: Record<string, CourtEntry[]> = {
     { name: "Oqoltin tumanlararo sudi",  address: "Sardoba shaharchasi, Guliston ko'chasi, 7-uy",                phone: "+998 (55) 651-35-36, 20263", email: "f.oqoltin@sud.uz",    jadval: "jadval2.sud.uz" },
     { name: "Sirdarё tumanlararo sudi",  address: "Sirdarё shahar, Zavqbash ko'chasi, 1A-uy",                   phone: "+998 (55) 651-35-57, 20419", email: "f.sirdaryo.t@sud.uz", jadval: "jadval2.sud.uz" },
   ],
+  xorvil: [
+    { name: "Xorazm viloyat sudi",          address: "Urganch shahri, Mashʼal ko'chasi, 3-uy",          phone: "+998 (62) 228-12-27, +998 (62) 228-12-44", email: "f.xorazm@sud.uz",  jadval: "jadval2.sud.uz" },
+    { name: "Urganch tumanlararo sudi",     address: "Urganch shahri, Mashʼal ko'chasi, 3-uy",          phone: "+998 (62) 226-01-70",                      email: "f.urganch@sud.uz", jadval: "jadval2.sud.uz" },
+    { name: "Bo'got tumanlararo sudi",      address: "Bo'got tumani, Navruz ko'chasi, 104-uy",          phone: "+998 (62) 315-10-18",                      email: "f.bogot@sud.uz",   jadval: "jadval2.sud.uz" },
+    { name: "Shovot tumanlararo sudi",      address: "Shovot tumani, Turkiston ko'chasi, 3-uy",         phone: "+998 (62) 345-27-71",                      email: "f.shovot@sud.uz",  jadval: "jadval2.sud.uz" },
+  ],
   farvil: [
     { name: "Farg'ona viloyat sudi",          address: "Farg'ona shahri, Yangisoy ko'chasi, 2-uy",                       phone: "+998 (73) 249-15-20, 40620", email: "f.fargona@sud.uz",    jadval: "jadval2.sud.uz" },
     { name: "Farg'ona tumanlararo sudi",      address: "Farg'ona shahri, Xo'jand ko'chasi, 12A-uy",                     phone: "+998 (73) 249-15-21, 40634", email: "f.fargona.t@sud.uz",  jadval: "jadval2.sud.uz" },
