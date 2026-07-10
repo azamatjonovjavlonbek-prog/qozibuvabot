@@ -84,3 +84,9 @@ id = "AMpTkCXCp_VcgzgOnX4B6"
 uri = "file://courts_fixed.zip"
 type = "unspecified"
 title = "courtsData.ts + courtsHandler.ts — telefon format xatosi tuzatilgan"
+
+[[outputs]]
+id = "NUVa1lfTlmsQOu6mZ6iQx"
+uri = "file://bot_update.zip"
+type = "unspecified"
+title = "Bot yangilangan fayllar (2 ta)"
