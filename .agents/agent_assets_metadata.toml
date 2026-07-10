@@ -132,3 +132,9 @@ id = "rZ3iYUpp73hIhnRGh38kQ"
 uri = "file://qozibuvabot_dist_v3.zip"
 type = "unspecified"
 title = "qozibuvabot dist v3 (aralash harflar tuzatilgan)"
+
+[[outputs]]
+id = "h0DaFEZL6u1wlF2dpMn75"
+uri = "file://qozibuvabot_dist_v4.zip"
+type = "unspecified"
+title = "qozibuvabot dist v4 (Google Maps havolasi qo'shilgan)"
