@@ -361,6 +361,13 @@ const FUQ: Record<string, CourtEntry[]> = {
     { name: "Chust tumanlararo sudi",         address: "Chust shahri, Chustiy ko'chasi, 5-uy",                  phone: "+998 (69) 211-12-51, 50326",        email: "f.chust@sud.uz",      jadval: "jadval2.sud.uz" },
     { name: "Yangiqo'rg'on tumanlararo sudi", address: "Yangiqo'rg'on shahri, Chortoq ko'chasi, 15-uy",        phone: "+998 (69) 211-12-53, 50425",        email: "f.yangiqurgon@sud.uz",jadval: "jadval2.sud.uz" },
   ],
+  sirdvil: [
+    { name: "Sirdarё viloyat sudi",      address: "Guliston shahar, Islom Karimov ko'chasi, 75-uy",              phone: "+998 (55) 651-75-00, 20011", email: "f.sirdaryo@sud.uz",   jadval: "jadval2.sud.uz" },
+    { name: "Guliston tumanlararo sudi", address: "Sirdarё viloyati, Guliston shahar, I.Karimov ko'chasi, 1-uy", phone: "+998 (55) 651-35-52, 20177", email: "f.guliston@sud.uz",   jadval: "jadval2.sud.uz" },
+    { name: "Boёvut tumanlararo sudi",   address: "Boёvut shaharchasi, Tinchlik ko'chasi, 26-uy",                phone: "+998 (55) 651-35-45, 20062", email: "f.boyovut@sud.uz",    jadval: "jadval2.sud.uz" },
+    { name: "Oqoltin tumanlararo sudi",  address: "Sardoba shaharchasi, Guliston ko'chasi, 7-uy",                phone: "+998 (55) 651-35-36, 20263", email: "f.oqoltin@sud.uz",    jadval: "jadval2.sud.uz" },
+    { name: "Sirdarё tumanlararo sudi",  address: "Sirdarё shahar, Zavqbash ko'chasi, 1A-uy",                   phone: "+998 (55) 651-35-57, 20419", email: "f.sirdaryo.t@sud.uz", jadval: "jadval2.sud.uz" },
+  ],
   samvil: [
     { name: "Samarqand viloyat sudi",          address: "Samarqand shahri, Mingtut ko'chasi, 2-uy",                           phone: "+998 (55) 706-70-03, 30820", email: "f.samarqand@sud.uz",    jadval: "jadval2.sud.uz" },
     { name: "Kattaqo'rg'on tumanlararo sudi", address: "Kattaqo'rg'on tumani, Kadan qishlog'i, Mustaqillik ko'chasi, 33-uy", phone: "+998 (55) 706-70-31, 30822", email: "f.kattaqurgon@sud.uz",  jadval: "jadval2.sud.uz" },
