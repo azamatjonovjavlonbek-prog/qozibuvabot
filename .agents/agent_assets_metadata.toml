@@ -150,3 +150,9 @@ id = "6v6meReww2Ougb-df-o84"
 uri = "file://qozibuvabot_dist_v6.zip"
 type = "unspecified"
 title = "qozibuvabot dist v6 (aniq koordinatalar)"
+
+[[outputs]]
+id = "syB6A4IJjkdx4rcdzwVWP"
+uri = "file://qozibuvabot_dist_v7.zip"
+type = "unspecified"
+title = "qozibuvabot dist v7 (to'g'rilangan koordinatalar)"
