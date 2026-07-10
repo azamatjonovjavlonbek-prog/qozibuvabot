@@ -389,7 +389,7 @@ const FUQ: Record<string, CourtEntry[]> = {
     { name: "Shayxontohur tumanlararo sudi",     address: "Toshkent shahar, Navoiy ko'chasi, 7-uy",                         phone: "+998 (55) 501-10-30, 02816", email: "f.shayxontoxur@sud.uz",   jadval: "jadval2.sud.uz" },
     { name: "Mirzo Ulug'bek tumanlararo sudi",  address: "Toshkent shahar, Bog'ishamol ko'chasi, 57/10-uy",                phone: "+998 (55) 501-11-03, 02673", email: "f.m-ulugbek@sud.uz",      jadval: "jadval2.sud.uz" },
     { name: "Uchtepa tumanlararo sudi",          address: "Toshkent shahar, Foziltepa ko'chasi, 42a-uy",                   phone: "+998 (55) 501-00-94, 02935", email: "f.uchtepa@sud.uz",        jadval: "jadval2.sud.uz" },
-    { name: "Yakkasaroy tumanlararo sudi",       address: "Toshkent shahar, Yangshi Sergili ko'chasi",                     phone: "+998 (55) 501-09-03, 02914", email: "f.yakkasaroy@sud.uz",     jadval: "jadval2.sud.uz" },
+    { name: "Yakkasaroy tumanlararo sudi",       address: "Toshkent shahar, Yangi Sergili ko'chasi",                     phone: "+998 (55) 501-09-03, 02914", email: "f.yakkasaroy@sud.uz",     jadval: "jadval2.sud.uz" },
   ],
   tashvil: [
     { name: "Toshkent viloyat sudi",             address: "Toshkent shahar, Yakkasaroy tumani, Sh.Rustaveli ko'chasi, 93-uy",       phone: "+998 (55) 510-74-74, 10043", email: "f.toshkent.v@sud.uz",     jadval: "jadval2.sud.uz" },
