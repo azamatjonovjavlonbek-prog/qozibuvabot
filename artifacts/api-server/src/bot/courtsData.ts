@@ -329,6 +329,16 @@ const FUQ: Record<string, CourtEntry[]> = {
     { name: "Zarbdor tumanlararo sudi",     address: "Zomin tumani, Bo'ston qishlog'i",                                phone: "+998 (55) 152-05-74, 25413", email: "f.zomin@sud.uz",       jadval: "jadval2.sud.uz" },
     { name: "Forish tuman sudi",            address: "Forish tumani, Oqtepa KFY, Tutak qishlog'i",                     phone: "+998 (55) 152-05-73, 25561", email: "f.forish@sud.uz",      jadval: "jadval2.sud.uz" },
   ],
+  qashvil: [
+    { name: "Qashqadaryo viloyat sudi",     address: "Qarshi shahri, Abdulla Oripov ko'chasi, 10A-uy",                 phone: "+998 (55) 404-69-10, 70011", email: "f.qashqadaryo@sud.uz", jadval: "jadval2.sud.uz" },
+    { name: "G'uzor tumanlararo sudi",      address: "G'uzor tumani, O'zbekiston ko'chasi, 72-uy",                    phone: "+998 (55) 404-69-18, 70071", email: "f.guzor@sud.uz",       jadval: "jadval2.sud.uz" },
+    { name: "Kasbi tumanlararo sudi",       address: "Kasbi tumani, Mug'lon shaharchasi, Mustaqillik ko'chasi, 14-uy", phone: "+998 (55) 404-69-23, 70321", email: "f.kasbi@sud.uz",       jadval: "jadval2.sud.uz" },
+    { name: "Koson tumanlararo sudi",       address: "Koson tumani, Do'stlik MFY, Mustaqillik ko'chasi, 116-uy",      phone: "+998 (55) 404-69-26, 70421", email: "f.koson@sud.uz",       jadval: "jadval2.sud.uz" },
+    { name: "Qarshi tumanlararo sudi",      address: "Qarshi shahar, Xonobod ko'chasi, 1a-uy",                        phone: "+998 (55) 404-69-14, 70211", email: "f.qarshi@sud.uz",      jadval: "jadval2.sud.uz" },
+    { name: "Chiroqchi tuman sudi",         address: "Chiroqchi tumani, Choshtepа MFY, Dam 2 massivi, 1-uy",          phone: "+998 (55) 404-69-31, 706210", email: "f.chiroqchi@sud.uz",  jadval: "jadval2.sud.uz" },
+    { name: "Shahrisabz tumanlararo sudi",  address: "Shahrisabz shahri, Ipak yo'li ko'chasi, 140-uy",                phone: "+998 (55) 404-69-17, 70671", email: "f.shaxrisabz@sud.uz",  jadval: "jadval2.sud.uz" },
+    { name: "Yakkabog' tumanlararo sudi",   address: "Yakkabog' tumani, A. Temur ko'chasi",                           phone: "+998 (55) 404-69-33, 70786", email: "f.yakkabog@sud.uz",    jadval: "jadval2.sud.uz" },
+  ],
 };
 
 // ── Ma'muriy sudlar ───────────────────────────────────────────────────────────
