@@ -144,3 +144,9 @@ id = "WMvztr19sgdfeb30rDsVu"
 uri = "file://qozibuvabot_dist_v5.zip"
 type = "unspecified"
 title = "qozibuvabot dist v5 (FUQ lokatsiya venue)"
+
+[[outputs]]
+id = "6v6meReww2Ougb-df-o84"
+uri = "file://qozibuvabot_dist_v6.zip"
+type = "unspecified"
+title = "qozibuvabot dist v6 (aniq koordinatalar)"
