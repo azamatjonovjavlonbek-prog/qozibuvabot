@@ -368,6 +368,17 @@ const FUQ: Record<string, CourtEntry[]> = {
     { name: "Oqoltin tumanlararo sudi",  address: "Sardoba shaharchasi, Guliston ko'chasi, 7-uy",                phone: "+998 (55) 651-35-36, 20263", email: "f.oqoltin@sud.uz",    jadval: "jadval2.sud.uz" },
     { name: "Sirdarё tumanlararo sudi",  address: "Sirdarё shahar, Zavqbash ko'chasi, 1A-uy",                   phone: "+998 (55) 651-35-57, 20419", email: "f.sirdaryo.t@sud.uz", jadval: "jadval2.sud.uz" },
   ],
+  tashvil: [
+    { name: "Toshkent viloyat sudi",             address: "Toshkent shahar, Yakkasaroy tumani, Sh.Rustaveli ko'chasi, 93-uy",       phone: "+998 (55) 510-74-74, 10043", email: "f.toshkent.v@sud.uz",     jadval: "jadval2.sud.uz" },
+    { name: "Zangiota tumanlararo sudi",         address: "Toshkent viloyati, Zangiota tumani, Ohunboboev ko'chasi",                phone: "+998 (55) 517-02-37, 10627", email: "f.zangiota@sud.uz",       jadval: "jadval2.sud.uz" },
+    { name: "Quyichirchiq tumanlararo sudi",    address: "Toshkent viloyati, Quyichirchiq tumani, Do'stlik-1 MFY, Markaziy ko'chasi", phone: "+998 (55) 517-02-55, 10682", email: "f.quyichirchiq@sud.uz", jadval: "jadval2.sud.uz" },
+    { name: "Yuqorichirchiq tumanlararo sudi",  address: "Toshkent viloyati, Yuqorichirchiq tumani, O'rtaovul MFY, Parkent ko'chasi, 22-uy", phone: "+998 (55) 517-02-32, 10861", email: "f.yuqorichirchiq@sud.uz", jadval: "jadval2.sud.uz" },
+    { name: "O'rtachirchiq tumanlararo sudi",   address: "Toshkent viloyati, O'rtachirchiq tumani, Qorasuv MFY, Temirchi ko'chasi, 3A-uy", phone: "+998 (55) 517-02-74, 10806", email: "f.urtachirchiq@sud.uz",  jadval: "jadval2.sud.uz" },
+    { name: "Chirchiq tumanlararo sudi",         address: "Toshkent viloyati, Chirchiq shahri, Istiqbol ko'chasi, 8-uy",            phone: "+998 (55) 517-02-71, 10777", email: "f.chirchiq@sud.uz",       jadval: "jadval2.sud.uz" },
+    { name: "Ohangaron tumanlararo sudi",        address: "Toshkent viloyati, Ohangaron shahri, Ezgulik ko'chasi, 100-uy",          phone: "+998 (55) 517-02-73, 10981", email: "f.oxangaron@sud.uz",      jadval: "jadval2.sud.uz" },
+    { name: "Bekobod tumanlararo sudi",          address: "Toshkent viloyati, Bekobod shahri, F.Gulom ko'chasi",                    phone: "+998 (55) 517-02-33, 10921", email: "f.bekobod@sud.uz",        jadval: "jadval2.sud.uz" },
+    { name: "Yangiyol tumanlararo sudi",         address: "Toshkent viloyati, Yangiyol tumani",                                     phone: "+998 (55) 517-02-75, 11041", email: "f.yangiyul@sud.uz",       jadval: "jadval2.sud.uz" },
+  ],
   surxvil: [
     { name: "Surxondarё viloyat sudi",         address: "Termiz shahri, Sulton Saodat ko'chasi, 286B-uy",                        phone: "+998 (76) 228-19-00, 75062", email: "f.surxondaryo@sud.uz", jadval: "jadval2.sud.uz" },
     { name: "Termiz tumanlararo sudi",         address: "Termiz shahri, Iso at-Termiziy ko'chasi, 5A-uy",                       phone: "+998 (76) 228-20-01, 75568", email: "f.termiz@sud.uz",      jadval: "jadval2.sud.uz" },
