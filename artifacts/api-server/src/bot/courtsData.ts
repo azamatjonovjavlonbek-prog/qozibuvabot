@@ -368,6 +368,15 @@ const FUQ: Record<string, CourtEntry[]> = {
     { name: "Oqoltin tumanlararo sudi",  address: "Sardoba shaharchasi, Guliston ko'chasi, 7-uy",                phone: "+998 (55) 651-35-36, 20263", email: "f.oqoltin@sud.uz",    jadval: "jadval2.sud.uz" },
     { name: "Sirdarё tumanlararo sudi",  address: "Sirdarё shahar, Zavqbash ko'chasi, 1A-uy",                   phone: "+998 (55) 651-35-57, 20419", email: "f.sirdaryo.t@sud.uz", jadval: "jadval2.sud.uz" },
   ],
+  surxvil: [
+    { name: "Surxondarё viloyat sudi",         address: "Termiz shahri, Sulton Saodat ko'chasi, 286B-uy",                        phone: "+998 (76) 228-19-00, 75062", email: "f.surxondaryo@sud.uz", jadval: "jadval2.sud.uz" },
+    { name: "Termiz tumanlararo sudi",         address: "Termiz shahri, Iso at-Termiziy ko'chasi, 5A-uy",                       phone: "+998 (76) 228-20-01, 75568", email: "f.termiz@sud.uz",      jadval: "jadval2.sud.uz" },
+    { name: "Boysun tuman sudi",               address: "Boysun tumani, Olmazor ko'chasi",                                      phone: "+998 (76) 453-20-06, 75112", email: "f.boysun@sud.uz",      jadval: "jadval2.sud.uz" },
+    { name: "Denov tumanlararo sudi",          address: "Denov shahri, Ezgu maqsad ko'chasi, 63-uy",                            phone: "+998 (76) 453-20-05, 75164", email: "f.denov@sud.uz",       jadval: "jadval2.sud.uz" },
+    { name: "Qumqo'rg'on tumanlararo sudi",   address: "Qumqo'rg'on tumani, «Bo'g'aro» mahallasi, O'zbekiston shoh ko'chasi, 3-uy", phone: "+998 (76) 453-20-04, 75314", email: "f.qumqurgon@sud.uz", jadval: "jadval2.sud.uz" },
+    { name: "Sariosiё tumanlararo sudi",       address: "Sariosiё tumani, Mehrshavqat mahallasi, Yorug' kun ko'chasi",          phone: "+998 (76) 453-20-03, 75462", email: "f.sariosiyo@sud.uz",   jadval: "jadval2.sud.uz" },
+    { name: "Sherobod tumanlararo sudi",       address: "Sherobod tuman, Do'stlik MFY, Mustaqillik ko'chasi, raqamsiz uy",      phone: "+998 (76) 453-20-02, 75668", email: "f.sherobod@sud.uz",    jadval: "jadval2.sud.uz" },
+  ],
   samvil: [
     { name: "Samarqand viloyat sudi",          address: "Samarqand shahri, Mingtut ko'chasi, 2-uy",                           phone: "+998 (55) 706-70-03, 30820", email: "f.samarqand@sud.uz",    jadval: "jadval2.sud.uz" },
     { name: "Kattaqo'rg'on tumanlararo sudi", address: "Kattaqo'rg'on tumani, Kadan qishlog'i, Mustaqillik ko'chasi, 33-uy", phone: "+998 (55) 706-70-31, 30822", email: "f.kattaqurgon@sud.uz",  jadval: "jadval2.sud.uz" },
