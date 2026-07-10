@@ -102,3 +102,9 @@ id = "aKOFnMKeE1Jter41gh2UC"
 uri = "file://dist_deploy.zip"
 type = "unspecified"
 title = "Railway uchun tayyor dist fayllari"
+
+[[outputs]]
+id = "qyDgUZ5xjmrWuwjssPbGn"
+uri = "file://dist_patch_final.zip"
+type = "unspecified"
+title = "Tuzatilgan dist/index.mjs (asl bot + fuq to'g'rilandi)"
