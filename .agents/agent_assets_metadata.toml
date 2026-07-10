@@ -108,3 +108,9 @@ id = "qyDgUZ5xjmrWuwjssPbGn"
 uri = "file://dist_patch_final.zip"
 type = "unspecified"
 title = "Tuzatilgan dist/index.mjs (asl bot + fuq to'g'rilandi)"
+
+[[outputs]]
+id = "z3ycSmpB3XOiRuYvakzFv"
+uri = "file://dist_only.zip"
+type = "unspecified"
+title = "dist/index.mjs (tuzatilgan, to'g'ri nom bilan)"
