@@ -90,3 +90,9 @@ id = "NUVa1lfTlmsQOu6mZ6iQx"
 uri = "file://bot_update.zip"
 type = "unspecified"
 title = "Bot yangilangan fayllar (2 ta)"
+
+[[outputs]]
+id = "2MsWv9HNDz3-nhrmnO9gX"
+uri = "file://bot_files_full.zip"
+type = "unspecified"
+title = "Bot barcha fayllari (7 ta)"
