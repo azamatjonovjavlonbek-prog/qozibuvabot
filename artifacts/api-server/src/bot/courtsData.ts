@@ -347,6 +347,13 @@ const FUQ: Record<string, CourtEntry[]> = {
     { name: "Nukus tumanlararo sudi",             address: "Nukus shahar, A.Dosnazarov ko'chasi, 159A-uy",                            phone: "+998 (55) 102-40-62, 95528", email: "f.nukus@sud.uz",    jadval: "jadval2.sud.uz" },
     { name: "Chimboy tumanlararo sudi",           address: "Chimboy tumani, Do'stlik guzari ko'chasi, raqamsiz uy",                   phone: "+998 (55) 102-40-54, 95761", email: "f.chimboy@sud.uz",  jadval: "jadval2.sud.uz" },
   ],
+  navvil: [
+    { name: "Navoiy viloyat sudi",          address: "Navoiy shahri, Navoiy ko'chasi, 1-uy",                          phone: "+998 (79) 222-01-24, 85003", email: "f.navoiy@sud.uz",     jadval: "jadval2.sud.uz" },
+    { name: "Zarafshon tumanlararo sudi",   address: "Zarafshon shahri, Marvarid ko'chasi, 1-uy",                     phone: "+998 (79) 222-01-43, 85075", email: "f.zarafshon@sud.uz",  jadval: "jadval2.sud.uz" },
+    { name: "Navbahor tumanlararo sudi",    address: "Navbahor tumani, Beshrabot qo'rg'oni, Bobur shoh ko'chasi, 7-uy", phone: "+998 (79) 222-01-27, 85270", email: "f.navbahor@sud.uz", jadval: "jadval2.sud.uz" },
+    { name: "Uchquduq tuman sudi",          address: "Uchquduq tumani, A.Temur ko'chasi, 46-uy",                      phone: "+998 (79) 222-01-44, 85472", email: "f.uchquduq@sud.uz",   jadval: "jadval2.sud.uz" },
+    { name: "Xatirchi tuman sudi",          address: "Xatirchi tumani, Yangrabad qo'rg'oni, Pulkan ko'chasi, 60-uy",  phone: "+998 (79) 222-02-36, 85503", email: "f.xatirchi@sud.uz",   jadval: "jadval2.sud.uz" },
+  ],
 };
 
 // ── Ma'muriy sudlar ───────────────────────────────────────────────────────────
