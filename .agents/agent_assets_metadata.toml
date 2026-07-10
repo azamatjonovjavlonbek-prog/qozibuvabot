@@ -96,3 +96,9 @@ id = "2MsWv9HNDz3-nhrmnO9gX"
 uri = "file://bot_files_full.zip"
 type = "unspecified"
 title = "Bot barcha fayllari (7 ta)"
+
+[[outputs]]
+id = "aKOFnMKeE1Jter41gh2UC"
+uri = "file://dist_deploy.zip"
+type = "unspecified"
+title = "Railway uchun tayyor dist fayllari"
