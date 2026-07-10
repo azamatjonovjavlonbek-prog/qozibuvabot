@@ -126,3 +126,9 @@ id = "h4clebyeGwKQGt7TfjJc_"
 uri = "file://qozibuvabot_dist_v2.zip"
 type = "unspecified"
 title = "qozibuvabot dist v2 (tumanlararo tuzatilgan)"
+
+[[outputs]]
+id = "rZ3iYUpp73hIhnRGh38kQ"
+uri = "file://qozibuvabot_dist_v3.zip"
+type = "unspecified"
+title = "qozibuvabot dist v3 (aralash harflar tuzatilgan)"
