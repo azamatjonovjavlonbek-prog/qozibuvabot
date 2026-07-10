@@ -120,3 +120,9 @@ id = "dY_SnkX_LRk9w_wK5ifPj"
 uri = "file://qozibuvabot_dist.zip"
 type = "unspecified"
 title = "qozibuvabot dist (14 viloyat FUQ ma'lumotlari bilan)"
+
+[[outputs]]
+id = "h4clebyeGwKQGt7TfjJc_"
+uri = "file://qozibuvabot_dist_v2.zip"
+type = "unspecified"
+title = "qozibuvabot dist v2 (tumanlararo tuzatilgan)"
