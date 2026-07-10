@@ -138,3 +138,9 @@ id = "h0DaFEZL6u1wlF2dpMn75"
 uri = "file://qozibuvabot_dist_v4.zip"
 type = "unspecified"
 title = "qozibuvabot dist v4 (Google Maps havolasi qo'shilgan)"
+
+[[outputs]]
+id = "WMvztr19sgdfeb30rDsVu"
+uri = "file://qozibuvabot_dist_v5.zip"
+type = "unspecified"
+title = "qozibuvabot dist v5 (FUQ lokatsiya venue)"
