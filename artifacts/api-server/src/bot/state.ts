@@ -28,7 +28,7 @@ export interface UserState {
 }
 
 export interface AdminState {
-  step: "idle" | "sending_ariza" | "setting_template";
+  step: "idle" | "sending_ariza" | "setting_template" | "broadcasting";
   targetUserId?: number;
   targetCatId?: string;
 }

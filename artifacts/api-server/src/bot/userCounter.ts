@@ -78,3 +78,7 @@ export function getMonthCount(): number {
   const monthAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
   return store.users.filter((u) => u.joinedAt >= monthAgo).length;
 }
+
+export function getAllUserIds(): number[] {
+  return [...idSet];
+}

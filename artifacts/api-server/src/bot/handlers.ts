@@ -45,7 +45,7 @@ import {
   tApprovedShablon, tApprovedConsultation, tCatLabel, tHelp,
   tProPrice, tHours, tSom,
 } from "./i18n";
-import { addUser, getUserCount, getTodayCount, getWeekCount, getMonthCount } from "./userCounter";
+import { addUser, getUserCount, getTodayCount, getWeekCount, getMonthCount, getAllUserIds } from "./userCounter";
 import { recordBotActivity } from "./index";
 import { touchProfile } from "./userProfile";
 import { recordEvent, getStats, getStatsByPeriod, getActiveUsersCount, getUniqueJoinUsers } from "./statsStore";
@@ -117,6 +117,7 @@ export function setupHandlers(bot: TelegramBot): void {
           `📊 Foydalanuvchilar: *${total}* ta (bugun +${today})\n\n` +
           `📌 Admin komandalari:\n` +
           `/stat — batafsil statistika\n` +
+          `/xabar — barcha foydalanuvchilarga xabar yuborish\n` +
           `/yuborish <ID> — foydalanuvchiga fayl yuborish\n` +
           `/settemplate <catId> — shablon o'rnatish\n` +
           `/listtemplates — shablonlar ro'yxati\n` +
@@ -304,6 +305,26 @@ export function setupHandlers(bot: TelegramBot): void {
       await bot.sendMessage(chatId, `✅ Amal bekor qilindi.`);
     } catch (err) {
       logger.error({ err }, "/bekor handleda xato");
+    }
+  });
+
+  // ── Admin: /xabar — barcha foydalanuvchilarga broadcast ──────────────────
+  bot.onText(/\/xabar/, async (msg) => {
+    const chatId = msg.chat.id;
+    const adminId = msg.from?.id ?? chatId;
+    if (adminId !== ADMIN_ID) return;
+    try {
+      const total = getUserCount();
+      setAdminState(ADMIN_ID, { step: "broadcasting" });
+      await bot.sendMessage(chatId,
+        `📢 *Broadcast xabari*\n\n` +
+        `Jami *${total}* ta foydalanuvchiga yuboriladigan xabarni yozing.\n\n` +
+        `_Matn, rasm, video yoki hujjat yuborishingiz mumkin._\n\n` +
+        `Bekor qilish: /bekor`,
+        { parse_mode: "Markdown" }
+      );
+    } catch (err) {
+      logger.error({ err }, "/xabar handleda xato");
     }
   });
 
@@ -674,6 +695,63 @@ export function setupHandlers(bot: TelegramBot): void {
           { parse_mode: "Markdown" }
         );
         logger.info({ catId, fileName }, "Admin shablon fayl yangiladi");
+        return;
+      }
+
+      // /xabar (broadcast) rejimi
+      if (adminState.step === "broadcasting") {
+        const allIds = getAllUserIds();
+        const total = allIds.length;
+        resetAdminState(ADMIN_ID);
+
+        const progressMsg = await bot.sendMessage(chatId,
+          `📤 Yuborilmoqda... 0/${total}`,
+        );
+
+        let sent = 0;
+        let failed = 0;
+        const BATCH = 25;
+
+        for (let i = 0; i < allIds.length; i++) {
+          const uid = allIds[i]!;
+          if (uid === ADMIN_ID) continue;
+          try {
+            if (msg.text) {
+              await bot.sendMessage(uid, msg.text, { parse_mode: "Markdown" });
+            } else if (msg.photo?.length) {
+              const fileId = msg.photo[msg.photo.length - 1]!.file_id;
+              await bot.sendPhoto(uid, fileId, { caption: msg.caption ?? undefined, parse_mode: "Markdown" });
+            } else if (msg.video) {
+              await bot.sendVideo(uid, msg.video.file_id, { caption: msg.caption ?? undefined, parse_mode: "Markdown" });
+            } else if (msg.document) {
+              await bot.sendDocument(uid, msg.document.file_id, { caption: msg.caption ?? undefined, parse_mode: "Markdown" });
+            } else if (msg.sticker) {
+              await bot.sendSticker(uid, msg.sticker.file_id);
+            }
+            sent++;
+          } catch {
+            failed++;
+          }
+          // Progress har 25 ta foydalanuvchidan keyin yangilanadi
+          if ((i + 1) % BATCH === 0) {
+            try {
+              await bot.editMessageText(
+                `📤 Yuborilmoqda... ${sent + failed}/${total}`,
+                { chat_id: chatId, message_id: progressMsg.message_id }
+              );
+            } catch { /* ignore */ }
+            await new Promise((r) => setTimeout(r, 200));
+          }
+        }
+
+        await bot.editMessageText(
+          `✅ *Broadcast tugadi!*\n\n` +
+          `📊 Jami: *${total}* ta\n` +
+          `✅ Yuborildi: *${sent}* ta\n` +
+          `❌ Yetkazilmadi (bloklagan): *${failed}* ta`,
+          { chat_id: chatId, message_id: progressMsg.message_id, parse_mode: "Markdown" }
+        );
+        logger.info({ sent, failed, total }, "Admin broadcast yubordi");
         return;
       }
 
