@@ -311,6 +311,15 @@ const FUQ: Record<string, CourtEntry[]> = {
     { name: "Qo'rg'ontepa tumanlararo sudi", address: "Qo'rg'ontepa shahri, Mustaqillik ko'chasi, 50 «a»-uy",            phone: "+998 (74) 224-37-67, 60532", email: "f.qurgontepa@sud.uz",   jadval: "jadval2.sud.uz" },
     { name: "Xo'jaobod tumanlararo sudi",    address: "Xo'jaobod tumani, Anxor ko'chasi, 2-uy",                           phone: "+998 (74) 224-37-87, 60734", email: "f.xujaobod@sud.uz",     jadval: "jadval2.sud.uz" },
   ],
+  buhvil: [
+    { name: "Buxoro viloyat sudi",          address: "Buxoro shahri, Yangihaёt ko'chasi, 122-uy",                phone: "+998 (65) 220-01-14, 80111", email: "f.buxoro@sud.uz",     jadval: "jadval2.sud.uz" },
+    { name: "Buxoro tumanlararo sudi",      address: "Buxoro shahri, G'ijduvon ko'chasi, 12-uy",                phone: "+998 (65) 220-05-86, 80859", email: "f.buxoro.sh@sud.uz",  jadval: "jadval2.sud.uz" },
+    { name: "G'ijduvon tumanlararo sudi",   address: "G'ijduvon tumani, Yu.Hamadoniу ko'chasi, 54-uy",          phone: "+998 (65) 220-05-97, 81102", email: "f.gijduvon@sud.uz",   jadval: "jadval2.sud.uz" },
+    { name: "Kogon tumanlararo sudi",       address: "Kogon shahri, Qorovulbozor shoh ko'chasi, 2-uy",          phone: "+998 (65) 220-05-96, 80905", email: "f.kogon@sud.uz",      jadval: "jadval2.sud.uz" },
+    { name: "Qorakul tumanlararo sudi",     address: "Qorakul tumani, Do'stlik MFY, Buxoro ko'chasi, 152-uy",  phone: "+998 (65) 220-06-13, 81007", email: "f.qorakul@sud.uz",    jadval: "jadval2.sud.uz" },
+    { name: "Peshku tumanlararo sudi",      address: "Peshku tumani, Amir Temur ko'chasi, 5-uy",                phone: "+998 (65) 220-06-15, 81055", email: "f.peshku@sud.uz",     jadval: "jadval2.sud.uz" },
+    { name: "Romitan tumanlararo sudi",     address: "Romitan tumani, A.Temur ko'chasi, 40-uy",                 phone: "+998 (65) 220-07-11, 80958", email: "f.romitan@sud.uz",    jadval: "jadval2.sud.uz" },
+  ],
 };
 
 // ── Ma'muriy sudlar ───────────────────────────────────────────────────────────
