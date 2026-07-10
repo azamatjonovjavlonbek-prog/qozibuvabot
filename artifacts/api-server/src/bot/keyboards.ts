@@ -5,9 +5,19 @@ import {
   CONSULTATION_PRICE,
   PROFESSIONAL_PRICE_LABEL,
   AI_CREDIT_PRICE,
+  CHANNEL_URL,
 } from "./config";
 import type { Lang } from "./userProfile";
 import { t, tCatLabel, tProPrice } from "./i18n";
+
+export function subscriptionKeyboard(): TelegramBot.InlineKeyboardMarkup {
+  return {
+    inline_keyboard: [
+      [{ text: "📢 Kanalga obuna bo'lish", url: CHANNEL_URL }],
+      [{ text: "✅ Obuna bo'ldim", callback_data: "check_sub" }],
+    ],
+  };
+}
 
 export function languageKeyboard(): TelegramBot.InlineKeyboardMarkup {
   return {

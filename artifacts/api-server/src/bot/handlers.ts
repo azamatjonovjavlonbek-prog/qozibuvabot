@@ -12,9 +12,11 @@ import {
   CARD_NUMBER,
   CARD_OWNER,
   ADMIN_ID,
+  REQUIRED_CHANNEL,
 } from "./config";
 import { getState, setState, resetState, getAdminState, setAdminState, resetAdminState } from "./state";
 import {
+  subscriptionKeyboard,
   languageKeyboard,
   phoneKeyboard,
   removeKeyboard,
@@ -100,6 +102,24 @@ async function safeEdit(
   }
 }
 
+async function isSubscribed(bot: TelegramBot, userId: number): Promise<boolean> {
+  try {
+    const member = await bot.getChatMember(REQUIRED_CHANNEL, userId);
+    return ["member", "administrator", "creator"].includes(member.status);
+  } catch {
+    return false;
+  }
+}
+
+async function sendSubscriptionPrompt(bot: TelegramBot, chatId: number): Promise<void> {
+  await bot.sendMessage(chatId,
+    `⚠️ *Botdan foydalanish uchun kanalga obuna bo'lishingiz shart!*\n\n` +
+    `📢 Quyidagi kanalga obuna bo'ling va "✅ Obuna bo'ldim" tugmasini bosing:\n\n` +
+    `👇 *@yurist_azamatjonov*`,
+    { parse_mode: "Markdown", reply_markup: subscriptionKeyboard() }
+  );
+}
+
 export function setupHandlers(bot: TelegramBot): void {
 
   // ── /start ────────────────────────────────────────────────────────────────
@@ -125,6 +145,14 @@ export function setupHandlers(bot: TelegramBot): void {
           { parse_mode: "Markdown", reply_markup: mainMenuKeyboard("latin") });
         return;
       }
+
+      // ── Kanal obunasini tekshirish ─────────────────────────────────────
+      const subscribed = await isSubscribed(bot, userId);
+      if (!subscribed) {
+        await sendSubscriptionPrompt(bot, chatId);
+        return;
+      }
+
       resetState(userId);
       setState(userId, { step: "selecting_language" });
       await bot.sendMessage(chatId,
@@ -370,6 +398,36 @@ export function setupHandlers(bot: TelegramBot): void {
         data.startsWith("aliment_children:")
       ) {
         await handleAliment(bot, userId, chatId, messageId, data);
+        return;
+      }
+
+      // ── Kanal obunasini tekshirish ─────────────────────────────────────
+      if (data === "check_sub") {
+        const subscribed = await isSubscribed(bot, userId);
+        if (!subscribed) {
+          await bot.answerCallbackQuery(query.id, {
+            text: "❌ Siz hali kanalga obuna bo'lmagansiz!",
+            show_alert: true,
+          });
+          return;
+        }
+        await bot.answerCallbackQuery(query.id, { text: "✅ Rahmat! Obuna tasdiqlandi." });
+        try {
+          await bot.deleteMessage(chatId, messageId);
+        } catch { /* ignore */ }
+        resetState(userId);
+        if (!isRegistered(userId)) {
+          setState(userId, { step: "selecting_language" });
+          await bot.sendMessage(chatId,
+            `👋 Assalomu alaykum! / Ассалому алайкум!\n\n🌐 Iltimos, tilni tanlang / Илтимос, тилни танланг:`,
+            { reply_markup: languageKeyboard() });
+        } else {
+          const userLang = getLang(userId);
+          await bot.sendMessage(chatId, t(userLang, "main_menu"), {
+            parse_mode: "Markdown",
+            reply_markup: mainMenuKeyboard(userLang),
+          });
+        }
         return;
       }
 
