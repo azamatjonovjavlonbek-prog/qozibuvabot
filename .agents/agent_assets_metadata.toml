@@ -156,3 +156,9 @@ id = "syB6A4IJjkdx4rcdzwVWP"
 uri = "file://qozibuvabot_dist_v7.zip"
 type = "unspecified"
 title = "qozibuvabot dist v7 (to'g'rilangan koordinatalar)"
+
+[[outputs]]
+id = "PpO9YSJC3RVkBoJcjqSHF"
+uri = "file://qozibuvabot_dist_v8.zip"
+type = "unspecified"
+title = "qozibuvabot dist v8 (koordinatasiz — Google Maps havolasi)"
