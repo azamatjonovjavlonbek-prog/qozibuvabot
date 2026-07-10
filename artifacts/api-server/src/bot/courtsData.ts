@@ -339,6 +339,14 @@ const FUQ: Record<string, CourtEntry[]> = {
     { name: "Shahrisabz tumanlararo sudi",  address: "Shahrisabz shahri, Ipak yo'li ko'chasi, 140-uy",                phone: "+998 (55) 404-69-17, 70671", email: "f.shaxrisabz@sud.uz",  jadval: "jadval2.sud.uz" },
     { name: "Yakkabog' tumanlararo sudi",   address: "Yakkabog' tumani, A. Temur ko'chasi",                           phone: "+998 (55) 404-69-33, 70786", email: "f.yakkabog@sud.uz",    jadval: "jadval2.sud.uz" },
   ],
+  qrresp: [
+    { name: "Qoraqalpog'iston Respublikasi sudi", address: "Nukus shahri, Dosliq guzari MFY, I.Karimov ko'chasi, 122-uy",             phone: "+998 (55) 102-40-42, 95044", email: "f.qr@sud.uz",       jadval: "jadval2.sud.uz" },
+    { name: "Amudaryo tuman sudi",                address: "Amudaryo tumani, Mang'it shahar, «Do'stlik» MFY, Gurlan ko'chasi",        phone: "+998 (55) 102-40-32, 95106", email: "f.amudaryo@sud.uz", jadval: "jadval2.sud.uz" },
+    { name: "Beruniy tumanlararo sudi",           address: "Beruniy tumani, Beruniy ko'chasi, raqamsiz uy",                           phone: "+998 (55) 102-40-63, 95167", email: "f.beruniy@sud.uz",  jadval: "jadval2.sud.uz" },
+    { name: "Ko'ngirot tumanlararo sudi",         address: "Ko'ngirot tumani, R.Abdullaev ko'chasi, raqamsiz uy",                     phone: "+998 (55) 102-40-64, 95367", email: "f.qungirot@sud.uz", jadval: "jadval2.sud.uz" },
+    { name: "Nukus tumanlararo sudi",             address: "Nukus shahar, A.Dosnazarov ko'chasi, 159A-uy",                            phone: "+998 (55) 102-40-62, 95528", email: "f.nukus@sud.uz",    jadval: "jadval2.sud.uz" },
+    { name: "Chimboy tumanlararo sudi",           address: "Chimboy tumani, Do'stlik guzari ko'chasi, raqamsiz uy",                   phone: "+998 (55) 102-40-54, 95761", email: "f.chimboy@sud.uz",  jadval: "jadval2.sud.uz" },
+  ],
 };
 
 // ── Ma'muriy sudlar ───────────────────────────────────────────────────────────
