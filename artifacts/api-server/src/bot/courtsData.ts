@@ -361,6 +361,18 @@ const FUQ: Record<string, CourtEntry[]> = {
     { name: "Chust tumanlararo sudi",         address: "Chust shahri, Chustiy ko'chasi, 5-uy",                  phone: "+998 (69) 211-12-51, 50326",        email: "f.chust@sud.uz",      jadval: "jadval2.sud.uz" },
     { name: "Yangiqo'rg'on tumanlararo sudi", address: "Yangiqo'rg'on shahri, Chortoq ko'chasi, 15-uy",        phone: "+998 (69) 211-12-53, 50425",        email: "f.yangiqurgon@sud.uz",jadval: "jadval2.sud.uz" },
   ],
+  samvil: [
+    { name: "Samarqand viloyat sudi",          address: "Samarqand shahri, Mingtut ko'chasi, 2-uy",                           phone: "+998 (55) 706-70-03, 30820", email: "f.samarqand@sud.uz",    jadval: "jadval2.sud.uz" },
+    { name: "Kattaqo'rg'on tumanlararo sudi", address: "Kattaqo'rg'on tumani, Kadan qishlog'i, Mustaqillik ko'chasi, 33-uy", phone: "+998 (55) 706-70-31, 30822", email: "f.kattaqurgon@sud.uz",  jadval: "jadval2.sud.uz" },
+    { name: "Samarqand shahar sudi",           address: "Samarqand shahri, A.Bahodirxon ko'chasi, 1A-uy",                    phone: "+998 (55) 706-70-27, 30821", email: "f.samarqand.sh@sud.uz", jadval: "jadval2.sud.uz" },
+    { name: "Ishtixon tumanlararo sudi",       address: "Ishtixon shahri, Ishtixon ko'chasi, 11-uy",                         phone: "+998 (55) 706-70-29, 30823", email: "f.ishtixon@sud.uz",     jadval: "jadval2.sud.uz" },
+    { name: "Jomboy tumanlararo sudi",         address: "Jomboy shahri, Toshkent ko'chasi, 35-uy",                           phone: "+998 (55) 706-70-28, 30824", email: "f.jomboy@sud.uz",       jadval: "jadval2.sud.uz" },
+    { name: "Tayloq tumanlararo sudi",         address: "Toyloq tumani, Mustaqillik ko'chasi, 8-uy",                         phone: "+998 (55) 706-70-35, 30825", email: "f.tayloq@sud.uz",       jadval: "jadval2.sud.uz" },
+    { name: "Payariq tumanlararo sudi",        address: "Payariq shahri, 50-yillik ko'chasi, 4-uy",                          phone: "+998 (55) 706-70-33, 30826", email: "f.payariq@sud.uz",      jadval: "jadval2.sud.uz" },
+    { name: "Pastdarg'om tuman sudi",          address: "Pastdarg'om tumani, Obod mahallasi",                                phone: "+998 (55) 706-70-34, 30827", email: "f.pastdargom@sud.uz",   jadval: "jadval2.sud.uz" },
+    { name: "Nurobod tuman sudi",              address: "Nurobod shahri, A.Temur ko'chasi, 14-uy",                           phone: "+998 (55) 706-70-32, 30828", email: "f.nurobod@sud.uz",      jadval: "jadval2.sud.uz" },
+    { name: "Urgut tuman sudi",                address: "Urgut shahar, Navoiyshox ko'chasi, 98-uy",                          phone: "+998 (55) 706-70-36, 30829", email: "f.urgut@sud.uz",        jadval: "jadval2.sud.uz" },
+  ],
 };
 
 // ── Ma'muriy sudlar ───────────────────────────────────────────────────────────
