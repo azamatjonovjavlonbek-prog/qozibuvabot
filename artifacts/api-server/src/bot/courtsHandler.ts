@@ -58,13 +58,20 @@ function formatCourtInfo(court: CourtEntry, lang: Lang): string {
   const cy = lang === "cyrillic";
   const name    = cy ? latinToCyrillic(court.name)    : court.name;
   const address = cy ? latinToCyrillic(court.address) : court.address;
+  // Telefon: vergulgacha birinchi raqam tel: link, qolganlari oddiy matn
+  const phoneMain = court.phone.split(",")[0]!.trim();
+  const phoneRest = court.phone.includes(",")
+    ? ", " + court.phone.split(",").slice(1).join(",").trim()
+    : "";
+  const phoneTel = phoneMain.replace(/[\s()-]/g, "");
+
   const lines: string[] = [
     `🏛 *${name}*`,
     ``,
     `📍 *${cy ? "Манзил" : "Manzil"}:*`,
     `${address}`,
     ``,
-    `📞 *${cy ? "Телефон" : "Telefon"}:* [${court.phone}](tel:${court.phone.replace(/[\s()-]/g, "")})`,
+    `📞 *${cy ? "Телефон" : "Telefon"}:* [${phoneMain}](tel:${phoneTel})${phoneRest}`,
   ];
   if (court.email) {
     lines.push(`📧 *Email:* ${court.email}`);

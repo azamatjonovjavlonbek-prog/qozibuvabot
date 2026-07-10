@@ -78,3 +78,9 @@ id = "nTJZDEdC34fagIO5lupwe"
 uri = "file://courtsData.zip"
 type = "unspecified"
 title = "courtsData.ts — tuzatilgan (Xorazm telefon formati to'g'irlandi)"
+
+[[outputs]]
+id = "AMpTkCXCp_VcgzgOnX4B6"
+uri = "file://courts_fixed.zip"
+type = "unspecified"
+title = "courtsData.ts + courtsHandler.ts — telefon format xatosi tuzatilgan"
