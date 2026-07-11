@@ -16,11 +16,14 @@ export interface UserState {
     | "ai_legal_pay_check"
     | "aliment_salary"
     | "aliment_children"
-    | "tahlil_waiting_doc";
+    | "tahlil_waiting_doc"
+    | "selecting_payment_method"
+    | "waiting_telegram_payment";
   selectedServiceId?: string;
   pendingChatId?: number;
   pendingUsername?: string;
   pendingType?: "shablon" | "professional" | "consultation";
+  pendingPayload?: string;
   alimentStatus?: "employed" | "unemployed";
   alimentSalary?: number;
   alimentChildren?: "1" | "2" | "3" | "3plus";

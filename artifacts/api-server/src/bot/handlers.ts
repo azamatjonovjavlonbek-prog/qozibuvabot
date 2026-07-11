@@ -14,6 +14,7 @@ import {
   ADMIN_ID,
   REQUIRED_CHANNEL,
 } from "./config";
+import { sendTelegramInvoice } from "./paymentFlow";
 import { getState, setState, resetState, getAdminState, setAdminState, resetAdminState } from "./state";
 import {
   subscriptionKeyboard,
@@ -30,6 +31,7 @@ import {
   adminApproveKeyboard,
   backToMainKeyboard,
   aiCreditsKeyboard,
+  paymentMethodKeyboard,
 } from "./keyboards";
 import { handleAiLegalQuestion } from "./aiLegalHandler";
 import { getCredits, hasCredits, addPaidCredits, AI_CREDIT_PRICE } from "./aiCreditStore";
@@ -487,14 +489,15 @@ export function setupHandlers(bot: TelegramBot): void {
 
       // ── Qozibuva AI kredit to'lovi ────────────────────────────────────
       if (data === "pay_ai_credits") {
-        setState(userId, { step: "ai_legal_pay_check" });
         const price = AI_CREDIT_PRICE.toLocaleString();
+        const amountLabel = lang === "cyrillic" ? `${price} сўм` : `${price} so'm`;
+        setState(userId, { step: "selecting_payment_method", pendingPayload: "ai_credits" });
         await safeEdit(
           bot, chatId, messageId,
           lang === "cyrillic"
-            ? `💳 *Тўлов маълумотлари*\n\nХизмат: *Qozibuva AI — 5 та савол*\nСумма: *${price} сўм*\n\nКарта рақами:\n\`${CARD_NUMBER}\`\nКарта эгаси: *${CARD_OWNER}*\n\nТўлов қилгандан сўнг *тўлов чеки (screenshot)* расмини шу чатга юборинг.`
-            : `💳 *To'lov ma'lumotlari*\n\nXizmat: *Qozibuva AI — 5 ta savol*\nSumma: *${price} so'm*\n\nKarta raqami:\n\`${CARD_NUMBER}\`\nKarta egasi: *${CARD_OWNER}*\n\nTo'lov qilgandan so'ng *to'lov cheki (screenshot)* rasmini shu chatga yuboring.`,
-          { parse_mode: "Markdown", reply_markup: cancelKeyboard(lang) }
+            ? `💳 *To'lov usulini tanlang*\n\nХизмат: *Qozibuva AI — 5 та савол*\nСумма: *${amountLabel}*`
+            : `💳 *To'lov usulini tanlang*\n\nXizmat: *Qozibuva AI — 5 ta savol*\nSumma: *${amountLabel}*`,
+          { parse_mode: "Markdown", reply_markup: paymentMethodKeyboard(lang, amountLabel) }
         );
         return;
       }
@@ -545,23 +548,22 @@ export function setupHandlers(bot: TelegramBot): void {
         if (!cat) return;
 
         recordEvent(userId, "shablon_order", catId);
+        const price = SHABLON_PRICE.toLocaleString();
+        const amountLabel = lang === "cyrillic" ? `${price} сўм` : `${price} so'm`;
         setState(userId, {
-          step: "waiting_shablon_check",
+          step: "selecting_payment_method",
           selectedServiceId: catId,
           pendingChatId: chatId,
           pendingUsername: username,
           pendingType: "shablon",
+          pendingPayload: `shablon:${catId}`,
         });
         await safeEdit(
           bot, chatId, messageId,
-          tPayShablon(
-            lang,
-            tCatLabel(lang, cat.label),
-            `${SHABLON_PRICE.toLocaleString()} ${lang === "cyrillic" ? "сўм" : "so'm"}`,
-            CARD_NUMBER,
-            CARD_OWNER,
-          ),
-          { parse_mode: "Markdown", reply_markup: cancelKeyboard(lang) }
+          lang === "cyrillic"
+            ? `💳 *To'lov usulini tanlang*\n\nХизмат: *${tCatLabel(lang, cat.label)}*\nСумма: *${amountLabel}*`
+            : `💳 *To'lov usulini tanlang*\n\nXizmat: *${tCatLabel(lang, cat.label)}*\nSumma: *${amountLabel}*`,
+          { parse_mode: "Markdown", reply_markup: paymentMethodKeyboard(lang, amountLabel) }
         );
         return;
       }
@@ -611,22 +613,88 @@ export function setupHandlers(bot: TelegramBot): void {
 
       if (data === "pay_consultation") {
         recordEvent(userId, "consultation_order");
+        const price = CONSULTATION_PRICE.toLocaleString();
+        const amountLabel = lang === "cyrillic" ? `${price} сўм` : `${price} so'm`;
         setState(userId, {
-          step: "waiting_consultation_check",
+          step: "selecting_payment_method",
           pendingChatId: chatId,
           pendingUsername: username,
           pendingType: "consultation",
+          pendingPayload: "consultation",
         });
         await safeEdit(
           bot, chatId, messageId,
-          tPayConsultation(
-            lang,
-            `${CONSULTATION_PRICE.toLocaleString()} ${lang === "cyrillic" ? "сўм" : "so'm"}`,
-            CARD_NUMBER,
-            CARD_OWNER,
-          ),
-          { parse_mode: "Markdown", reply_markup: cancelKeyboard(lang) }
+          lang === "cyrillic"
+            ? `💳 *To'lov usulini tanlang*\n\nХизмат: *Юридик консультация*\nСумма: *${amountLabel}*`
+            : `💳 *To'lov usulini tanlang*\n\nXizmat: *Yuridik konsultatsiya*\nSumma: *${amountLabel}*`,
+          { parse_mode: "Markdown", reply_markup: paymentMethodKeyboard(lang, amountLabel) }
         );
+        return;
+      }
+
+      // ── To'lov usuli: Payme / Click ────────────────────────────────────
+      if (data === "select_payme" || data === "select_click") {
+        const provider = data === "select_payme" ? "payme" : "click";
+        const curState = getState(userId);
+        const payload = curState.pendingPayload;
+        if (!payload) {
+          await bot.sendMessage(chatId,
+            lang === "cyrillic"
+              ? "❌ To'lov ma'lumotlari topilmadi. Qaytadan urinib ko'ring."
+              : "❌ To'lov ma'lumotlari topilmadi. Qaytadan urinib ko'ring.",
+          );
+          return;
+        }
+        setState(userId, { ...curState, step: "waiting_telegram_payment" });
+        try {
+          await sendTelegramInvoice(bot, chatId, provider, payload, lang);
+          try { await bot.deleteMessage(chatId, messageId); } catch { }
+        } catch (err) {
+          logger.error({ err, provider, payload }, "Invoice yuborishda xato");
+          resetState(userId);
+          await bot.sendMessage(chatId,
+            lang === "cyrillic"
+              ? "❌ To'lov tizimiga ulanishda xato yuz berdi. Bank kartasi orqali to'lang."
+              : "❌ To'lov tizimiga ulanishda xato yuz berdi. Bank kartasi orqali to'lang.",
+            { reply_markup: backToMainKeyboard(lang) }
+          );
+        }
+        return;
+      }
+
+      // ── To'lov usuli: Karta (eskicha chek flow) ────────────────────────
+      if (data === "select_card") {
+        const curState = getState(userId);
+        const payload = curState.pendingPayload;
+
+        if (payload?.startsWith("shablon:")) {
+          const catId = payload.replace("shablon:", "");
+          const cat = ARIZA_CATEGORIES.find((c) => c.id === catId);
+          if (!cat) return;
+          setState(userId, { ...curState, step: "waiting_shablon_check" });
+          await safeEdit(
+            bot, chatId, messageId,
+            tPayShablon(lang, tCatLabel(lang, cat.label), `${SHABLON_PRICE.toLocaleString()} ${tSom(lang)}`, CARD_NUMBER, CARD_OWNER),
+            { parse_mode: "Markdown", reply_markup: cancelKeyboard(lang) }
+          );
+        } else if (payload === "consultation") {
+          setState(userId, { ...curState, step: "waiting_consultation_check" });
+          await safeEdit(
+            bot, chatId, messageId,
+            tPayConsultation(lang, `${CONSULTATION_PRICE.toLocaleString()} ${tSom(lang)}`, CARD_NUMBER, CARD_OWNER),
+            { parse_mode: "Markdown", reply_markup: cancelKeyboard(lang) }
+          );
+        } else if (payload === "ai_credits") {
+          const price = AI_CREDIT_PRICE.toLocaleString();
+          setState(userId, { ...curState, step: "ai_legal_pay_check" });
+          await safeEdit(
+            bot, chatId, messageId,
+            lang === "cyrillic"
+              ? `💳 *Тўлов маълумотлари*\n\nХизмат: *Qozibuva AI — 5 та савол*\nСумма: *${price} сўм*\n\nКарта рақами:\n\`${CARD_NUMBER}\`\nКарта эгаси: *${CARD_OWNER}*\n\nТўлов қилгандан сўнг *тўлов чеки (screenshot)* расмини шу чатга юборинг.`
+              : `💳 *To'lov ma'lumotlari*\n\nXizmat: *Qozibuva AI — 5 ta savol*\nSumma: *${price} so'm*\n\nKarta raqami:\n\`${CARD_NUMBER}\`\nKarta egasi: *${CARD_OWNER}*\n\nTo'lov qilgandan so'ng *to'lov cheki (screenshot)* rasmini shu chatga yuboring.`,
+            { parse_mode: "Markdown", reply_markup: cancelKeyboard(lang) }
+          );
+        }
         return;
       }
 
@@ -715,6 +783,78 @@ export function setupHandlers(bot: TelegramBot): void {
 
     } catch (err) {
       logger.error({ err, data, userId }, "Callback query handleda xato");
+    }
+  });
+
+  // ── Pre-checkout query (Telegram Payments) ───────────────────────────────
+  bot.on("pre_checkout_query", async (query) => {
+    recordBotActivity();
+    try {
+      await (bot as any).answerPreCheckoutQuery(query.id, true);
+      logger.info({ userId: query.from.id, payload: query.invoice_payload, amount: query.total_amount }, "Pre-checkout answered OK");
+    } catch (err) {
+      logger.error({ err }, "Pre-checkout query da xato");
+      try { await (bot as any).answerPreCheckoutQuery(query.id, false, "Xato yuz berdi, qayta urinib ko'ring"); } catch { }
+    }
+  });
+
+  // ── Successful payment (Telegram Payments) ────────────────────────────────
+  bot.on("successful_payment", async (msg) => {
+    recordBotActivity();
+    const chatId = msg.chat.id;
+    const userId = msg.from?.id ?? chatId;
+    const username = msg.from?.username ? `@${msg.from.username}` : (msg.from?.first_name ?? "Noma'lum");
+    const payment = (msg as any).successful_payment;
+    if (!payment) return;
+    const payload: string = payment.invoice_payload;
+    const paidAmount: number = payment.total_amount; // tiyin
+    const lang = getLang(userId);
+
+    logger.info({ userId, payload, paidAmount }, "Muvaffaqiyatli to'lov qabul qilindi");
+    resetState(userId);
+
+    try {
+      if (payload.startsWith("shablon:")) {
+        const catId = payload.replace("shablon:", "");
+        const cat = ARIZA_CATEGORIES.find((c) => c.id === catId);
+        if (!cat) return;
+        recordEvent(userId, "shablon_paid", catId);
+        await bot.sendMessage(userId,
+          tApprovedShablon(lang, tCatLabel(lang, cat.label)),
+          { parse_mode: "Markdown" }
+        );
+        await sendShablonDocument(bot, userId, catId, lang);
+        await bot.sendMessage(ADMIN_ID,
+          `✅ *Telegram Pay — Shablon*\n\n👤 ${username}\n🆔 \`${userId}\`\n📝 ${tCatLabel("latin", cat.label)}\n💰 ${(paidAmount / 100).toLocaleString()} so'm`,
+          { parse_mode: "Markdown" }
+        );
+      } else if (payload === "consultation") {
+        recordEvent(userId, "consultation_paid");
+        await bot.sendMessage(userId,
+          tApprovedConsultation(lang, CONSULTATION_PHONE, tHours(lang)),
+          { parse_mode: "Markdown", reply_markup: backToMainKeyboard(lang) }
+        );
+        await bot.sendMessage(ADMIN_ID,
+          `✅ *Telegram Pay — Konsultatsiya*\n\n👤 ${username}\n🆔 \`${userId}\`\n💰 ${(paidAmount / 100).toLocaleString()} so'm`,
+          { parse_mode: "Markdown" }
+        );
+      } else if (payload === "ai_credits") {
+        addPaidCredits(userId);
+        const credits = getCredits(userId);
+        recordEvent(userId, "ai_credit_purchased");
+        await bot.sendMessage(userId,
+          lang === "cyrillic"
+            ? `✅ *Тўловингиз тасдиқланди!*\n\n*5 та янги савол кредити* ҳисобингизга қўшилди.\nЖами кредит: *${credits} та*\n\n"Qozibuva AI ⚖️" тугмасини босиб давом этинг.`
+            : `✅ *To'lovingiz tasdiqlandi!*\n\n*5 ta yangi savol krediti* hisobingizga qo'shildi.\nJami kredit: *${credits} ta*\n\n"Qozibuva AI ⚖️" tugmasini bosib davom eting.`,
+          { parse_mode: "Markdown", reply_markup: backToMainKeyboard(lang) }
+        );
+        await bot.sendMessage(ADMIN_ID,
+          `✅ *Telegram Pay — AI Kredit*\n\n👤 ${username}\n🆔 \`${userId}\`\n💰 ${(paidAmount / 100).toLocaleString()} so'm`,
+          { parse_mode: "Markdown" }
+        );
+      }
+    } catch (err) {
+      logger.error({ err, userId, payload }, "Successful payment deliver qilishda xato");
     }
   });
 

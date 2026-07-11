@@ -165,6 +165,17 @@ export function backToMainKeyboard(lang: Lang = "latin"): TelegramBot.InlineKeyb
   };
 }
 
+export function paymentMethodKeyboard(lang: Lang, amountLabel: string): TelegramBot.InlineKeyboardMarkup {
+  return {
+    inline_keyboard: [
+      [{ text: `🟢 Payme — ${amountLabel}`, callback_data: "select_payme" }],
+      [{ text: `🔵 Click — ${amountLabel}`, callback_data: "select_click" }],
+      [{ text: lang === "cyrillic" ? "💳 Банк картаси орқали" : "💳 Bank kartasi orqali", callback_data: "select_card" }],
+      [{ text: t(lang, "btn_cancel"), callback_data: "back_main" }],
+    ],
+  };
+}
+
 export function aiCreditsKeyboard(lang: Lang): TelegramBot.InlineKeyboardMarkup {
   const price = AI_CREDIT_PRICE.toLocaleString();
   const label = lang === "cyrillic"

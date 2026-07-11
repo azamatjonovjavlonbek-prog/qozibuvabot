@@ -8,6 +8,10 @@ export const PROFESSIONAL_PRICE_LABEL = "199 000 so'mdan 1 000 000 so'mgacha";
 export const CARD_NUMBER = "9860 3501 4913 3539";
 export const CARD_OWNER = "Javlonbek Azamatjonov";
 
+// Telegram Payments provider tokenlari (@BotFather → /mybots → Payments dan olinadi)
+export const PAYME_PROVIDER_TOKEN  = process.env["PAYME_PROVIDER_TOKEN"]  ?? process.env["PAYMENT_PROVIDER_TOKEN"] ?? "";
+export const CLICK_PROVIDER_TOKEN  = process.env["CLICK_PROVIDER_TOKEN"]  ?? process.env["PAYMENT_PROVIDER_TOKEN"] ?? "";
+
 export const ADMIN_ID = 1079088129;
 
 export const REQUIRED_CHANNEL = "@yurist_azamatjonov";
