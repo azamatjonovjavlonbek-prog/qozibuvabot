@@ -6,6 +6,7 @@ import {
   PROFESSIONAL_PRICE_LABEL,
   AI_CREDIT_PRICE,
   CHANNEL_URL,
+  MINI_APP_URL,
 } from "./config";
 import type { Lang } from "./userProfile";
 import { t, tCatLabel, tProPrice } from "./i18n";
@@ -43,29 +44,24 @@ export function removeKeyboard(): TelegramBot.ReplyKeyboardRemove {
 }
 
 export function mainMenuKeyboard(lang: Lang): TelegramBot.ReplyKeyboardMarkup {
-  return {
-    keyboard: [
-      [
-        { text: t(lang, "btn_ariza") },
-        { text: t(lang, "btn_consultation") },
-      ],
-      [
-        { text: t(lang, "btn_courts") },
-        { text: t(lang, "btn_aliment") },
-      ],
-      [
-        { text: t(lang, "btn_tahlil") },
-        { text: t(lang, "btn_ai") },
-      ],
-      [
-        { text: t(lang, "btn_about") },
-      ],
-      [
-        { text: t(lang, "btn_clear") },
-      ],
-    ],
-    resize_keyboard: true,
-  };
+  const rows: TelegramBot.KeyboardButton[][] = [];
+
+  if (MINI_APP_URL) {
+    rows.push([{
+      text: lang === "cyrillic" ? "🌐 Онлайн Хизматлар" : "🌐 Onlayn Xizmatlar",
+      web_app: { url: MINI_APP_URL },
+    }]);
+  }
+
+  rows.push(
+    [{ text: t(lang, "btn_ariza") }, { text: t(lang, "btn_consultation") }],
+    [{ text: t(lang, "btn_courts") }, { text: t(lang, "btn_aliment") }],
+    [{ text: t(lang, "btn_tahlil") }, { text: t(lang, "btn_ai") }],
+    [{ text: t(lang, "btn_about") }],
+    [{ text: t(lang, "btn_clear") }],
+  );
+
+  return { keyboard: rows, resize_keyboard: true };
 }
 
 export function arizaMenuKeyboard(lang: Lang): TelegramBot.InlineKeyboardMarkup {

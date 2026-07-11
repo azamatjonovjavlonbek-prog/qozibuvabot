@@ -16,7 +16,10 @@ export type EventType =
   | "aliment_calc"
   | "courts_view"
   | "courts_detail"
-  | "doc_analysis";
+  | "doc_analysis"
+  | "mini_app_shablon_order"
+  | "mini_app_consultation_order"
+  | "mini_app_ai_order";
 
 interface StatsEvent {
   userId: number;

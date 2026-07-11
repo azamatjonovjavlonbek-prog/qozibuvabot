@@ -729,6 +729,71 @@ export function setupHandlers(bot: TelegramBot): void {
       ? `@${msg.from.username}`
       : (msg.from?.first_name ?? "Noma'lum");
 
+    // ── Mini App web_app_data ──────────────────────────────────────────────
+    if (msg.web_app_data?.data) {
+      touchProfile(userId);
+      const lang = getLang(userId);
+      try {
+        const payload = JSON.parse(msg.web_app_data.data) as {
+          type: "shablon" | "consultation" | "ai_credits";
+          catId?: string;
+          label?: string;
+        };
+
+        if (payload.type === "shablon") {
+          const label = payload.label ?? "Ariza";
+          const priceStr = `${SHABLON_PRICE.toLocaleString()} ${lang === "cyrillic" ? "сўм" : "so'm"}`;
+          setState(userId, {
+            step: "waiting_shablon_check",
+            selectedServiceId: payload.catId ?? "other",
+            pendingChatId: chatId,
+            pendingUsername: username,
+            pendingType: "shablon",
+          });
+          recordEvent(userId, "mini_app_shablon_order");
+          await bot.sendMessage(
+            chatId,
+            tPayShablon(lang, label, priceStr, CARD_NUMBER, CARD_OWNER),
+            { parse_mode: "Markdown", reply_markup: cancelKeyboard(lang) },
+          );
+        } else if (payload.type === "consultation") {
+          const priceStr = `${CONSULTATION_PRICE.toLocaleString()} ${lang === "cyrillic" ? "сўм" : "so'm"}`;
+          setState(userId, {
+            step: "waiting_consultation_check",
+            pendingChatId: chatId,
+            pendingUsername: username,
+            pendingType: "consultation",
+          });
+          recordEvent(userId, "mini_app_consultation_order");
+          await bot.sendMessage(
+            chatId,
+            tPayConsultation(lang, priceStr, CARD_NUMBER, CARD_OWNER),
+            { parse_mode: "Markdown", reply_markup: cancelKeyboard(lang) },
+          );
+        } else if (payload.type === "ai_credits") {
+          const price = AI_CREDIT_PRICE;
+          const priceStr = `${price.toLocaleString()} ${lang === "cyrillic" ? "сўм" : "so'm"}`;
+          setState(userId, {
+            step: "waiting_ai_check",
+            pendingChatId: chatId,
+            pendingUsername: username,
+            pendingType: "ai",
+          });
+          recordEvent(userId, "mini_app_ai_order");
+          const txt = lang === "cyrillic"
+            ? `💳 *Тўлов маълумотлари*\n\nХизмат: *Qozibuva AI — 5 та савол*\nСумма: *${priceStr}*\n\nКарта рақами:\n\`${CARD_NUMBER}\`\nКарта эгаси: *${CARD_OWNER}*\n\nТўлов қилгандан сўнг *тўлов чеки (screenshot)* расмини шу чатга юборинг.`
+            : `💳 *To'lov ma'lumotlari*\n\nXizmat: *Qozibuva AI — 5 ta savol*\nSumma: *${priceStr}*\n\nKarta raqami:\n\`${CARD_NUMBER}\`\nKarta egasi: *${CARD_OWNER}*\n\nTo'lov qilgandan so'ng *to'lov cheki (screenshot)* rasmini shu chatga yuboring.`;
+          await bot.sendMessage(chatId, txt, {
+            parse_mode: "Markdown",
+            reply_markup: cancelKeyboard(lang),
+          });
+        }
+      } catch (err) {
+        logger.error({ err }, "web_app_data handleda xato");
+      }
+      return;
+    }
+
     if (msg.text?.startsWith("/")) return;
 
     touchProfile(userId);

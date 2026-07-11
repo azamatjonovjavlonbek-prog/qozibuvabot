@@ -18,11 +18,12 @@ export interface UserState {
     | "aliment_children"
     | "tahlil_waiting_doc"
     | "selecting_payment_method"
-    | "waiting_telegram_payment";
+    | "waiting_telegram_payment"
+    | "waiting_ai_check";
   selectedServiceId?: string;
   pendingChatId?: number;
   pendingUsername?: string;
-  pendingType?: "shablon" | "professional" | "consultation";
+  pendingType?: "shablon" | "professional" | "consultation" | "ai";
   pendingPayload?: string;
   alimentStatus?: "employed" | "unemployed";
   alimentSalary?: number;

@@ -1,4 +1,10 @@
 export const CONSULTATION_PHONE = "+998918518551";
+
+// Mini App URL — deployed domain dan olinadi
+const _domain = (process.env["REPLIT_DOMAINS"] ?? "").split(",")[0]?.trim() ?? "";
+export const MINI_APP_URL = _domain
+  ? `https://${_domain}/mini-app/`
+  : "";
 export const CONSULTATION_HOURS = "10:00 dan 20:00 gacha";
 
 export const SHABLON_PRICE = 29000;
