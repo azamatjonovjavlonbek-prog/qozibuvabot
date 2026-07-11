@@ -1143,6 +1143,14 @@ export function setupHandlers(bot: TelegramBot): void {
         "Қозибува AI ⚖️":        "menu_ai",
       };
       const action = menuAction[msg.text];
+      if (!action && !Object.values(menuAction).includes(msg.text)) {
+        // Noto'g'ri yoki eski tugma bosildi — yangi klaviatura bilan bosh menyu
+        await bot.sendMessage(chatId, t(lang, "main_menu"), {
+          parse_mode: "Markdown",
+          reply_markup: mainMenuKeyboard(lang),
+        });
+        return;
+      }
       if (action) {
         resetState(userId);
         if (action === "menu_ariza") {
