@@ -57,8 +57,6 @@ export function mainMenuKeyboard(lang: Lang): TelegramBot.ReplyKeyboardMarkup {
     [{ text: t(lang, "btn_ariza") }, { text: t(lang, "btn_consultation") }],
     [{ text: t(lang, "btn_courts") }, { text: t(lang, "btn_aliment") }],
     [{ text: t(lang, "btn_tahlil") }, { text: t(lang, "btn_ai") }],
-    [{ text: t(lang, "btn_about") }],
-    [{ text: t(lang, "btn_clear") }],
   );
 
   return { keyboard: rows, resize_keyboard: true };

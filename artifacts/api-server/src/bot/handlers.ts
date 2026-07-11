@@ -459,35 +459,6 @@ export function setupHandlers(bot: TelegramBot): void {
         return;
       }
 
-      // ── Chatni tozalash ───────────────────────────────────────────────
-      if (data === "chat_clear") {
-        resetState(userId);
-        try { await bot.deleteMessage(chatId, messageId); } catch { /* ignore */ }
-        await bot.sendMessage(
-          chatId,
-          t(lang, "main_menu"),
-          { parse_mode: "Markdown", reply_markup: mainMenuKeyboard(lang) }
-        );
-        return;
-      }
-
-      // ── Biz haqimizda ─────────────────────────────────────────────────
-      if (data === "menu_about") {
-        await safeEdit(
-          bot, chatId, messageId,
-          tMainMenu(
-            lang,
-            `${SHABLON_PRICE.toLocaleString()} ${tSom(lang)}`,
-            tProPrice(lang),
-            `${CONSULTATION_PRICE.toLocaleString()} ${tSom(lang)}`,
-            CARD_NUMBER,
-            CARD_OWNER,
-            tHours(lang),
-          ),
-          { parse_mode: "Markdown", reply_markup: backToMainKeyboard(lang) }
-        );
-        return;
-      }
 
       // ── Qozibuva AI kredit to'lovi ────────────────────────────────────
       if (data === "pay_ai_credits") {
@@ -1139,10 +1110,6 @@ export function setupHandlers(bot: TelegramBot): void {
         "Судлар манзиллари":     "courts",
         "Aliment kalkulyatori":  "menu_aliment",
         "Алимент калькулятори":  "menu_aliment",
-        "Biz haqimizda":         "menu_about",
-        "Биз ҳақимизда":         "menu_about",
-        "Chatni tozalash":       "chat_clear",
-        "Чатни тозалаш":         "chat_clear",
         "Hujjat tahlili (AI)":   "menu_tahlil",
         "Хужжат таҳлили (AI)":   "menu_tahlil",
         "Qozibuva AI ⚖️":        "menu_ai",
@@ -1181,18 +1148,6 @@ export function setupHandlers(bot: TelegramBot): void {
               { parse_mode: "Markdown", reply_markup: aiCreditsKeyboard(lang) }
             );
           }
-        } else if (action === "menu_about") {
-          await bot.sendMessage(chatId,
-            tMainMenu(lang,
-              `${SHABLON_PRICE.toLocaleString()} ${tSom(lang)}`,
-              tProPrice(lang),
-              `${CONSULTATION_PRICE.toLocaleString()} ${tSom(lang)}`,
-              CARD_NUMBER, CARD_OWNER, tHours(lang),
-            ),
-            { parse_mode: "Markdown", reply_markup: backToMainKeyboard(lang) },
-          );
-        } else if (action === "chat_clear") {
-          await bot.sendMessage(chatId, t(lang, "main_menu"), { parse_mode: "Markdown", reply_markup: mainMenuKeyboard(lang) });
         } else if (action === "menu_tahlil") {
           await bot.sendMessage(chatId,
             lang === "cyrillic"

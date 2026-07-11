@@ -33,10 +33,6 @@ const S: Record<string, Record<Lang, string>> = {
     latin:    "Qozibuva AI ⚖️",
     cyrillic: "Қозибува AI ⚖️",
   },
-  btn_about: {
-    latin:    "Biz haqimizda",
-    cyrillic: "Биз ҳақимизда",
-  },
   btn_courts: {
     latin:    "Sudlar manzillari",
     cyrillic: "Судлар манзиллари",
@@ -44,10 +40,6 @@ const S: Record<string, Record<Lang, string>> = {
   btn_aliment: {
     latin:    "Aliment kalkulyatori",
     cyrillic: "Алимент калькулятори",
-  },
-  btn_clear: {
-    latin:    "Chatni tozalash",
-    cyrillic: "Чатни тозалаш",
   },
   btn_tahlil: {
     latin:    "Hujjat tahlili (AI)",
