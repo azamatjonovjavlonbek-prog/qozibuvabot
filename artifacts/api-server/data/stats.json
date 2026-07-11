@@ -1,1 +1,10 @@
-{"events":[]}
+{
+  "events": [
+    {
+      "userId": 0,
+      "timestamp": 1783780369784,
+      "type": "ai_question",
+      "detail": "free"
+    }
+  ]
+}

@@ -65,7 +65,12 @@ router.post("/ai/chat", async (req, res) => {
     userId = validateInitData(initData, botToken);
   }
 
-  if (!userId) {
+  // Dev rejimida (Railway'da emas) initData bo'lmasa ham ruxsat berish
+  if (!userId && process.env.NODE_ENV !== "production") {
+    userId = 0;
+  }
+
+  if (!userId && userId !== 0) {
     res.status(401).json({ error: "unauthorized" });
     return;
   }
