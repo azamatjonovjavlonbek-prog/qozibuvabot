@@ -17,19 +17,11 @@ const upload = multer({
 const botToken = () => process.env.TELEGRAM_BOT_TOKEN ?? "";
 const isDev = () => process.env.NODE_ENV !== "production";
 
-function priceKeyboard(reqId: number) {
+function adminProfKeyboard(reqId: number) {
   return {
     inline_keyboard: [
-      [
-        { text: "50 000",   callback_data: `prof_price:${reqId}:50000` },
-        { text: "100 000",  callback_data: `prof_price:${reqId}:100000` },
-        { text: "200 000",  callback_data: `prof_price:${reqId}:200000` },
-      ],
-      [
-        { text: "500 000",  callback_data: `prof_price:${reqId}:500000` },
-        { text: "1 000 000",callback_data: `prof_price:${reqId}:1000000` },
-        { text: "❌ Rad etish", callback_data: `prof_no_req:${reqId}` },
-      ],
+      [{ text: "✏️ Narx belgilash", callback_data: `set_price_req:${reqId}` }],
+      [{ text: "❌ Rad etish",       callback_data: `prof_no_req:${reqId}` }],
     ],
   };
 }
@@ -106,12 +98,12 @@ router.post("/professional/submit", upload.array("files", 5), async (req, res) =
     if (bot) {
       await bot.sendMessage(ADMIN_ID, caption, {
         parse_mode: "Markdown",
-        reply_markup: priceKeyboard(reqId),
+        reply_markup: adminProfKeyboard(reqId),
       });
     } else {
       await tgSendMessage(ADMIN_ID, caption, {
         parse_mode: "Markdown",
-        reply_markup: priceKeyboard(reqId),
+        reply_markup: adminProfKeyboard(reqId),
       });
     }
 

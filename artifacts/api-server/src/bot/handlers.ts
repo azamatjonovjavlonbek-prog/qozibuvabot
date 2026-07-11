@@ -752,38 +752,16 @@ export function setupHandlers(bot: TelegramBot): void {
         return;
       }
 
-      // ── Admin: professional ariza narxini belgilash  prof_price:<reqId>:<amount> ──
-      if (data.startsWith("prof_price:")) {
-        const parts = data.split(":");
-        const reqId  = parseInt(parts[1]!);
-        const amount = parseInt(parts[2]!);
-        try {
-          const [req] = await db.select()
-            .from(professionalRequestsTable)
-            .where(eq(professionalRequestsTable.id, reqId))
-            .limit(1);
-          if (!req) {
-            await bot.answerCallbackQuery(query.id, { text: "❌ Ariza topilmadi." });
-            return;
-          }
-          const targetUserId = Number(req.userId);
-          await db.update(professionalRequestsTable)
-            .set({ status: "priced", price: amount, updatedAt: new Date() })
-            .where(eq(professionalRequestsTable.id, reqId));
-          setState(targetUserId, { step: "waiting_professional_check", pendingType: "professional", selectedServiceId: "general" });
-          const formatted = amount.toLocaleString("uz-UZ");
-          const userLang = getLang(targetUserId);
-          const payMsg = userLang === "cyrillic"
-            ? `💰 *Аризангиз кўриб чиқилди!*\n\nПрофессионал ариза нархи белгиланди: *${formatted} сўм*\n\nТўлов учун карта рақами:\n\`${CARD_NUMBER}\`\nКарта эгаси: *${CARD_OWNER}*\n\nТўловни амалга ошириб, чек (screenshot) расмини *шу чатга* юборинг. Юрист сиз билан тез орада боғланади.`
-            : `💰 *Arizangiz ko'rib chiqildi!*\n\nProfessional ariza narxi belgilandi: *${formatted} so'm*\n\nTo'lov uchun karta raqami:\n\`${CARD_NUMBER}\`\nKarta egasi: *${CARD_OWNER}*\n\nTo'lovni amalga oshirib, chek (screenshot) rasmini *shu chatga* yuboring. Yurist siz bilan tez orada bog'lanadi.`;
-          await bot.sendMessage(targetUserId, payMsg, { parse_mode: "Markdown" });
-          await bot.answerCallbackQuery(query.id, { text: `✅ Narx: ${formatted} so'm` });
-          await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId }).catch(() => {});
-          await bot.sendMessage(chatId, `✅ *Narx belgilandi: ${formatted} so'm*\nFoydalanuvchiga to'lov ko'rsatmasi yuborildi.`, { parse_mode: "Markdown" });
-        } catch (dbErr) {
-          logger.error({ dbErr, reqId }, "prof_price DB xato");
-          await bot.answerCallbackQuery(query.id, { text: "❌ Xato yuz berdi." });
-        }
+      // ── Admin: professional ariza narx belgilash tugmasi  set_price_req:<reqId> ──
+      if (data.startsWith("set_price_req:")) {
+        const reqId = parseInt(data.split(":")[1]!);
+        setAdminState(ADMIN_ID, { step: "awaiting_prof_price", reqId });
+        await bot.answerCallbackQuery(query.id, { text: "✏️ Narxni yozing" });
+        await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId }).catch(() => {});
+        await bot.sendMessage(chatId,
+          `✏️ *Narxni so'mda yozing* (faqat raqam):\n\nMasalan: \`150000\` yoki \`500 000\``,
+          { parse_mode: "Markdown" }
+        );
         return;
       }
 
@@ -1037,6 +1015,55 @@ export function setupHandlers(bot: TelegramBot): void {
           { chat_id: chatId, message_id: progressMsg.message_id, parse_mode: "Markdown" }
         );
         logger.info({ sent, failed, total }, "Admin broadcast yubordi");
+        return;
+      }
+
+      // ── Admin: professional ariza narxini qo'lda kiritish ──────────────
+      if (adminState.step === "awaiting_prof_price" && adminState.reqId && msg.text) {
+        const raw = msg.text.replace(/\s/g, "").replace(/[^0-9]/g, "");
+        const amount = parseInt(raw);
+        if (!raw || isNaN(amount) || amount < 1000) {
+          await bot.sendMessage(chatId, `⚠️ Noto'g'ri summa. Faqat raqam kiriting (masalan: 150000 yoki 500000):`);
+          return;
+        }
+        const reqId = adminState.reqId;
+        try {
+          const [req] = await db.select()
+            .from(professionalRequestsTable)
+            .where(eq(professionalRequestsTable.id, reqId))
+            .limit(1);
+          if (!req) {
+            await bot.sendMessage(chatId, `❌ Ariza #${reqId} topilmadi.`);
+            resetAdminState(ADMIN_ID);
+            return;
+          }
+          const targetUserId = Number(req.userId);
+          await db.update(professionalRequestsTable)
+            .set({ status: "priced", price: amount, updatedAt: new Date() })
+            .where(eq(professionalRequestsTable.id, reqId));
+          setState(targetUserId, { step: "waiting_professional_check", pendingType: "professional", selectedServiceId: "general" });
+          resetAdminState(ADMIN_ID);
+          const formatted = amount.toLocaleString("uz-UZ");
+          const userLang = getLang(targetUserId);
+          const payMsg = userLang === "cyrillic"
+            ? `💰 *Аризангиз кўриб чиқилди!*\n\nПрофессионал ариза нархи белгиланди: *${formatted} сўм*\n\nТўлов учун карта рақами:\n\`${CARD_NUMBER}\`\nКарта эгаси: *${CARD_OWNER}*\n\nТўловни амалга ошириб, чек (screenshot) расмини *шу чатга* юборинг. Юрист сиз билан тез орада боғланади.`
+            : `💰 *Arizangiz ko'rib chiqildi!*\n\nProfessional ariza narxi belgilandi: *${formatted} so'm*\n\nTo'lov uchun karta raqami:\n\`${CARD_NUMBER}\`\nKarta egasi: *${CARD_OWNER}*\n\nTo'lovni amalga oshirib, chek (screenshot) rasmini *shu chatga* yuboring. Yurist siz bilan tez orada bog'lanadi.`;
+          try {
+            await bot.sendMessage(targetUserId, payMsg, { parse_mode: "Markdown" });
+          } catch (sendErr) {
+            logger.error({ sendErr, targetUserId }, "bot.sendMessage xato — HTTP fallback ishlatilmoqda");
+            const { tgSendMessage } = await import("../lib/telegramApi");
+            await tgSendMessage(targetUserId, payMsg, { parse_mode: "Markdown" });
+          }
+          await bot.sendMessage(chatId,
+            `✅ *Narx belgilandi: ${formatted} so'm*\nFoydalanuvchi (ID: ${targetUserId}) ga to'lov ko'rsatmasi yuborildi.`,
+            { parse_mode: "Markdown" }
+          );
+          logger.info({ reqId, targetUserId, amount }, "Admin professional ariza narxini belgiladi");
+        } catch (err) {
+          logger.error({ err, reqId }, "awaiting_prof_price DB xato");
+          await bot.sendMessage(chatId, `❌ Xatolik yuz berdi. Qaytadan urinib ko'ring.`);
+        }
         return;
       }
 

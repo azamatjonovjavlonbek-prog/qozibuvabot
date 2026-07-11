@@ -32,9 +32,10 @@ export interface UserState {
 }
 
 export interface AdminState {
-  step: "idle" | "sending_ariza" | "setting_template" | "broadcasting";
+  step: "idle" | "sending_ariza" | "setting_template" | "broadcasting" | "awaiting_prof_price";
   targetUserId?: number;
   targetCatId?: string;
+  reqId?: number;
 }
 
 const userStates = new Map<number, UserState>();
