@@ -1,8 +1,8 @@
-import type { Service } from "@/App";
-import { ChevronLeft, ChevronRight, FileText, AlertTriangle, Baby, Ticket } from "lucide-react";
+import { useState } from "react";
+import { ChevronLeft, ChevronRight, FileText, AlertTriangle, Baby, Ticket, CheckCircle2 } from "lucide-react";
+import { sendOrder, closeMiniApp } from "@/lib/tg";
 
 interface Props {
-  onSelect: (svc: Service) => void;
   onBack: () => void;
 }
 
@@ -33,10 +33,31 @@ const CATEGORIES = [
   },
 ];
 
-export function ArizaCatalog({ onSelect, onBack }: Props) {
+export function ArizaCatalog({ onBack }: Props) {
+  const [sent, setSent] = useState(false);
+
+  function handleSelect(catId: string, label: string) {
+    sendOrder({ type: "shablon", catId, label });
+    setSent(true);
+    setTimeout(closeMiniApp, 1800);
+  }
+
+  if (sent) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", padding: 32, textAlign: "center" }}>
+        <div style={{ width: 80, height: 80, borderRadius: 24, background: "rgba(76,175,132,0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
+          <CheckCircle2 size={40} color="#4CAF84" strokeWidth={1.6} />
+        </div>
+        <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 10 }}>Buyurtma yuborildi!</div>
+        <div style={{ fontSize: 14, color: "var(--tg-muted)", lineHeight: 1.7 }}>
+          Bot chatiga qarang — to'lov rekvizitlari yuborildi.
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      {/* Header */}
       <div style={{ background: "var(--tg-header)", padding: "16px", display: "flex", alignItems: "center", gap: 12, borderBottom: "1px solid var(--tg-border)" }}>
         <div onClick={onBack} style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.07)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
           <ChevronLeft size={20} strokeWidth={2} />
@@ -48,14 +69,13 @@ export function ArizaCatalog({ onSelect, onBack }: Props) {
       </div>
 
       <div style={{ padding: "14px 16px 24px", flex: 1 }}>
-        {/* Price info */}
         <div style={{ background: "rgba(42,171,238,0.08)", border: "1px solid rgba(42,171,238,0.2)", borderRadius: 14, padding: "12px 15px", marginBottom: 16, display: "flex", gap: 12, alignItems: "center" }}>
           <div style={{ width: 40, height: 40, borderRadius: 12, background: "rgba(42,171,238,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             <FileText size={18} color="#2AABEE" strokeWidth={1.8} />
           </div>
           <div>
             <div style={{ fontSize: 13, fontWeight: 600 }}>Shablon ariza</div>
-            <div style={{ fontSize: 12, color: "var(--tg-muted)" }}>To'lovdan so'ng darhol yuboriladi • <b style={{ color: "#2AABEE" }}>29 000 so'm</b></div>
+            <div style={{ fontSize: 12, color: "var(--tg-muted)" }}>Tanlash bilan to'lov ma'lumotlari botga yuboriladi</div>
           </div>
         </div>
 
@@ -63,7 +83,7 @@ export function ArizaCatalog({ onSelect, onBack }: Props) {
 
         {CATEGORIES.map(({ id, icon: Icon, label, color, bg, desc }) => (
           <div key={id}
-            onClick={() => onSelect({ type: "shablon", catId: id, label })}
+            onClick={() => handleSelect(id, label)}
             style={{ background: "var(--tg-card)", borderRadius: 14, padding: "14px 15px", marginBottom: 10, display: "flex", alignItems: "center", gap: 13, cursor: "pointer", border: "1px solid var(--tg-border)" }}>
             <div style={{ width: 48, height: 48, borderRadius: 13, background: bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <Icon size={22} color={color} strokeWidth={1.8} />

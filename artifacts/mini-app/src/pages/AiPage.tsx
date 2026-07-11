@@ -1,8 +1,32 @@
-import { ChevronLeft, Bot, Sparkles, Zap, CreditCard } from "lucide-react";
+import { useState } from "react";
+import { ChevronLeft, Bot, Sparkles, Zap, CreditCard, CheckCircle2 } from "lucide-react";
+import { sendOrder, closeMiniApp } from "@/lib/tg";
 
-interface Props { onConfirm: () => void; onBack: () => void; }
+interface Props { onBack: () => void; }
 
-export function AiPage({ onConfirm, onBack }: Props) {
+export function AiPage({ onBack }: Props) {
+  const [sent, setSent] = useState(false);
+
+  function handleOrder() {
+    sendOrder({ type: "ai_credits" });
+    setSent(true);
+    setTimeout(closeMiniApp, 1800);
+  }
+
+  if (sent) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", padding: 32, textAlign: "center" }}>
+        <div style={{ width: 80, height: 80, borderRadius: 24, background: "rgba(168,85,247,0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
+          <CheckCircle2 size={40} color="#A855F7" strokeWidth={1.6} />
+        </div>
+        <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 10 }}>Buyurtma yuborildi!</div>
+        <div style={{ fontSize: 14, color: "var(--tg-muted)", lineHeight: 1.7 }}>
+          Bot chatiga qarang — to'lov rekvizitlari yuborildi.
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <div style={{ background: "var(--tg-header)", padding: "16px", display: "flex", alignItems: "center", gap: 12, borderBottom: "1px solid var(--tg-border)" }}>
@@ -19,13 +43,13 @@ export function AiPage({ onConfirm, onBack }: Props) {
           </div>
           <div style={{ fontSize: 18, fontWeight: 700, textAlign: "center", marginBottom: 8 }}>AI Huquqiy Maslahat</div>
           <div style={{ fontSize: 13, color: "var(--tg-muted)", textAlign: "center", lineHeight: 1.6, marginBottom: 20 }}>
-            Sun'iy intellekt yordamida huquqiy savollaringizga javob oling. Kredit sotib olish orqali AI bilan suhbatlashing.
+            Sun'iy intellekt yordamida huquqiy savollaringizga javob oling.
           </div>
 
           <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
             <div style={{ flex: 1, background: "rgba(168,85,247,0.12)", borderRadius: 14, padding: "14px 10px", textAlign: "center", border: "1px solid rgba(168,85,247,0.2)" }}>
               <Sparkles size={22} color="#A855F7" style={{ margin: "0 auto 6px" }} />
-              <div style={{ fontSize: 11, color: "var(--tg-muted)", marginBottom: 4 }}>Paket hajmi</div>
+              <div style={{ fontSize: 11, color: "var(--tg-muted)", marginBottom: 4 }}>Paket</div>
               <div style={{ fontSize: 26, fontWeight: 800, color: "#A855F7" }}>5</div>
               <div style={{ fontSize: 11, color: "var(--tg-muted)" }}>ta savol</div>
             </div>
@@ -50,8 +74,8 @@ export function AiPage({ onConfirm, onBack }: Props) {
       </div>
 
       <div style={{ padding: "12px 16px 24px", borderTop: "1px solid var(--tg-border)" }}>
-        <button onClick={onConfirm} style={{ width: "100%", background: "linear-gradient(135deg,#7C3AED,#A855F7)", color: "#fff", border: "none", borderRadius: 14, padding: "15px 0", fontSize: 16, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-          <CreditCard size={17} /> 5 kredit sotib olish — 50 000 so'm
+        <button onClick={handleOrder} style={{ width: "100%", background: "linear-gradient(135deg,#7C3AED,#A855F7)", color: "#fff", border: "none", borderRadius: 14, padding: "15px 0", fontSize: 16, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          <CreditCard size={17} /> 5 kredit — 50 000 so'm
         </button>
       </div>
     </div>
