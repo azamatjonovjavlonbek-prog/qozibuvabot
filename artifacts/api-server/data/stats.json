@@ -5,6 +5,18 @@
       "timestamp": 1783780369784,
       "type": "ai_question",
       "detail": "free"
+    },
+    {
+      "userId": 0,
+      "timestamp": 1783780455109,
+      "type": "ai_question",
+      "detail": "free"
+    },
+    {
+      "userId": 0,
+      "timestamp": 1783780746506,
+      "type": "ai_question",
+      "detail": "free"
     }
   ]
 }

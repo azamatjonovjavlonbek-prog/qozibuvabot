@@ -10,6 +10,7 @@ interface Props {
 interface Message {
   role: "user" | "ai";
   text: string;
+  disclaimer?: string;
 }
 
 function getInitData(): string {
@@ -73,9 +74,9 @@ export function AiChat({ onBack, onBuyCredits }: Props) {
         return;
       }
 
-      const data = await res.json() as { answer: string; creditsLeft: number };
+      const data = await res.json() as { answer: string; creditsLeft: number; disclaimer?: string };
       setCreditsLeft(data.creditsLeft);
-      setMessages((prev) => [...prev, { role: "ai", text: data.answer }]);
+      setMessages((prev) => [...prev, { role: "ai", text: data.answer, disclaimer: data.disclaimer }]);
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -128,21 +129,33 @@ export function AiChat({ onBack, onBuyCredits }: Props) {
                 <User size={15} color="#2AABEE" strokeWidth={1.8} />
               </div>
             )}
-            <div style={{
-              maxWidth: "78%",
-              background: msg.role === "user"
-                ? "linear-gradient(135deg,#2AABEE,#1A8FD1)"
-                : "var(--tg-card)",
-              border: msg.role === "ai" ? "1px solid var(--tg-border)" : "none",
-              borderRadius: msg.role === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
-              padding: "10px 14px",
-              fontSize: 14,
-              lineHeight: 1.6,
-              color: msg.role === "user" ? "#fff" : "var(--tg-text)",
-              whiteSpace: "pre-wrap",
-              wordBreak: "break-word",
-            }}>
-              {msg.text}
+            <div style={{ maxWidth: "78%", display: "flex", flexDirection: "column", gap: 6 }}>
+              <div style={{
+                background: msg.role === "user"
+                  ? "linear-gradient(135deg,#2AABEE,#1A8FD1)"
+                  : "var(--tg-card)",
+                border: msg.role === "ai" ? "1px solid var(--tg-border)" : "none",
+                borderRadius: msg.role === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
+                padding: "10px 14px",
+                fontSize: 14,
+                lineHeight: 1.6,
+                color: msg.role === "user" ? "#fff" : "var(--tg-text)",
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-word",
+              }}>
+                {msg.text}
+              </div>
+              {msg.role === "ai" && msg.disclaimer && (
+                <div style={{
+                  fontSize: 11,
+                  color: "var(--tg-muted)",
+                  lineHeight: 1.4,
+                  padding: "0 4px",
+                  opacity: 0.75,
+                }}>
+                  ℹ️ {msg.disclaimer}
+                </div>
+              )}
             </div>
           </div>
         ))}

@@ -19,7 +19,22 @@ MAJBURIY QOIDALAR:
 7. Kerakli huquqiy tadbirlarni aniq ko'rsating
 8. Javob o'zbek tilida bo'lsin
 9. Maqtov, uzr so'rash yoki his-tuyg'uli murojaat qilmasdan to'g'ridan-to'g'ri professional javob bering
-10. Javobda emotikonlar va bo'limlar boshlag'ichlari ishlatilmasin`;
+10. JAVOBDA EMOTIKONLAR VA BO'LIMLAR BOSHLAGICHLAR ISHLATILMASIN (⚖️, 📜, 🏛, 📋, ⚠️, ---, ** va shunga o'xshash bezaklar yo'q)
+11. Javob matniga bo'limlar qo'shilsa ham, faqat oddiy sarlavhalar bilan (masalan: "Huquqiy tahlil:", "Qonuniy asos:"), emotikon va chiziqlarsiz
+12. Javob qat'iy yuridik-huquqiy uslubda, rasmiy hujjatga o'xshash, lekin tushunarli bo'lsin
+
+JAVOB FORMATI (professional, tekis uslub):
+[Holat qisqacha baholash]
+
+[Qonuniy asos: qonun nomi, modda raqami, qism va bandi]
+
+[Sud amaliyoti — agar mavjud bo'lsa]
+
+[Huquqiy tadbirlar: nima qilish kerak, tartib bo'yicha]
+
+[Muhim eslatmalar: muddatlar, xavflar va boshqa nuances]`;
+
+const DISCLAIMER = `Ushbu javob AI tomonidan tayyorlangan huquqiy ma'lumot bo'lib, faqat yo'naltiruvchi xususiyatga ega. Muhim qarorlar uchun malakali yurist bilan maslahatlashing.`;
 
 function validateInitData(initData: string, botToken: string): number | null {
   try {
@@ -97,7 +112,7 @@ router.post("/ai/chat", async (req, res) => {
     const anthropic = new Anthropic({ apiKey });
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 2048,
+      max_tokens: 4096,
       system: LEGAL_SYSTEM_PROMPT,
       messages: [{ role: "user", content: question.trim() }],
     });
@@ -111,7 +126,7 @@ router.post("/ai/chat", async (req, res) => {
     const creditsLeft = getCredits(userId);
 
     logger.info({ userId, creditsLeft }, "Mini app AI savol javoblandi");
-    res.json({ answer, creditsLeft });
+    res.json({ answer, creditsLeft, disclaimer: DISCLAIMER });
   } catch (err) {
     logger.error({ err, userId }, "Mini app AI xato");
     res.status(500).json({ error: "ai_error" });
