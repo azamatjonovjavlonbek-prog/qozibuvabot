@@ -4,6 +4,7 @@ import { Home } from "@/pages/Home";
 import { ArizaCatalog } from "@/pages/ArizaCatalog";
 import { ConsultationPage } from "@/pages/ConsultationPage";
 import { AiPage } from "@/pages/AiPage";
+import { AiChat } from "@/pages/AiChat";
 import { Courts } from "@/pages/Courts";
 import { AlimentCalc } from "@/pages/AlimentCalc";
 import { Tahlil } from "@/pages/Tahlil";
@@ -15,6 +16,7 @@ export type Page =
   | "ariza"
   | "consultation"
   | "ai"
+  | "ai_chat"
   | "courts"
   | "aliment_calc"
   | "tahlil"
@@ -30,7 +32,8 @@ export default function App() {
       {page === "home"         && <Home onNavigate={setPage} />}
       {page === "ariza"        && <ArizaCatalog onBack={() => setPage("home")} />}
       {page === "consultation" && <ConsultationPage onBack={() => setPage("home")} />}
-      {page === "ai"           && <AiPage onBack={() => setPage("home")} />}
+      {page === "ai"           && <AiPage onBack={() => setPage("home")} onStartChat={() => setPage("ai_chat")} />}
+      {page === "ai_chat"      && <AiChat onBack={() => setPage("ai")} onBuyCredits={() => setPage("ai")} />}
       {page === "courts"       && <Courts onBack={() => setPage("home")} />}
       {page === "aliment_calc" && <AlimentCalc onBack={() => setPage("home")} />}
       {page === "tahlil"       && <Tahlil onBack={() => setPage("home")} />}

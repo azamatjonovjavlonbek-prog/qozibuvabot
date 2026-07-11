@@ -2,36 +2,29 @@ import { useState } from "react";
 import { ChevronLeft, Bot, Sparkles, Zap, CreditCard, CheckCircle2, MessageSquare } from "lucide-react";
 import { sendOrder, closeMiniApp } from "@/lib/tg";
 
-interface Props { onBack: () => void; }
+interface Props {
+  onBack: () => void;
+  onStartChat: () => void;
+}
 
-export function AiPage({ onBack }: Props) {
-  const [sent, setSent] = useState<"chat" | "buy" | null>(null);
-
-  function handleStartChat() {
-    sendOrder({ type: "ai_chat" });
-    setSent("chat");
-    setTimeout(closeMiniApp, 1600);
-  }
+export function AiPage({ onBack, onStartChat }: Props) {
+  const [buying, setBuying] = useState(false);
 
   function handleBuyCredits() {
     sendOrder({ type: "ai_credits" });
-    setSent("buy");
+    setBuying(true);
     setTimeout(closeMiniApp, 1600);
   }
 
-  if (sent) {
+  if (buying) {
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", padding: 32, textAlign: "center" }}>
         <div style={{ width: 80, height: 80, borderRadius: 24, background: "rgba(168,85,247,0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
           <CheckCircle2 size={40} color="#A855F7" strokeWidth={1.6} />
         </div>
-        <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 10 }}>
-          {sent === "chat" ? "Bot chatiga qarang!" : "Buyurtma yuborildi!"}
-        </div>
+        <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 10 }}>Buyurtma yuborildi!</div>
         <div style={{ fontSize: 14, color: "var(--tg-muted)", lineHeight: 1.7 }}>
-          {sent === "chat"
-            ? "AI bilan suhbat boshlanmoqda..."
-            : "To'lov rekvizitlari bot chatiga yuborildi."}
+          To'lov rekvizitlari bot chatiga yuborildi.
         </div>
       </div>
     );
@@ -59,7 +52,7 @@ export function AiPage({ onBack }: Props) {
 
           {/* Free credits banner */}
           <div style={{ background: "linear-gradient(135deg,rgba(76,175,132,0.2),rgba(42,171,238,0.1))", border: "1px solid rgba(76,175,132,0.35)", borderRadius: 14, padding: "12px 16px", textAlign: "center", marginBottom: 18 }}>
-            <div style={{ fontSize: 12, color: "rgba(76,175,132,0.8)", marginBottom: 4, fontWeight: 600 }}>🎁 BEPUL SOVG'A</div>
+            <div style={{ fontSize: 12, color: "rgba(76,175,132,0.9)", marginBottom: 4, fontWeight: 700 }}>🎁 BEPUL SOVG'A</div>
             <div style={{ fontSize: 28, fontWeight: 900, color: "#4CAF84" }}>10 ta</div>
             <div style={{ fontSize: 13, color: "rgba(255,255,255,0.75)" }}>bepul kredit — har bir yangi foydalanuvchiga</div>
           </div>
@@ -85,7 +78,7 @@ export function AiPage({ onBack }: Props) {
         <div style={{ background: "var(--tg-card)", borderRadius: 16, padding: "4px 0", marginBottom: 16 }}>
           {[
             "Har qanday huquqiy savollarga javob",
-            "O'zbek va rus tillarida ishlaydi",
+            "To'g'ridan-to'g'ri mini app ichida suhbat",
             "Kreditlar tugagach qo'shimcha sotib olasiz",
           ].map((s) => (
             <div key={s} style={{ fontSize: 13, color: "var(--tg-muted)", padding: "12px 16px", borderBottom: "1px solid var(--tg-border)", display: "flex", gap: 10, alignItems: "center" }}>
@@ -97,7 +90,7 @@ export function AiPage({ onBack }: Props) {
 
       {/* Buttons */}
       <div style={{ padding: "12px 16px 24px", borderTop: "1px solid var(--tg-border)", display: "flex", flexDirection: "column", gap: 10 }}>
-        <button onClick={handleStartChat}
+        <button onClick={onStartChat}
           style={{ width: "100%", background: "linear-gradient(135deg,#7C3AED,#A855F7)", color: "#fff", border: "none", borderRadius: 14, padding: "15px 0", fontSize: 16, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 9 }}>
           <MessageSquare size={18} strokeWidth={2} /> AI bilan suhbat boshlash
         </button>
