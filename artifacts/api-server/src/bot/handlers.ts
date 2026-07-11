@@ -53,6 +53,8 @@ import { addUser, getUserCount, getTodayCount, getWeekCount, getMonthCount, getA
 import { recordBotActivity } from "./index";
 import { touchProfile } from "./userProfile";
 import { recordEvent, getStats, getStatsByPeriod, getActiveUsersCount, getUniqueJoinUsers } from "./statsStore";
+import { db, professionalRequestsTable } from "@workspace/db";
+import { eq, desc } from "drizzle-orm";
 
 const FONT_PATH = path.join(process.cwd(), "assets", "NotoSans-Regular.ttf");
 let FONT_BUFFER: Buffer;
@@ -662,10 +664,26 @@ export function setupHandlers(bot: TelegramBot): void {
         const userLang = getLang(targetUserId);
         await bot.sendMessage(chatId, `✅ Tasdiqlandi! Foydalanuvchiga xabar yuborildi.`);
         recordEvent(targetUserId, "professional_approved");
-        await bot.sendMessage(targetUserId,
-          t(userLang, "pro_approved_msg"),
+        const phoneMsg = userLang === "cyrillic"
+          ? `✅ *Тўловингиз тасдиқланди!*\n\nПрофессионал ариза буюртмангиз қабул қилинди.\n\n📞 Юристимиз телефон рақами:\n*${CONSULTATION_PHONE}*\n\nИш вақти: *${CONSULTATION_HOURS}*\nЗанг қилинг — юрист сиз билан аризани муҳокама қилади ва тайёр аризани Telegram орқали юборади.`
+          : `✅ *To'lovingiz tasdiqlandi!*\n\nProfessional ariza buyurtmangiz qabul qilindi.\n\n📞 Yuristimiz telefon raqami:\n*${CONSULTATION_PHONE}*\n\nIsh vaqti: *${CONSULTATION_HOURS}*\nQo'ng'iroq qiling — yurist siz bilan arizani muhokama qiladi va tayyor arizani Telegram orqali yuboradi.`;
+        await bot.sendMessage(targetUserId, phoneMsg,
           { parse_mode: "Markdown", reply_markup: backToMainKeyboard(userLang) }
         );
+        try {
+          const [latest] = await db.select({ id: professionalRequestsTable.id })
+            .from(professionalRequestsTable)
+            .where(eq(professionalRequestsTable.userId, targetUserId))
+            .orderBy(desc(professionalRequestsTable.createdAt))
+            .limit(1);
+          if (latest) {
+            await db.update(professionalRequestsTable)
+              .set({ status: "completed", updatedAt: new Date() })
+              .where(eq(professionalRequestsTable.id, latest.id));
+          }
+        } catch (dbErr) {
+          logger.error({ dbErr, targetUserId }, "admin_ok_p DB update xato");
+        }
         resetState(targetUserId);
         return;
       }
@@ -743,6 +761,74 @@ export function setupHandlers(bot: TelegramBot): void {
           t(userLang, "payment_rejected"),
           { parse_mode: "Markdown", reply_markup: backToMainKeyboard(userLang) }
         );
+        return;
+      }
+
+      // ── Admin: professional ariza narxini belgilash  prof_price:<reqId>:<amount> ──
+      if (data.startsWith("prof_price:")) {
+        const parts = data.split(":");
+        const reqId  = parseInt(parts[1]!);
+        const amount = parseInt(parts[2]!);
+        try {
+          const [req] = await db.select()
+            .from(professionalRequestsTable)
+            .where(eq(professionalRequestsTable.id, reqId))
+            .limit(1);
+          if (!req) {
+            await bot.answerCallbackQuery(query.id, { text: "❌ Ariza topilmadi." });
+            return;
+          }
+          const targetUserId = Number(req.userId);
+          await db.update(professionalRequestsTable)
+            .set({ status: "priced", price: amount, updatedAt: new Date() })
+            .where(eq(professionalRequestsTable.id, reqId));
+          setState(targetUserId, { step: "waiting_professional_check", pendingType: "professional", selectedServiceId: "general" });
+          const formatted = amount.toLocaleString("uz-UZ");
+          const userLang = getLang(targetUserId);
+          const payMsg = userLang === "cyrillic"
+            ? `💰 *Аризангиз кўриб чиқилди!*\n\nПрофессионал ариза нархи белгиланди: *${formatted} сўм*\n\nТўлов учун карта рақами:\n\`${CARD_NUMBER}\`\nКарта эгаси: *${CARD_OWNER}*\n\nТўловни амалга ошириб, чек (screenshot) расмини *шу чатга* юборинг. Юрист сиз билан тез орада боғланади.`
+            : `💰 *Arizangiz ko'rib chiqildi!*\n\nProfessional ariza narxi belgilandi: *${formatted} so'm*\n\nTo'lov uchun karta raqami:\n\`${CARD_NUMBER}\`\nKarta egasi: *${CARD_OWNER}*\n\nTo'lovni amalga oshirib, chek (screenshot) rasmini *shu chatga* yuboring. Yurist siz bilan tez orada bog'lanadi.`;
+          await bot.sendMessage(targetUserId, payMsg, { parse_mode: "Markdown" });
+          await bot.answerCallbackQuery(query.id, { text: `✅ Narx: ${formatted} so'm` });
+          await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId }).catch(() => {});
+          await bot.sendMessage(chatId, `✅ *Narx belgilandi: ${formatted} so'm*\nFoydalanuvchiga to'lov ko'rsatmasi yuborildi.`, { parse_mode: "Markdown" });
+        } catch (dbErr) {
+          logger.error({ dbErr, reqId }, "prof_price DB xato");
+          await bot.answerCallbackQuery(query.id, { text: "❌ Xato yuz berdi." });
+        }
+        return;
+      }
+
+      // ── Admin: professional ariza rad etish  prof_no_req:<reqId> ─────────
+      if (data.startsWith("prof_no_req:")) {
+        const reqId = parseInt(data.split(":")[1]!);
+        try {
+          const [req] = await db.select()
+            .from(professionalRequestsTable)
+            .where(eq(professionalRequestsTable.id, reqId))
+            .limit(1);
+          if (!req) {
+            await bot.answerCallbackQuery(query.id, { text: "❌ Ariza topilmadi." });
+            return;
+          }
+          const targetUserId = Number(req.userId);
+          await db.update(professionalRequestsTable)
+            .set({ status: "rejected", updatedAt: new Date() })
+            .where(eq(professionalRequestsTable.id, reqId));
+          const userLang = getLang(targetUserId);
+          await bot.sendMessage(targetUserId,
+            userLang === "cyrillic"
+              ? `❌ *Аризангиз рад этилди.*\n\nАфсуски, ҳозирча сизнинг аризангизни қабул қила олмаймиз. Бошқа савол ёки хизмат учун бош менюга қайтинг.`
+              : `❌ *Arizangiz rad etildi.*\n\nAfsuski, hozircha sizning arizangizni qabul qila olmaymiz. Boshqa savol yoki xizmat uchun bosh menyuga qaytng.`,
+            { parse_mode: "Markdown", reply_markup: backToMainKeyboard(userLang) }
+          );
+          await bot.answerCallbackQuery(query.id, { text: "❌ Ariza rad etildi." });
+          await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId }).catch(() => {});
+          await bot.sendMessage(chatId, `❌ *Ariza rad etildi.* Foydalanuvchiga xabar yuborildi.`, { parse_mode: "Markdown" });
+        } catch (dbErr) {
+          logger.error({ dbErr, reqId }, "prof_no_req DB xato");
+          await bot.answerCallbackQuery(query.id, { text: "❌ Xato yuz berdi." });
+        }
         return;
       }
 

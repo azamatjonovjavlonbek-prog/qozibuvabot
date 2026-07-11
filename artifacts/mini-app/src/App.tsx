@@ -9,6 +9,7 @@ import { Courts } from "@/pages/Courts";
 import { AlimentCalc } from "@/pages/AlimentCalc";
 import { Tahlil } from "@/pages/Tahlil";
 import { ProfessionalPage } from "@/pages/ProfessionalPage";
+import { MyRequestsPage } from "@/pages/MyRequestsPage";
 import "./index.css";
 
 export type Page =
@@ -20,7 +21,8 @@ export type Page =
   | "courts"
   | "aliment_calc"
   | "tahlil"
-  | "professional";
+  | "professional"
+  | "my_requests";
 
 export default function App() {
   const [page, setPage] = useState<Page>("home");
@@ -38,6 +40,7 @@ export default function App() {
       {page === "aliment_calc" && <AlimentCalc onBack={() => setPage("home")} />}
       {page === "tahlil"       && <Tahlil onBack={() => setPage("home")} />}
       {page === "professional" && <ProfessionalPage onBack={() => setPage("home")} />}
+      {page === "my_requests"  && <MyRequestsPage  onBack={() => setPage("home")} />}
     </div>
   );
 }

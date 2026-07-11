@@ -1,4 +1,4 @@
-import { FileText, MessageCircle, Bot, Scale, Landmark, Calculator, FileSearch, ChevronRight } from "lucide-react";
+import { FileText, MessageCircle, Bot, Scale, Landmark, Calculator, FileSearch, ChevronRight, ClipboardList } from "lucide-react";
 import type { Page } from "@/App";
 import { tgUser } from "@/lib/tg";
 
@@ -21,13 +21,22 @@ export function Home({ onNavigate }: Props) {
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       {/* Header */}
       <div style={{ background: "linear-gradient(180deg,#1A3A52,#1E2D40)", padding: "20px 16px 16px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 14, background: "linear-gradient(135deg,#2AABEE,#1A8FD1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Scale size={22} color="#fff" strokeWidth={2} />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ width: 44, height: 44, borderRadius: 14, background: "linear-gradient(135deg,#2AABEE,#1A8FD1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Scale size={22} color="#fff" strokeWidth={2} />
+            </div>
+            <div>
+              <div style={{ fontSize: 17, fontWeight: 700 }}>Qozibuva</div>
+              <div style={{ fontSize: 12, color: "var(--tg-muted)" }}>Huquqiy xizmatlar platformasi</div>
+            </div>
           </div>
-          <div>
-            <div style={{ fontSize: 17, fontWeight: 700 }}>Qozibuva</div>
-            <div style={{ fontSize: 12, color: "var(--tg-muted)" }}>Huquqiy xizmatlar platformasi</div>
+          <div
+            onClick={() => onNavigate("my_requests")}
+            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, cursor: "pointer", padding: "6px 10px", borderRadius: 12, background: "rgba(251,146,60,0.15)", border: "1px solid rgba(251,146,60,0.25)" }}
+          >
+            <ClipboardList size={18} color="#FB923C" strokeWidth={1.8} />
+            <span style={{ fontSize: 9, fontWeight: 700, color: "#FB923C", lineHeight: 1 }}>Arizalarim</span>
           </div>
         </div>
       </div>
@@ -57,7 +66,23 @@ export function Home({ onNavigate }: Props) {
           </div>
         ))}
       </div>
-      <div style={{ height: 24 }} />
+
+      {/* My Requests shortcut */}
+      <div style={{ margin: "8px 16px 24px" }}>
+        <div
+          onClick={() => onNavigate("my_requests")}
+          style={{ background: "linear-gradient(135deg,rgba(251,146,60,0.12),rgba(194,65,12,0.08))", borderRadius: 14, padding: "13px 16px", display: "flex", alignItems: "center", gap: 13, cursor: "pointer", border: "1px solid rgba(251,146,60,0.2)" }}
+        >
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(251,146,60,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <ClipboardList size={20} color="#FB923C" strokeWidth={1.8} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.3 }}>Mening arizalarim</div>
+            <div style={{ fontSize: 12, color: "#FB923C", fontWeight: 600, marginTop: 2 }}>Professional arizalar tarixi</div>
+          </div>
+          <ChevronRight size={18} color="#FB923C" strokeWidth={1.6} />
+        </div>
+      </div>
     </div>
   );
 }
