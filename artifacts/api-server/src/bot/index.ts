@@ -21,8 +21,8 @@ export function recordBotActivity(): void {
 async function createBot(): Promise<TelegramBot> {
   const tempBot = new TelegramBot(TOKEN!, { polling: false });
   try {
-    await tempBot.deleteWebHook();
-    logger.info("Webhook o'chirildi, polling boshlanyapti");
+    await tempBot.deleteWebHook({ drop_pending_updates: true });
+    logger.info("Webhook o'chirildi, eski updatelar tozalandi, polling boshlanyapti");
   } catch (err) {
     logger.warn({ err }, "Webhook o'chirishda xato (ehtimol yo'q edi)");
   }
