@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
-  FileText, MessageCircle, Bot, Scale, Home, List, Package, User,
-  ChevronRight, CheckCircle2, Clock, Sparkles,
+  FileText, MessageCircle, Bot, Scale, Home as HomeIcon, List, Package, User,
+  CheckCircle2, Clock, Sparkles,
 } from "lucide-react";
 
 const tgBlue = "#2AABEE";
@@ -19,7 +19,7 @@ const SERVICES = [
 ];
 
 const NAV = [
-  { id: "home",    icon: Home,    label: "Bosh sahifa" },
+  { id: "home",    icon: HomeIcon, label: "Bosh sahifa" },
   { id: "catalog", icon: List,    label: "Xizmatlar" },
   { id: "orders",  icon: Package, label: "Buyurtmalar" },
   { id: "profile", icon: User,    label: "Profil" },
