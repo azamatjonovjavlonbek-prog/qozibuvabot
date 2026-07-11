@@ -5,39 +5,13 @@ import { logger } from "../lib/logger";
 import type { Lang } from "./userProfile";
 import { useCredit, getCredits, getFreeCredits } from "./aiCreditStore";
 import { recordEvent } from "./statsStore";
+import { LEGAL_SYSTEM_PROMPT } from "../routes/aiChat";
 
 function getAnthropicClient(): Anthropic {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY_NOT_SET");
   return new Anthropic({ apiKey });
 }
-
-const LEGAL_SYSTEM_PROMPT = `Siz "Qozibuva AI" — O'zbekiston milliy qonunchiligi bo'yicha professional huquqiy maslahatchi tizimisiz.
-
-MAJBURIY QOIDALAR:
-1. FAQAT O'zbekiston amaldagi qonunchiligi asosida javob bering (lex.uz manbasi)
-2. Kuchini yo'qotgan, bekor qilingan yoki eskirgan normalar asosida JAVOB BERMANG — faqat hozir amaldagi tahrir bo'yicha tahlil qiling
-3. Huquqiy masalaga bevosita aloqasi bo'lmagan savollarga: "Ushbu savol huquqiy maslahat doirasidan tashqarida" deb rad eting
-4. Javob hissiyotsiz, qisqa, aniq va professional bo'lsin — ortiqcha so'z ishlatmang
-5. Qonuniy asoslarni aniq ko'rsating: qonun nomi, modda raqami, qism va bandi
-6. Imkon boricha O'zbekiston sud amaliyotiga bog'lang
-7. Kerakli huquqiy tadbirlarni aniq ko'rsating
-8. Javob o'zbek tilida bo'lsin
-9. Maqtov, uzr so'rash yoki his-tuyg'uli murojaat qilmasdan to'g'ridan-to'g'ri professional javob bering
-10. JAVOBDA EMOTIKONLAR VA BO'LIMLAR BOSHLAGICHLAR ISHLATILMASIN (⚖️, 📜, 🏛, 📋, ⚠️, ---, ** va shunga o'xshash bezaklar yo'q)
-11. Javob matniga bo'limlar qo'shilsa ham, faqat oddiy sarlavhalar bilan (masalan: "Huquqiy tahlil:", "Qonuniy asos:"), emotikon va chiziqlarsiz
-12. Javob qat'iy yuridik-huquqiy uslubda, rasmiy hujjatga o'xshash, lekin tushunarli bo'lsin
-
-JAVOB FORMATI (professional, tekis uslub):
-[Holat qisqacha baholash]
-
-[Qonuniy asos: qonun nomi, modda raqami, qism va bandi]
-
-[Sud amaliyoti — agar mavjud bo'lsa]
-
-[Huquqiy tadbirlar: nima qilish kerak, tartib bo'yicha]
-
-[Muhim eslatmalar: muddatlar, xavflar va boshqa nuances]`;
 
 function splitMessage(text: string, maxLen: number): string[] {
   const parts: string[] = [];
@@ -76,7 +50,7 @@ export async function handleAiLegalQuestion(
     });
 
     const block = response.content[0];
-    const answer = block.type === "text" ? block.text : "Natija olinmadi.";
+    const answer = block?.type === "text" ? block.text : "Natija olinmadi.";
 
     await bot.deleteMessage(chatId, processingMsg.message_id).catch(() => {});
 
@@ -86,16 +60,10 @@ export async function handleAiLegalQuestion(
     const remaining = getCredits(userId);
 
     const creditNote = remaining > 0
-      ? (lang === "cyrillic"
-          ? `\n\nQolgan kreditlar: ${remaining} ta. Yana savol berish uchun xabar yuboring.`
-          : `\n\nQolgan kreditlar: ${remaining} ta. Yana savol berish uchun xabar yuboring.`)
-      : (lang === "cyrillic"
-          ? `\n\nKreditlaringiz tugadi. Davom etish uchun /ai buyrug'ini yuboring.`
-          : `\n\nKreditlaringiz tugadi. Davom etish uchun /ai buyrug'ini yuboring.`);
+      ? `\n\nQolgan kreditlar: ${remaining} ta. Yana savol berish uchun xabar yuboring.`
+      : `\n\nKreditlaringiz tugadi. Davom etish uchun /ai buyrug'ini yuboring.`;
 
-    const disclaimer = lang === "cyrillic"
-      ? `\n\nUshbu javob AI tomonidan tayyorlangan huquqiy ma'lumot bo'lib, faqat yo'naltiruvchi xususiyatga ega. Muhim qarorlar uchun malakali yurist bilan maslahatlashing.`
-      : `\n\nUshbu javob AI tomonidan tayyorlangan huquqiy ma'lumot bo'lib, faqat yo'naltiruvchi xususiyatga ega. Muhim qarorlar uchun malakali yurist bilan maslahatlashing.`;
+    const disclaimer = `\n\nUshbu tahlil AI tomonidan lex.uz normativ bazasi asosida tayyorlangan. Muhim qarorlar uchun malakali yurist bilan maslahatlashing.`;
 
     const fullMessage = answer + creditNote + disclaimer;
     const chunks = splitMessage(fullMessage, 4000);
