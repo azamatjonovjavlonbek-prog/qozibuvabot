@@ -735,7 +735,7 @@ export function setupHandlers(bot: TelegramBot): void {
       const lang = getLang(userId);
       try {
         const payload = JSON.parse(msg.web_app_data.data) as {
-          type: "shablon" | "consultation" | "ai_credits" | "tahlil_request" | "professional_ariza";
+          type: "shablon" | "consultation" | "ai_credits" | "ai_chat" | "tahlil_request" | "professional_ariza";
           catId?: string;
           label?: string;
         };
@@ -787,6 +787,38 @@ export function setupHandlers(bot: TelegramBot): void {
             parse_mode: "Markdown",
             reply_markup: cancelKeyboard(lang),
           });
+        } else if (payload.type === "ai_chat") {
+          recordEvent(userId, "mini_app_ai_chat_start");
+          const credits = getCredits(userId);
+          if (credits > 0) {
+            setState(userId, { step: "ai_legal_chat" });
+            const privacyNote = lang === "cyrillic"
+              ? "_Шахсий маълумотларингизни ёзманг._"
+              : "_Shaxsiy ma'lumotlaringizni yozmang._";
+            const txt = lang === "cyrillic"
+              ? `⚖️ *Qozibuva AI — Ҳуқуқий Маслаҳат*\n\n${privacyNote}\n\n📊 Кредитлар: *${credits} та* (ҳар бир савол — 1 та кредит)\n\n❓ *Ҳуқуқий саволингизни ёзинг:*\n\n_Савол фақат Ўзбекистон қонунчилигига оид бўлиши керак._`
+              : `⚖️ *Qozibuva AI — Huquqiy Maslahat*\n\n${privacyNote}\n\n📊 Kreditlar: *${credits} ta* (har bir savol — 1 ta kredit)\n\n❓ *Huquqiy savolingizni yozing:*\n\n_Savol faqat O'zbekiston qonunchiligiga oid bo'lishi kerak._`;
+            await bot.sendMessage(chatId, txt, {
+              parse_mode: "Markdown",
+              reply_markup: aiCreditsKeyboard(lang),
+            });
+          } else {
+            const price = AI_CREDIT_PRICE;
+            const priceStr = `${price.toLocaleString()} ${lang === "cyrillic" ? "сўм" : "so'm"}`;
+            setState(userId, {
+              step: "waiting_ai_check",
+              pendingChatId: chatId,
+              pendingUsername: username,
+              pendingType: "ai",
+            });
+            const txt = lang === "cyrillic"
+              ? `⚖️ *Qozibuva AI*\n\n❌ Кредитлар тугади.\n\nЯнги 5 та кредит сотиб олиш учун:\n\n💳 Карта рақами:\n\`${CARD_NUMBER}\`\nКарта эгаси: *${CARD_OWNER}*\nСумма: *${priceStr}*\n\nТўлов чекини шу чатга юборинг.`
+              : `⚖️ *Qozibuva AI*\n\n❌ Kreditlar tugadi.\n\nYangi 5 ta kredit sotib olish uchun:\n\n💳 Karta raqami:\n\`${CARD_NUMBER}\`\nKarta egasi: *${CARD_OWNER}*\nSumma: *${priceStr}*\n\nTo'lov chekini shu chatga yuboring.`;
+            await bot.sendMessage(chatId, txt, {
+              parse_mode: "Markdown",
+              reply_markup: cancelKeyboard(lang),
+            });
+          }
         } else if (payload.type === "tahlil_request") {
           recordEvent(userId, "mini_app_tahlil_request");
           setState(userId, { step: "waiting_tahlil_doc" });
