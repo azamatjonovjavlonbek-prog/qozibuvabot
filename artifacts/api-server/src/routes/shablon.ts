@@ -46,13 +46,6 @@ router.post("/shablon/pay", upload.single("file"), async (req, res) => {
     return;
   }
 
-  const bot = getBot();
-  if (!bot) {
-    logger.warn({ userId, orderId }, "Dev: bot yo'q, admin notification o'tkazib yuborildi");
-    res.json({ ok: true, orderId });
-    return;
-  }
-
   try {
     const userName = displayName(user);
     const price = "29 000 so'm";
@@ -74,11 +67,32 @@ router.post("/shablon/pay", upload.single("file"), async (req, res) => {
       ]],
     };
 
-    await bot.sendPhoto(ADMIN_ID, file.buffer, {
-      caption,
-      parse_mode: "Markdown",
-      reply_markup: keyboard,
-    });
+    // Bot instance orqali yuborish (Railway), aks holda Telegram HTTP API orqali (Replit)
+    const bot = getBot();
+    if (bot) {
+      await bot.sendPhoto(ADMIN_ID, file.buffer, {
+        caption,
+        parse_mode: "Markdown",
+        reply_markup: keyboard,
+      });
+    } else {
+      // To'g'ridan Telegram HTTP API orqali yuborish
+      const token = botToken();
+      const form = new FormData();
+      form.append("chat_id", String(ADMIN_ID));
+      form.append("caption", caption);
+      form.append("parse_mode", "Markdown");
+      form.append("reply_markup", JSON.stringify(keyboard));
+      form.append("photo", new Blob([new Uint8Array(file.buffer)], { type: file.mimetype }), file.originalname || "check.jpg");
+      const tgRes = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+        method: "POST",
+        body: form,
+      });
+      if (!tgRes.ok) {
+        const err = await tgRes.text();
+        logger.error({ err, userId }, "Telegram API orqali adminga yuborishda xato");
+      }
+    }
 
     logger.info({ userId, catId, orderId }, "Shablon ariza cheki adminga yuborildi");
   } catch (err) {
