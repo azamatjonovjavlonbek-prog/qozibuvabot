@@ -1,10 +1,18 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Landmark, Phone, Mail, MapPin, Copy, CheckCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, Landmark, Phone, Mail, MapPin, Copy, CheckCircle, Scale, ShieldAlert, Users, Building2, TrendingUp, Building } from "lucide-react";
 import { COURT_TYPES, REGIONS, OLIY_SUD, getCourts, type CourtType, type CourtEntry } from "@/lib/courtsData";
 
 interface Props { onBack: () => void; }
 
 type Step = "type" | "region" | "list" | "detail";
+
+const TYPE_ICONS: Record<CourtType, { icon: typeof Landmark; color: string; bg: string }> = {
+  oliy: { icon: Scale,       color: "#2AABEE", bg: "rgba(42,171,238,0.14)"  },
+  jin:  { icon: ShieldAlert, color: "#F87171", bg: "rgba(248,113,113,0.14)" },
+  fuq:  { icon: Users,       color: "#4CAF84", bg: "rgba(76,175,132,0.14)"  },
+  mam:  { icon: Building2,   color: "#FB923C", bg: "rgba(251,146,60,0.14)"  },
+  iqt:  { icon: TrendingUp,  color: "#A855F7", bg: "rgba(168,85,247,0.14)"  },
+};
 
 export function Courts({ onBack }: Props) {
   const [step, setStep] = useState<Step>("type");
@@ -45,6 +53,7 @@ export function Courts({ onBack }: Props) {
   const courts = selectedType && selectedRegion ? getCourts(selectedType, selectedRegion) : [];
   const regionName = REGIONS.find(r => r.id === selectedRegion)?.name ?? "";
   const typeName = COURT_TYPES.find(t => t.id === selectedType)?.name ?? "";
+  const typeStyle = selectedType ? TYPE_ICONS[selectedType] : null;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -53,11 +62,18 @@ export function Courts({ onBack }: Props) {
         <div onClick={step === "type" ? onBack : goBack} style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.07)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
           <ChevronLeft size={20} strokeWidth={2} />
         </div>
-        <div style={{ flex: 1, overflow: "hidden" }}>
-          <div style={{ fontSize: 17, fontWeight: 700 }}>Sud manzillari</div>
-          {step !== "type" && <div style={{ fontSize: 11, color: "var(--tg-muted)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-            {typeName}{regionName ? ` • ${regionName}` : ""}
-          </div>}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, overflow: "hidden" }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(42,171,238,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <Landmark size={18} color="#2AABEE" strokeWidth={1.8} />
+          </div>
+          <div style={{ overflow: "hidden" }}>
+            <div style={{ fontSize: 17, fontWeight: 700 }}>Sud manzillari</div>
+            {step !== "type" && (
+              <div style={{ fontSize: 11, color: "var(--tg-muted)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {typeName}{regionName ? ` • ${regionName}` : ""}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -67,16 +83,20 @@ export function Courts({ onBack }: Props) {
         {step === "type" && (
           <>
             <div style={{ fontSize: 11, fontWeight: 700, color: "var(--tg-muted)", marginBottom: 12, textTransform: "uppercase", letterSpacing: 0.8 }}>Sud turini tanlang</div>
-            {COURT_TYPES.map(({ id, name, emoji }) => (
-              <div key={id} onClick={() => selectType(id)}
-                style={{ background: "var(--tg-card)", borderRadius: 14, padding: "14px 16px", marginBottom: 8, display: "flex", alignItems: "center", gap: 14, cursor: "pointer", border: "1px solid var(--tg-border)" }}>
-                <div style={{ fontSize: 22, width: 44, height: 44, borderRadius: 12, background: "rgba(42,171,238,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  {emoji}
+            {COURT_TYPES.map(({ id, name }) => {
+              const style = TYPE_ICONS[id];
+              const IconComp = style.icon;
+              return (
+                <div key={id} onClick={() => selectType(id)}
+                  style={{ background: "var(--tg-card)", borderRadius: 14, padding: "14px 16px", marginBottom: 8, display: "flex", alignItems: "center", gap: 14, cursor: "pointer", border: "1px solid var(--tg-border)", transition: "opacity 0.15s" }}>
+                  <div style={{ width: 46, height: 46, borderRadius: 13, background: style.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <IconComp size={22} color={style.color} strokeWidth={1.7} />
+                  </div>
+                  <div style={{ flex: 1, fontSize: 14, fontWeight: 500, lineHeight: 1.35 }}>{name}</div>
+                  <ChevronRight size={18} color="var(--tg-muted)" strokeWidth={1.6} />
                 </div>
-                <div style={{ flex: 1, fontSize: 14, fontWeight: 500, lineHeight: 1.35 }}>{name}</div>
-                <ChevronRight size={18} color="var(--tg-muted)" />
-              </div>
-            ))}
+              );
+            })}
           </>
         )}
 
@@ -86,10 +106,12 @@ export function Courts({ onBack }: Props) {
             <div style={{ fontSize: 11, fontWeight: 700, color: "var(--tg-muted)", marginBottom: 12, textTransform: "uppercase", letterSpacing: 0.8 }}>Viloyatni tanlang</div>
             {REGIONS.map(({ id, name }) => (
               <div key={id} onClick={() => selectRegion(id)}
-                style={{ background: "var(--tg-card)", borderRadius: 12, padding: "13px 15px", marginBottom: 6, display: "flex", alignItems: "center", gap: 12, cursor: "pointer", border: "1px solid var(--tg-border)" }}>
-                <Landmark size={16} color="var(--tg-muted)" strokeWidth={1.6} style={{ flexShrink: 0 }} />
+                style={{ background: "var(--tg-card)", borderRadius: 12, padding: "13px 15px", marginBottom: 6, display: "flex", alignItems: "center", gap: 12, cursor: "pointer", border: "1px solid var(--tg-border)", transition: "opacity 0.15s" }}>
+                <div style={{ width: 34, height: 34, borderRadius: 9, background: "rgba(42,171,238,0.1)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <MapPin size={15} color="#2AABEE" strokeWidth={1.8} />
+                </div>
                 <div style={{ flex: 1, fontSize: 14, fontWeight: 500 }}>{name}</div>
-                <ChevronRight size={16} color="var(--tg-muted)" />
+                <ChevronRight size={16} color="var(--tg-muted)" strokeWidth={1.6} />
               </div>
             ))}
           </>
@@ -102,23 +124,23 @@ export function Courts({ onBack }: Props) {
               {courts.length} ta sud topildi
             </div>
             {courts.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "40px 20px", color: "var(--tg-muted)" }}>
-                <div style={{ fontSize: 36, marginBottom: 12 }}>🏛</div>
+              <div style={{ textAlign: "center", padding: "48px 20px", color: "var(--tg-muted)" }}>
+                <div style={{ width: 64, height: 64, borderRadius: 18, background: "rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
+                  <Building size={28} color="var(--tg-muted)" strokeWidth={1.5} />
+                </div>
                 <div style={{ fontSize: 14 }}>Ushbu bo'yicha ma'lumot mavjud emas</div>
               </div>
             ) : courts.map((court, i) => (
               <div key={i} onClick={() => { setSelectedCourt(court); setStep("detail"); }}
-                style={{ background: "var(--tg-card)", borderRadius: 14, padding: "14px 15px", marginBottom: 8, cursor: "pointer", border: "1px solid var(--tg-border)" }}>
-                <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
-                  <div style={{ width: 38, height: 38, borderRadius: 10, background: "rgba(42,171,238,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <Landmark size={16} color="#2AABEE" strokeWidth={1.8} />
-                  </div>
-                  <div style={{ flex: 1, overflow: "hidden" }}>
-                    <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 4, lineHeight: 1.3 }}>{court.name}</div>
-                    <div style={{ fontSize: 12, color: "var(--tg-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{court.address}</div>
-                  </div>
-                  <ChevronRight size={16} color="var(--tg-muted)" style={{ flexShrink: 0 }} />
+                style={{ background: "var(--tg-card)", borderRadius: 14, padding: "14px 15px", marginBottom: 8, cursor: "pointer", border: "1px solid var(--tg-border)", display: "flex", alignItems: "flex-start", gap: 12, transition: "opacity 0.15s" }}>
+                <div style={{ width: 40, height: 40, borderRadius: 11, background: typeStyle?.bg ?? "rgba(42,171,238,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  {typeStyle && <typeStyle.icon size={18} color={typeStyle.color} strokeWidth={1.8} />}
                 </div>
+                <div style={{ flex: 1, overflow: "hidden" }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 4, lineHeight: 1.3 }}>{court.name}</div>
+                  <div style={{ fontSize: 12, color: "var(--tg-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{court.address}</div>
+                </div>
+                <ChevronRight size={16} color="var(--tg-muted)" style={{ flexShrink: 0, marginTop: 2 }} strokeWidth={1.6} />
               </div>
             ))}
           </>
@@ -128,13 +150,16 @@ export function Courts({ onBack }: Props) {
         {step === "detail" && selectedCourt && (
           <div>
             <div style={{ background: "var(--tg-card)", borderRadius: 18, padding: 20, marginBottom: 12 }}>
-              <div style={{ width: 64, height: 64, borderRadius: 18, background: "rgba(42,171,238,0.15)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
-                <Landmark size={28} color="#2AABEE" strokeWidth={1.6} />
+              <div style={{ width: 64, height: 64, borderRadius: 18, background: typeStyle?.bg ?? "rgba(42,171,238,0.15)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+                {typeStyle
+                  ? <typeStyle.icon size={28} color={typeStyle.color} strokeWidth={1.6} />
+                  : <Landmark size={28} color="#2AABEE" strokeWidth={1.6} />
+                }
               </div>
               <div style={{ fontSize: 16, fontWeight: 700, textAlign: "center", marginBottom: 18, lineHeight: 1.4 }}>{selectedCourt.name}</div>
 
               {/* Address */}
-              <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "12px 14px", marginBottom: 8, display: "flex", gap: 10, alignItems: "flex-start" }}
+              <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "12px 14px", marginBottom: 8, display: "flex", gap: 10, alignItems: "flex-start", cursor: "pointer" }}
                 onClick={() => copyText(selectedCourt.address, "addr")}>
                 <MapPin size={16} color="#2AABEE" style={{ flexShrink: 0, marginTop: 2 }} strokeWidth={1.8} />
                 <div style={{ flex: 1 }}>
@@ -152,12 +177,13 @@ export function Courts({ onBack }: Props) {
                     <div style={{ fontSize: 11, color: "var(--tg-muted)", marginBottom: 3 }}>Telefon</div>
                     <div style={{ fontSize: 14, fontWeight: 600, color: "#4CAF84" }}>{selectedCourt.phone}</div>
                   </div>
+                  <ChevronRight size={15} color="var(--tg-muted)" strokeWidth={1.6} />
                 </div>
               </a>
 
               {/* Email */}
               {selectedCourt.email && (
-                <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "12px 14px", display: "flex", gap: 10, alignItems: "center" }}
+                <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "12px 14px", display: "flex", gap: 10, alignItems: "center", cursor: "pointer" }}
                   onClick={() => copyText(selectedCourt.email!, "email")}>
                   <Mail size={16} color="#A855F7" strokeWidth={1.8} />
                   <div style={{ flex: 1 }}>
