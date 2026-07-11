@@ -9,7 +9,7 @@ interface Props {
 }
 
 const PRICE_MAP: Record<string, string> = {
-  shablon: "15 000 so'm",
+  shablon: "29 000 so'm",
   consultation: "99 000 so'm",
   ai_credits: "50 000 so'm",
 };

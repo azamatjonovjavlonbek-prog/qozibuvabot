@@ -735,7 +735,7 @@ export function setupHandlers(bot: TelegramBot): void {
       const lang = getLang(userId);
       try {
         const payload = JSON.parse(msg.web_app_data.data) as {
-          type: "shablon" | "consultation" | "ai_credits";
+          type: "shablon" | "consultation" | "ai_credits" | "tahlil_request" | "professional_ariza";
           catId?: string;
           label?: string;
         };
@@ -787,6 +787,29 @@ export function setupHandlers(bot: TelegramBot): void {
             parse_mode: "Markdown",
             reply_markup: cancelKeyboard(lang),
           });
+        } else if (payload.type === "tahlil_request") {
+          recordEvent(userId, "mini_app_tahlil_request");
+          setState(userId, { step: "waiting_tahlil_doc" });
+          const txt = lang === "cyrillic"
+            ? `📄 *Ҳужжат таҳлили*\n\nAI ҳужжатингизни таҳлил қилиши учун:\n\n1️⃣ Ушбу чатга ҳужжатни юборинг (PDF, Word ёки расм)\n2️⃣ AI ҳужжатни ўқиб, ҳуқуқий баҳо беради\n\n⚠️ Бу хизмат *AI кредит* таlab қилади.`
+            : `📄 *Hujjat tahlili*\n\nAI hujjatingizni tahlil qilishi uchun:\n\n1️⃣ Ushbu chatga hujjatni yuboring (PDF, Word yoki rasm)\n2️⃣ AI hujjatni o'qib, huquqiy baho beradi\n\n⚠️ Bu xizmat *AI kredit* talab qiladi.`;
+          await bot.sendMessage(chatId, txt, { parse_mode: "Markdown" });
+        } else if (payload.type === "professional_ariza") {
+          recordEvent(userId, "mini_app_professional_order");
+          setState(userId, {
+            step: "waiting_professional_check",
+            selectedServiceId: "general",
+            pendingChatId: chatId,
+            pendingUsername: username,
+            pendingType: "professional",
+          });
+          const txt = lang === "cyrillic"
+            ? `✍️ *Professional ariza buyurtmasi qabul qilindi!*\n\nYuristimiz siz bilan tez orada bog'lanadi va narxni aniqlashtiradi.\n\n💰 Narxi: *199 000 so'mdan 1 000 000 so'mgacha*\n(murakkabiikka qarab)`
+            : `✍️ *Professional ariza buyurtmasi qabul qilindi!*\n\nYuristimiz siz bilan tez orada bog'lanadi va narxni aniqlashtiradi.\n\n💰 Narxi: *199 000 so'mdan 1 000 000 so'mgacha*\n(murakkablikka qarab)`;
+          await bot.sendMessage(chatId, txt, { parse_mode: "Markdown" });
+          // Notify admin
+          const adminMsg = `✍️ *Professional ariza buyurtmasi (Mini App)*\n\nFoydalanuvchi: ${username ? `@${username}` : `ID: ${userId}`}\nChat ID: \`${chatId}\``;
+          await bot.sendMessage(ADMIN_ID, adminMsg, { parse_mode: "Markdown" }).catch(() => {});
         }
       } catch (err) {
         logger.error({ err }, "web_app_data handleda xato");
