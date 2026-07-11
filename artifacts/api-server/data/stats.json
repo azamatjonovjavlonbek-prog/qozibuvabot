@@ -23,6 +23,12 @@
       "timestamp": 1783781127338,
       "type": "ai_question",
       "detail": "free"
+    },
+    {
+      "userId": 0,
+      "timestamp": 1783781302611,
+      "type": "ai_question",
+      "detail": "free"
     }
   ]
 }
