@@ -1300,9 +1300,29 @@ export function setupHandlers(bot: TelegramBot): void {
       amount = SHABLON_PRICE;
       adminKeyboard = adminApproveKeyboard(userId, "shablon", state.selectedServiceId);
     } else if (state.step === "waiting_professional_check") {
-      serviceLabel = `✍️ Professional ariza`;
+      // DB ga saqlash va narx belgilash klaviaturasi
+      let reqId: number;
+      try {
+        const [inserted] = await db.insert(professionalRequestsTable).values({
+          userId: userId,
+          description: "(Bot orqali to'lov cheki yuborildi)",
+          status: "pending",
+        }).returning({ id: professionalRequestsTable.id });
+        reqId = inserted!.id;
+      } catch (dbErr) {
+        logger.error({ dbErr, userId }, "Professional ariza DB ga saqlanmadi");
+        reqId = 0;
+      }
+      serviceLabel = `✍️ Professional ariza${reqId ? ` #${reqId}` : ""}`;
       amount = 0;
-      adminKeyboard = adminApproveKeyboard(userId, "professional");
+      adminKeyboard = reqId
+        ? {
+            inline_keyboard: [
+              [{ text: "✏️ Narx belgilash", callback_data: `set_price_req:${reqId}` }],
+              [{ text: "❌ Rad etish",       callback_data: `prof_no_req:${reqId}` }],
+            ],
+          }
+        : adminApproveKeyboard(userId, "professional");
     } else {
       serviceLabel = `📞 Konsultatsiya`;
       amount = CONSULTATION_PRICE;
@@ -1318,7 +1338,7 @@ export function setupHandlers(bot: TelegramBot): void {
       `🆔 ID: \`${userId}\`\n` +
       `${serviceLabel}\n` +
       `${amountText}\n` +
-      `Chekni tekshirib tasdiqlang yoki rad eting:`;
+      `Chekni tekshirib, narx belgilang yoki rad eting:`;
 
     try {
       if (hasPhoto) {
