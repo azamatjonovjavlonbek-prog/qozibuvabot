@@ -106,7 +106,6 @@ export async function startBot(): Promise<void> {
   bot.setMyCommands([
     { command: "start", description: "Botni ishga tushirish" },
     { command: "help",  description: "Yordam" },
-    { command: "clean", description: "Chatni tozalash" },
   ]).catch((err) => logger.error({ err }, "setMyCommands xato"));
 
   fetch(`https://api.telegram.org/bot${TOKEN}/setChatMenuButton`, {

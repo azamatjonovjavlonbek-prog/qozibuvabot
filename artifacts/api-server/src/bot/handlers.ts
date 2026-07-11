@@ -158,6 +158,15 @@ export function setupHandlers(bot: TelegramBot): void {
       }
 
       resetState(userId);
+      const lang = getLang(userId);
+      if (isRegistered(userId)) {
+        // Allaqachon ro'yxatdan o'tgan — yangi klaviatura bilan bosh menyu
+        await bot.sendMessage(chatId, t(lang, "main_menu"), {
+          parse_mode: "Markdown",
+          reply_markup: mainMenuKeyboard(lang),
+        });
+        return;
+      }
       setState(userId, { step: "selecting_language" });
       await bot.sendMessage(chatId,
         `👋 Assalomu alaykum! / Ассалому алайкум!\n\n🌐 Iltimos, tilni tanlang / Илтимос, тилни танланг:`,
