@@ -1,18 +1,30 @@
-import { useState } from "react";
-import { ChevronLeft, Phone, Clock, Timer, CreditCard, CheckCircle2, Copy, Check, ArrowRight, MessageCircle } from "lucide-react";
-import { sendOrder, closeMiniApp } from "@/lib/tg";
+import { useState, useRef } from "react";
+import { ChevronLeft, Phone, Clock, Timer, CreditCard, CheckCircle2, Copy, Check, ArrowRight, Upload, ImageIcon, Loader2, AlertCircle } from "lucide-react";
+import { sendOrder, closeMiniApp, tg } from "@/lib/tg";
 
 const CARD_NUMBER = "9860 3501 4913 3539";
 const CARD_OWNER = "Javlonbek Azamatjonov";
 const CONSULTATION_PRICE = "99 000 so'm";
 
-interface Props { onBack: () => void; }
+function getInitData(): string {
+  try { return tg.initData ?? ""; } catch { return ""; }
+}
 
-type Step = "info" | "payment" | "sent";
+function getApiBase(): string {
+  const base = import.meta.env.BASE_URL as string | undefined;
+  return (base ?? "").replace(/\/$/, "").replace(/\/mini-app$/, "") + "/api";
+}
+
+interface Props { onBack: () => void; }
+type Step = "info" | "payment" | "uploading" | "sent";
 
 export function ConsultationPage({ onBack }: Props) {
   const [step, setStep] = useState<Step>("info");
   const [copied, setCopied] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   function handleOrder() {
     sendOrder({ type: "consultation" });
@@ -25,25 +37,75 @@ export function ConsultationPage({ onBack }: Props) {
     setTimeout(() => setCopied(false), 2000);
   }
 
-  function handleSentCheck() {
-    setStep("sent");
-    setTimeout(closeMiniApp, 2000);
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setFile(f);
+    setUploadError(null);
+    const reader = new FileReader();
+    reader.onload = (ev) => setPreview(ev.target?.result as string);
+    reader.readAsDataURL(f);
   }
 
+  async function handleUpload() {
+    if (!file) {
+      setUploadError("Iltimos, to'lov chekini tanlang.");
+      return;
+    }
+    setStep("uploading");
+    setUploadError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("initData", getInitData());
+
+      const res = await fetch(`${getApiBase()}/check/upload`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(err.error ?? "upload_failed");
+      }
+
+      setStep("sent");
+      setTimeout(closeMiniApp, 3500);
+    } catch {
+      setStep("payment");
+      setUploadError("Chek yuborishda xato yuz berdi. Qaytadan urinib ko'ring.");
+    }
+  }
+
+  /* ── SENT ── */
   if (step === "sent") {
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", padding: 32, textAlign: "center" }}>
         <div style={{ width: 80, height: 80, borderRadius: 24, background: "rgba(76,175,132,0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
           <CheckCircle2 size={40} color="#4CAF84" strokeWidth={1.6} />
         </div>
-        <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 10 }}>Buyurtma qabul qilindi!</div>
+        <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 10 }}>Chek yuborildi!</div>
         <div style={{ fontSize: 14, color: "var(--tg-muted)", lineHeight: 1.7 }}>
-          To'lov chekingizni bot chatiga yuboring. Administrator tasdiqlashi bilan telefon raqam yuboriladi.
+          Administrator tekshirib, tez orada javob beradi.<br />
+          Tasdiqlangach <strong style={{ color: "var(--tg-text)" }}>telefon raqam</strong> bot orqali yuboriladi.
         </div>
       </div>
     );
   }
 
+  /* ── UPLOADING ── */
+  if (step === "uploading") {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", padding: 32, gap: 16 }}>
+        <Loader2 size={48} color="#4CAF84" style={{ animation: "spin 1s linear infinite" }} />
+        <div style={{ fontSize: 16, fontWeight: 700 }}>Chek yuborilmoqda...</div>
+        <div style={{ fontSize: 13, color: "var(--tg-muted)" }}>Bir oz kuting</div>
+      </div>
+    );
+  }
+
+  /* ── PAYMENT ── */
   if (step === "payment") {
     return (
       <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -57,45 +119,32 @@ export function ConsultationPage({ onBack }: Props) {
           </div>
         </div>
 
-        <div style={{ padding: "16px", flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ padding: "16px", flex: 1, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
 
           {/* Xizmat va summa */}
-          <div style={{ background: "var(--tg-card)", borderRadius: 16, padding: 16, border: "1px solid var(--tg-border)" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-              <span style={{ fontSize: 13, color: "var(--tg-muted)" }}>Xizmat</span>
-              <span style={{ fontSize: 14, fontWeight: 700 }}>Konsultatsiya</span>
+          <div style={{ background: "var(--tg-card)", borderRadius: 16, padding: 16, border: "1px solid var(--tg-border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div>
+              <div style={{ fontSize: 12, color: "var(--tg-muted)", marginBottom: 3 }}>Xizmat</div>
+              <div style={{ fontSize: 14, fontWeight: 700 }}>Konsultatsiya</div>
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: 13, color: "var(--tg-muted)" }}>Summa</span>
-              <span style={{ fontSize: 16, fontWeight: 800, color: "#4CAF84" }}>{CONSULTATION_PRICE}</span>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ fontSize: 12, color: "var(--tg-muted)", marginBottom: 3 }}>Summa</div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: "#4CAF84" }}>{CONSULTATION_PRICE}</div>
             </div>
           </div>
 
           {/* Karta raqami */}
           <div style={{ background: "var(--tg-card)", borderRadius: 16, padding: 16, border: "1px solid var(--tg-border)" }}>
-            <div style={{ fontSize: 12, color: "var(--tg-muted)", marginBottom: 10, fontWeight: 600, letterSpacing: "0.5px", textTransform: "uppercase" }}>
+            <div style={{ fontSize: 11, color: "var(--tg-muted)", fontWeight: 600, letterSpacing: "0.5px", textTransform: "uppercase", marginBottom: 10 }}>
               Karta ma'lumotlari
             </div>
-            <button
-              onClick={copyCard}
-              style={{
-                width: "100%", background: "rgba(42,171,238,0.08)", border: "1.5px dashed rgba(42,171,238,0.35)",
-                borderRadius: 12, padding: "14px 16px", cursor: "pointer",
-                display: "flex", alignItems: "center", justifyContent: "space-between",
-                marginBottom: 10,
-              }}
-            >
+            <button onClick={copyCard} style={{ width: "100%", background: "rgba(42,171,238,0.08)", border: "1.5px dashed rgba(42,171,238,0.35)", borderRadius: 12, padding: "14px 16px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
               <div style={{ textAlign: "left" }}>
-                <div style={{ fontSize: 12, color: "var(--tg-muted)", marginBottom: 4 }}>Karta raqami</div>
-                <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: "2px", color: "var(--tg-text)", fontFamily: "monospace" }}>
-                  {CARD_NUMBER}
-                </div>
+                <div style={{ fontSize: 11, color: "var(--tg-muted)", marginBottom: 4 }}>Karta raqami (bosib nusxa oling)</div>
+                <div style={{ fontSize: 19, fontWeight: 800, letterSpacing: "2px", color: "var(--tg-text)", fontFamily: "monospace" }}>{CARD_NUMBER}</div>
               </div>
               <div style={{ width: 34, height: 34, borderRadius: 9, background: copied ? "rgba(76,175,132,0.15)" : "rgba(42,171,238,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                {copied
-                  ? <Check size={16} color="#4CAF84" strokeWidth={2.2} />
-                  : <Copy size={16} color="#2AABEE" strokeWidth={2} />
-                }
+                {copied ? <Check size={16} color="#4CAF84" strokeWidth={2.2} /> : <Copy size={16} color="#2AABEE" strokeWidth={2} />}
               </div>
             </button>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 2px" }}>
@@ -104,35 +153,61 @@ export function ConsultationPage({ onBack }: Props) {
             </div>
           </div>
 
+          {/* Chek yuklash */}
+          <div style={{ background: "var(--tg-card)", borderRadius: 16, padding: 16, border: "1px solid var(--tg-border)" }}>
+            <div style={{ fontSize: 11, color: "var(--tg-muted)", fontWeight: 600, letterSpacing: "0.5px", textTransform: "uppercase", marginBottom: 10 }}>
+              To'lov cheki (screenshot)
+            </div>
+
+            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} style={{ display: "none" }} />
+
+            {preview ? (
+              <div style={{ position: "relative", marginBottom: 10 }}>
+                <img src={preview} alt="Chek" style={{ width: "100%", maxHeight: 200, objectFit: "contain", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid var(--tg-border)" }} />
+                <button onClick={() => fileInputRef.current?.click()} style={{ position: "absolute", top: 8, right: 8, background: "rgba(0,0,0,0.6)", border: "none", borderRadius: 8, padding: "6px 10px", color: "#fff", fontSize: 12, cursor: "pointer" }}>
+                  O'zgartirish
+                </button>
+              </div>
+            ) : (
+              <button onClick={() => fileInputRef.current?.click()} style={{ width: "100%", background: "rgba(76,175,132,0.06)", border: "2px dashed rgba(76,175,132,0.3)", borderRadius: 14, padding: "24px 0", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 14, background: "rgba(76,175,132,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <ImageIcon size={22} color="#4CAF84" strokeWidth={1.6} />
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "#4CAF84" }}>Chek rasmini tanlang</div>
+                <div style={{ fontSize: 12, color: "var(--tg-muted)" }}>To'lov cheki (screenshot)</div>
+              </button>
+            )}
+
+            {uploadError && (
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, padding: "10px 12px", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 10 }}>
+                <AlertCircle size={14} color="#EF4444" />
+                <span style={{ fontSize: 12, color: "#EF4444" }}>{uploadError}</span>
+              </div>
+            )}
+          </div>
+
           {/* Ko'rsatma */}
-          <div style={{ background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.25)", borderRadius: 14, padding: "13px 14px" }}>
-            <div style={{ fontSize: 13, color: "#FBB924", fontWeight: 700, marginBottom: 6 }}>Keyingi qadam</div>
-            <div style={{ fontSize: 13, color: "var(--tg-muted)", lineHeight: 1.6 }}>
-              Ushbu kartaga <strong style={{ color: "var(--tg-text)" }}>{CONSULTATION_PRICE}</strong> o'tkazing va to'lov cheki (screenshot)ni bot chatiga yuboring.
-              <br /><br />
-              Administrator tasdiqlashi bilan <strong style={{ color: "var(--tg-text)" }}>telefon raqam yuboriladi</strong>.
+          <div style={{ background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.25)", borderRadius: 14, padding: "12px 14px" }}>
+            <div style={{ fontSize: 12, color: "var(--tg-muted)", lineHeight: 1.6 }}>
+              <strong style={{ color: "#FBB924" }}>Muhim:</strong> To'lov qilgandan so'ng chek rasmini yuklang. Administrator tasdiqlashi bilan <strong style={{ color: "var(--tg-text)" }}>telefon raqam</strong> bot orqali yuboriladi (5–15 daqiqa).
             </div>
           </div>
 
-          {/* Ish vaqti eslatmasi */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", background: "var(--tg-card)", borderRadius: 12, border: "1px solid var(--tg-border)" }}>
-            <Clock size={14} color="var(--tg-muted)" strokeWidth={1.8} />
-            <span style={{ fontSize: 12, color: "var(--tg-muted)" }}>Ish vaqti: <strong style={{ color: "var(--tg-text)" }}>10:00 – 20:00</strong> • Tasdiqlash: <strong style={{ color: "var(--tg-text)" }}>5–15 daqiqa</strong></span>
+            <Clock size={13} color="var(--tg-muted)" strokeWidth={1.8} />
+            <span style={{ fontSize: 12, color: "var(--tg-muted)" }}>Ish vaqti: <strong style={{ color: "var(--tg-text)" }}>10:00 – 20:00</strong></span>
           </div>
         </div>
 
         <div style={{ padding: "12px 16px 24px", borderTop: "1px solid var(--tg-border)", display: "flex", flexDirection: "column", gap: 10 }}>
           <button
-            onClick={handleSentCheck}
-            style={{ width: "100%", background: "linear-gradient(135deg,#4CAF84,#2E7D52)", color: "#fff", border: "none", borderRadius: 14, padding: "15px 0", fontSize: 15, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+            onClick={() => void handleUpload()}
+            style={{ width: "100%", background: file ? "linear-gradient(135deg,#4CAF84,#2E7D52)" : "var(--tg-card)", color: file ? "#fff" : "var(--tg-muted)", border: file ? "none" : "1px solid var(--tg-border)", borderRadius: 14, padding: "15px 0", fontSize: 15, fontWeight: 700, cursor: file ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "all 0.2s" }}
           >
-            <MessageCircle size={18} strokeWidth={2} />
-            Chekni botga yubordim
+            <Upload size={18} strokeWidth={2} />
+            {file ? "Chekni yuborish" : "Avval chekni tanlang"}
           </button>
-          <button
-            onClick={() => setStep("info")}
-            style={{ width: "100%", background: "transparent", color: "var(--tg-muted)", border: "none", borderRadius: 14, padding: "10px 0", fontSize: 13, cursor: "pointer" }}
-          >
+          <button onClick={() => setStep("info")} style={{ width: "100%", background: "transparent", color: "var(--tg-muted)", border: "none", padding: "10px 0", fontSize: 13, cursor: "pointer" }}>
             Bekor qilish
           </button>
         </div>
@@ -140,6 +215,7 @@ export function ConsultationPage({ onBack }: Props) {
     );
   }
 
+  /* ── INFO ── */
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <div style={{ background: "var(--tg-header)", padding: "16px", display: "flex", alignItems: "center", gap: 12, borderBottom: "1px solid var(--tg-border)" }}>
@@ -184,10 +260,7 @@ export function ConsultationPage({ onBack }: Props) {
       </div>
 
       <div style={{ padding: "12px 16px 24px", borderTop: "1px solid var(--tg-border)" }}>
-        <button
-          onClick={handleOrder}
-          style={{ width: "100%", background: "linear-gradient(135deg,#4CAF84,#2E7D52)", color: "#fff", border: "none", borderRadius: 14, padding: "15px 0", fontSize: 16, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
-        >
+        <button onClick={handleOrder} style={{ width: "100%", background: "linear-gradient(135deg,#4CAF84,#2E7D52)", color: "#fff", border: "none", borderRadius: 14, padding: "15px 0", fontSize: 16, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
           Buyurtma berish — 99 000 so'm
           <ArrowRight size={18} strokeWidth={2.2} />
         </button>

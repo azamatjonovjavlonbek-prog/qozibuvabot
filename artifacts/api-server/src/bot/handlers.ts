@@ -715,6 +715,37 @@ export function setupHandlers(bot: TelegramBot): void {
         return;
       }
 
+      // ── Admin: Mini app chek tasdiqlash  admin_ok_mc:<userId> ─────────
+      if (data.startsWith("admin_ok_mc:")) {
+        const targetUserId = parseInt(data.split(":")[1]!);
+        const userLang = getLang(targetUserId);
+        await bot.answerCallbackQuery(query.id, { text: "✅ Tasdiqlandi!" });
+        await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId }).catch(() => {});
+        await bot.sendMessage(chatId, `✅ *Mini app chek tasdiqlandi!* Foydalanuvchiga telefon raqam yuborildi.`, { parse_mode: "Markdown" });
+        recordEvent(targetUserId, "consultation_approved");
+        await bot.sendMessage(
+          targetUserId,
+          tApprovedConsultation(userLang, CONSULTATION_PHONE, tHours(userLang)),
+          { parse_mode: "Markdown", reply_markup: backToMainKeyboard(userLang) }
+        );
+        return;
+      }
+
+      // ── Admin: Mini app chek rad etish  admin_no_mc:<userId> ──────────
+      if (data.startsWith("admin_no_mc:")) {
+        const targetUserId = parseInt(data.split(":")[1]!);
+        const userLang = getLang(targetUserId);
+        await bot.answerCallbackQuery(query.id, { text: "❌ Rad etildi." });
+        await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId }).catch(() => {});
+        await bot.sendMessage(chatId, `❌ *Mini app chek rad etildi.* Foydalanuvchiga xabar yuborildi.`, { parse_mode: "Markdown" });
+        await bot.sendMessage(
+          targetUserId,
+          t(userLang, "payment_rejected"),
+          { parse_mode: "Markdown", reply_markup: backToMainKeyboard(userLang) }
+        );
+        return;
+      }
+
     } catch (err) {
       logger.error({ err, data, userId }, "Callback query handleda xato");
     }
