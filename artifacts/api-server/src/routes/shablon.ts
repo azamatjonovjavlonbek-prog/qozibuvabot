@@ -6,6 +6,7 @@ import { ADMIN_ID } from "../bot/config";
 import { getBot } from "../bot/index";
 import { logger } from "../lib/logger";
 import { resolveUserId, displayName } from "../lib/initData";
+import { tgSendPhoto } from "../lib/telegramApi";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
@@ -67,7 +68,6 @@ router.post("/shablon/pay", upload.single("file"), async (req, res) => {
       ]],
     };
 
-    // Bot instance orqali yuborish (Railway), aks holda Telegram HTTP API orqali (Replit)
     const bot = getBot();
     if (bot) {
       await bot.sendPhoto(ADMIN_ID, file.buffer, {
@@ -76,22 +76,11 @@ router.post("/shablon/pay", upload.single("file"), async (req, res) => {
         reply_markup: keyboard,
       });
     } else {
-      // To'g'ridan Telegram HTTP API orqali yuborish
-      const token = botToken();
-      const form = new FormData();
-      form.append("chat_id", String(ADMIN_ID));
-      form.append("caption", caption);
-      form.append("parse_mode", "Markdown");
-      form.append("reply_markup", JSON.stringify(keyboard));
-      form.append("photo", new Blob([new Uint8Array(file.buffer)], { type: file.mimetype }), file.originalname || "check.jpg");
-      const tgRes = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
-        method: "POST",
-        body: form,
+      await tgSendPhoto(ADMIN_ID, file.buffer, file.mimetype, file.originalname || "check.jpg", {
+        caption,
+        parse_mode: "Markdown",
+        reply_markup: keyboard,
       });
-      if (!tgRes.ok) {
-        const err = await tgRes.text();
-        logger.error({ err, userId }, "Telegram API orqali adminga yuborishda xato");
-      }
     }
 
     logger.info({ userId, catId, orderId }, "Shablon ariza cheki adminga yuborildi");

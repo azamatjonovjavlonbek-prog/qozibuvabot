@@ -4,6 +4,7 @@ import crypto from "crypto";
 import { ADMIN_ID } from "../bot/config";
 import { getBot } from "../bot/index";
 import { logger } from "../lib/logger";
+import { tgSendPhoto } from "../lib/telegramApi";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
@@ -67,14 +68,6 @@ router.post("/check/upload", upload.single("file"), async (req, res) => {
     return;
   }
 
-  const bot = getBot();
-
-  if (!bot) {
-    logger.warn({ userId }, "Bot mavjud emas — chek qabul qilindi, lekin adminga yuborilmadi (dev rejimi)");
-    res.json({ ok: true, message: "dev_no_bot" });
-    return;
-  }
-
   try {
     const { username } = getUserInfo(initData);
     const price = "99 000 so'm";
@@ -93,11 +86,20 @@ router.post("/check/upload", upload.single("file"), async (req, res) => {
       ]],
     };
 
-    await bot.sendPhoto(ADMIN_ID, file.buffer, {
-      caption,
-      parse_mode: "Markdown",
-      reply_markup: keyboard,
-    });
+    const bot = getBot();
+    if (bot) {
+      await bot.sendPhoto(ADMIN_ID, file.buffer, {
+        caption,
+        parse_mode: "Markdown",
+        reply_markup: keyboard,
+      });
+    } else {
+      await tgSendPhoto(ADMIN_ID, file.buffer, file.mimetype, file.originalname || "check.jpg", {
+        caption,
+        parse_mode: "Markdown",
+        reply_markup: keyboard,
+      });
+    }
 
     logger.info({ userId }, "Mini app chek adminga yuborildi");
     res.json({ ok: true });

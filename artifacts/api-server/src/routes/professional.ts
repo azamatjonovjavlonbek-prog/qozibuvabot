@@ -6,6 +6,7 @@ import { ADMIN_ID, CARD_NUMBER, CARD_OWNER } from "../bot/config";
 import { getBot } from "../bot/index";
 import { logger } from "../lib/logger";
 import { resolveUserId, displayName } from "../lib/initData";
+import { tgSendPhoto, tgSendDocument, tgSendMessage } from "../lib/telegramApi";
 
 const router = Router();
 const upload = multer({
@@ -62,27 +63,34 @@ router.post("/professional/submit", upload.array("files", 5), async (req, res) =
     return;
   }
 
-  const bot = getBot();
-  if (!bot) {
-    logger.warn({ userId, reqId }, "Dev: bot yo'q, admin notification o'tkazib yuborildi");
-    res.json({ ok: true, reqId });
-    return;
-  }
-
   const userName = displayName(user);
   const now = new Date().toLocaleString("uz-UZ", { timeZone: "Asia/Tashkent" });
 
   try {
+    const bot = getBot();
+
     for (const file of files) {
       const isImage = file.mimetype.startsWith("image/");
-      if (isImage) {
-        await bot.sendPhoto(ADMIN_ID, file.buffer, {
-          caption: `📎 Hujjat — Ariza #${reqId}`,
-        });
+      if (bot) {
+        if (isImage) {
+          await bot.sendPhoto(ADMIN_ID, file.buffer, {
+            caption: `📎 Hujjat — Ariza #${reqId}`,
+          });
+        } else {
+          await bot.sendDocument(ADMIN_ID, file.buffer, {
+            caption: `📎 Hujjat — Ariza #${reqId}`,
+          }, { filename: file.originalname, contentType: file.mimetype });
+        }
       } else {
-        await bot.sendDocument(ADMIN_ID, file.buffer, {
-          caption: `📎 Hujjat — Ariza #${reqId}`,
-        }, { filename: file.originalname, contentType: file.mimetype });
+        if (isImage) {
+          await tgSendPhoto(ADMIN_ID, file.buffer, file.mimetype, file.originalname || "file.jpg", {
+            caption: `📎 Hujjat — Ariza #${reqId}`,
+          });
+        } else {
+          await tgSendDocument(ADMIN_ID, file.buffer, file.mimetype, file.originalname || "file.pdf", {
+            caption: `📎 Hujjat — Ariza #${reqId}`,
+          });
+        }
       }
     }
 
@@ -95,10 +103,17 @@ router.post("/professional/submit", upload.array("files", 5), async (req, res) =
       `📝 *Masala:*\n${description.trim()}\n\n` +
       `👇 Narxni belgilang (so'm):`;
 
-    await bot.sendMessage(ADMIN_ID, caption, {
-      parse_mode: "Markdown",
-      reply_markup: priceKeyboard(reqId),
-    });
+    if (bot) {
+      await bot.sendMessage(ADMIN_ID, caption, {
+        parse_mode: "Markdown",
+        reply_markup: priceKeyboard(reqId),
+      });
+    } else {
+      await tgSendMessage(ADMIN_ID, caption, {
+        parse_mode: "Markdown",
+        reply_markup: priceKeyboard(reqId),
+      });
+    }
 
     logger.info({ userId, reqId }, "Professional ariza adminga yuborildi");
   } catch (err) {
