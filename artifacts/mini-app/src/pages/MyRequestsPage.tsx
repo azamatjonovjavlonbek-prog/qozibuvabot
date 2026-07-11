@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, FileText, Clock, CheckCircle2, XCircle, CreditCard, RefreshCw, Inbox, Scale, Users, Car } from "lucide-react";
+import { ChevronLeft, FileText, Clock, CheckCircle2, XCircle, CreditCard, RefreshCw, Inbox, Scale, Users, Car, AlertCircle } from "lucide-react";
 import { tg } from "@/lib/tg";
 
 interface Props { onBack: () => void; }
@@ -177,17 +177,17 @@ export function MyRequestsPage({ onBack }: Props) {
                   </div>
                   {order.status === "pending" && (
                     <div style={{ background: "rgba(251,185,36,0.08)", border: "1px solid rgba(251,185,36,0.2)", borderRadius: 10, padding: "8px 12px" }}>
-                      <div style={{ fontSize: 11, color: "var(--tg-muted)" }}>⏳ Administrator to'lovingizni tekshirmoqda. Tasdiqlangach ariza bot orqali avtomatik yuboriladi.</div>
+                      <div style={{ fontSize: 11, color: "var(--tg-muted)", display: "flex", alignItems: "flex-start", gap: 5 }}><Clock size={11} color="#FBB924" strokeWidth={2} style={{ flexShrink: 0, marginTop: 1 }} /><span>Administrator to'lovingizni tekshirmoqda. Tasdiqlangach ariza bot orqali avtomatik yuboriladi.</span></div>
                     </div>
                   )}
                   {order.status === "completed" && (
                     <div style={{ background: "rgba(76,175,132,0.08)", border: "1px solid rgba(76,175,132,0.2)", borderRadius: 10, padding: "8px 12px" }}>
-                      <div style={{ fontSize: 11, color: "#4CAF84" }}>✅ Ariza Word formatida Telegram botga yuborildi.</div>
+                      <div style={{ fontSize: 11, color: "#4CAF84", display: "flex", alignItems: "center", gap: 5 }}><CheckCircle2 size={11} color="#4CAF84" strokeWidth={2} /><span>Ariza Word formatida Telegram botga yuborildi.</span></div>
                     </div>
                   )}
                   {order.status === "rejected" && (
                     <div style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 10, padding: "8px 12px" }}>
-                      <div style={{ fontSize: 11, color: "#EF4444" }}>❌ To'lov tasdiqlanmadi. Botga murojaat qiling.</div>
+                      <div style={{ fontSize: 11, color: "#EF4444", display: "flex", alignItems: "center", gap: 5 }}><XCircle size={11} color="#EF4444" strokeWidth={2} /><span>To'lov tasdiqlanmadi. Botga murojaat qiling.</span></div>
                     </div>
                   )}
                 </div>
@@ -226,18 +226,18 @@ export function MyRequestsPage({ onBack }: Props) {
                 </div>
                 {req.status === "priced" && req.price && (
                   <div style={{ background: "rgba(42,171,238,0.08)", border: "1px solid rgba(42,171,238,0.2)", borderRadius: 10, padding: "10px 12px" }}>
-                    <div style={{ fontSize: 12, color: "#2AABEE", fontWeight: 700, marginBottom: 3 }}>💳 To'lov: {formatPrice(req.price)}</div>
+                    <div style={{ fontSize: 12, color: "#2AABEE", fontWeight: 700, marginBottom: 3, display: "flex", alignItems: "center", gap: 5 }}><CreditCard size={12} color="#2AABEE" strokeWidth={2} /><span>To'lov: {formatPrice(req.price)}</span></div>
                     <div style={{ fontSize: 11, color: "var(--tg-muted)" }}>Telegram botga chek (screenshot) rasmini yuboring.</div>
                   </div>
                 )}
                 {req.status === "completed" && (
                   <div style={{ background: "rgba(76,175,132,0.08)", border: "1px solid rgba(76,175,132,0.2)", borderRadius: 10, padding: "8px 12px" }}>
-                    <div style={{ fontSize: 11, color: "#4CAF84" }}>✅ Tasdiqlandi. Yurist siz bilan bog'lanadi.</div>
+                    <div style={{ fontSize: 11, color: "#4CAF84", display: "flex", alignItems: "center", gap: 5 }}><CheckCircle2 size={11} color="#4CAF84" strokeWidth={2} /><span>Tasdiqlandi. Yurist siz bilan bog'lanadi.</span></div>
                   </div>
                 )}
                 {req.status === "rejected" && (
                   <div style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 10, padding: "8px 12px" }}>
-                    <div style={{ fontSize: 11, color: "#EF4444" }}>❌ Rad etildi. Botga murojaat qiling.</div>
+                    <div style={{ fontSize: 11, color: "#EF4444", display: "flex", alignItems: "center", gap: 5 }}><XCircle size={11} color="#EF4444" strokeWidth={2} /><span>Rad etildi. Botga murojaat qiling.</span></div>
                   </div>
                 )}
               </div>

@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { ChevronLeft, Scale, Star, ArrowRight, Upload, ImageIcon, Loader2, CheckCircle2, AlertCircle, X, FileText, Plus } from "lucide-react";
+import { ChevronLeft, Scale, Star, ArrowRight, Upload, ImageIcon, Loader2, CheckCircle2, AlertCircle, X, FileText, Plus, Info } from "lucide-react";
 import { tg } from "@/lib/tg";
 
 interface Props { onBack: () => void; }
@@ -200,8 +200,9 @@ export function ProfessionalPage({ onBack }: Props) {
           )}
 
           <div style={{ background: "rgba(251,146,60,0.07)", border: "1px solid rgba(251,146,60,0.2)", borderRadius: 12, padding: "10px 14px" }}>
-            <div style={{ fontSize: 12, color: "var(--tg-muted)", lineHeight: 1.6 }}>
-              💡 Masalangizni qanchalik batafsil yozsangiz, yurist shunchalik tez va to'g'ri ariza yozib bera oladi.
+            <div style={{ fontSize: 12, color: "var(--tg-muted)", lineHeight: 1.6, display: "flex", alignItems: "flex-start", gap: 7 }}>
+              <Info size={13} color="#FB923C" strokeWidth={2} style={{ flexShrink: 0, marginTop: 1 }} />
+              <span>Masalangizni qanchalik batafsil yozsangiz, yurist shunchalik tez va to'g'ri ariza yozib bera oladi.</span>
             </div>
           </div>
         </div>

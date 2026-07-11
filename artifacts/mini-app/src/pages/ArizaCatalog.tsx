@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { ChevronLeft, ChevronRight, FileText, Scale, Users, Car, Copy, Check, Upload, ImageIcon, Loader2, CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileText, Scale, Users, Car, Copy, Check, Upload, ImageIcon, Loader2, CheckCircle2, AlertCircle, ArrowRight, Info } from "lucide-react";
 import { tg } from "@/lib/tg";
 
 interface Props { onBack: () => void; }
@@ -89,7 +89,7 @@ export function ArizaCatalog({ onBack }: Props) {
         Administrator tekshirib, tasdiqlangach <strong style={{ color: "var(--tg-text)" }}>ariza fayli</strong> bot orqali avtomatik yuboriladi.
       </div>
       <div style={{ marginTop: 20, background: "rgba(42,171,238,0.08)", border: "1px solid rgba(42,171,238,0.2)", borderRadius: 14, padding: "12px 16px", maxWidth: 300, width: "100%" }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "#2AABEE", marginBottom: 6 }}>📄 {selected?.label}</div>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "#2AABEE", marginBottom: 6, display: "flex", alignItems: "center", gap: 5 }}><FileText size={12} color="#2AABEE" strokeWidth={2} />{selected?.label}</div>
         <div style={{ fontSize: 11, color: "var(--tg-muted)", lineHeight: 1.5 }}>Tasdiqlangandan so'ng Word formatida ariza sizning Telegram chatga yuboriladi.</div>
       </div>
       <button onClick={onBack} style={{ marginTop: 22, background: "transparent", border: "1px solid var(--tg-border)", borderRadius: 12, padding: "10px 28px", color: "var(--tg-muted)", fontSize: 13, cursor: "pointer" }}>
@@ -178,8 +178,9 @@ export function ArizaCatalog({ onBack }: Props) {
         </div>
 
         <div style={{ background: "rgba(42,171,238,0.07)", border: "1px solid rgba(42,171,238,0.2)", borderRadius: 12, padding: "10px 14px" }}>
-          <div style={{ fontSize: 12, color: "var(--tg-muted)", lineHeight: 1.6 }}>
-            💡 To'lovdan so'ng chek rasmini yuklang. Administrator tasdiqlashi bilan <strong style={{ color: "var(--tg-text)" }}>Word formatidagi ariza</strong> botga avtomatik yuboriladi.
+          <div style={{ fontSize: 12, color: "var(--tg-muted)", lineHeight: 1.6, display: "flex", alignItems: "flex-start", gap: 7 }}>
+            <Info size={13} color="#2AABEE" strokeWidth={2} style={{ flexShrink: 0, marginTop: 1 }} />
+            <span>To'lovdan so'ng chek rasmini yuklang. Administrator tasdiqlashi bilan <strong style={{ color: "var(--tg-text)" }}>Word formatidagi ariza</strong> botga avtomatik yuboriladi.</span>
           </div>
         </div>
       </div>
