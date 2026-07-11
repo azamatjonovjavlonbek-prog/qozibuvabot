@@ -53,8 +53,8 @@ import { addUser, getUserCount, getTodayCount, getWeekCount, getMonthCount, getA
 import { recordBotActivity } from "./index";
 import { touchProfile } from "./userProfile";
 import { recordEvent, getStats, getStatsByPeriod, getActiveUsersCount, getUniqueJoinUsers } from "./statsStore";
-import { db, professionalRequestsTable } from "@workspace/db";
-import { eq, desc } from "drizzle-orm";
+import { db, professionalRequestsTable, shablonOrdersTable } from "@workspace/db";
+import { eq, desc, and } from "drizzle-orm";
 
 const FONT_PATH = path.join(process.cwd(), "assets", "NotoSans-Regular.ttf");
 let FONT_BUFFER: Buffer;
@@ -654,6 +654,23 @@ export function setupHandlers(bot: TelegramBot): void {
           { parse_mode: "Markdown" }
         );
         await sendShablonDocument(bot, targetUserId, catId, userLang);
+        try {
+          const [latest] = await db.select({ id: shablonOrdersTable.id })
+            .from(shablonOrdersTable)
+            .where(and(
+              eq(shablonOrdersTable.userId, targetUserId),
+              eq(shablonOrdersTable.catId, catId),
+            ))
+            .orderBy(desc(shablonOrdersTable.createdAt))
+            .limit(1);
+          if (latest) {
+            await db.update(shablonOrdersTable)
+              .set({ status: "completed", updatedAt: new Date() })
+              .where(eq(shablonOrdersTable.id, latest.id));
+          }
+        } catch (dbErr) {
+          logger.error({ dbErr, targetUserId, catId }, "admin_ok_s DB update xato");
+        }
         resetState(targetUserId);
         return;
       }
