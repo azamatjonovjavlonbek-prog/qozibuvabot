@@ -53,7 +53,7 @@ import { addUser, getUserCount, getTodayCount, getWeekCount, getMonthCount, getA
 import { recordBotActivity } from "./index";
 import { touchProfile } from "./userProfile";
 import { recordEvent, getStats, getStatsByPeriod, getActiveUsersCount, getUniqueJoinUsers } from "./statsStore";
-import { db, professionalRequestsTable, shablonOrdersTable } from "@workspace/db";
+import { db, professionalRequestsTable, shablonOrdersTable, consultationOrdersTable } from "@workspace/db";
 import { eq, desc, and } from "drizzle-orm";
 
 const FONT_PATH = path.join(process.cwd(), "assets", "NotoSans-Regular.ttf");
@@ -730,14 +730,26 @@ export function setupHandlers(bot: TelegramBot): void {
         return;
       }
 
-      // ── Admin: Mini app chek tasdiqlash  admin_ok_mc:<userId> ─────────
+      // ── Admin: Mini app chek tasdiqlash  admin_ok_mc:<userId>:<orderId> ─
       if (data.startsWith("admin_ok_mc:")) {
-        const targetUserId = parseInt(data.split(":")[1]!);
+        const parts = data.split(":");
+        const targetUserId = parseInt(parts[1]!);
+        const orderId = parseInt(parts[2] ?? "0");
         const userLang = getLang(targetUserId);
         await bot.answerCallbackQuery(query.id, { text: "✅ Tasdiqlandi!" });
         await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId }).catch(() => {});
         await bot.sendMessage(chatId, `✅ *Mini app chek tasdiqlandi!* Foydalanuvchiga telefon raqam yuborildi.`, { parse_mode: "Markdown" });
         recordEvent(targetUserId, "consultation_approved");
+        // DB status yangilash
+        if (orderId) {
+          try {
+            await db.update(consultationOrdersTable)
+              .set({ status: "completed", updatedAt: new Date() })
+              .where(eq(consultationOrdersTable.id, orderId));
+          } catch (dbErr) {
+            logger.error({ dbErr, orderId }, "admin_ok_mc DB update xato");
+          }
+        }
         await bot.sendMessage(
           targetUserId,
           tApprovedConsultation(userLang, CONSULTATION_PHONE, tHours(userLang)),
@@ -746,13 +758,24 @@ export function setupHandlers(bot: TelegramBot): void {
         return;
       }
 
-      // ── Admin: Mini app chek rad etish  admin_no_mc:<userId> ──────────
+      // ── Admin: Mini app chek rad etish  admin_no_mc:<userId>:<orderId> ─
       if (data.startsWith("admin_no_mc:")) {
-        const targetUserId = parseInt(data.split(":")[1]!);
+        const parts = data.split(":");
+        const targetUserId = parseInt(parts[1]!);
+        const orderId = parseInt(parts[2] ?? "0");
         const userLang = getLang(targetUserId);
         await bot.answerCallbackQuery(query.id, { text: "❌ Rad etildi." });
         await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: messageId }).catch(() => {});
         await bot.sendMessage(chatId, `❌ *Mini app chek rad etildi.* Foydalanuvchiga xabar yuborildi.`, { parse_mode: "Markdown" });
+        if (orderId) {
+          try {
+            await db.update(consultationOrdersTable)
+              .set({ status: "rejected", updatedAt: new Date() })
+              .where(eq(consultationOrdersTable.id, orderId));
+          } catch (dbErr) {
+            logger.error({ dbErr, orderId }, "admin_no_mc DB update xato");
+          }
+        }
         await bot.sendMessage(
           targetUserId,
           t(userLang, "payment_rejected"),

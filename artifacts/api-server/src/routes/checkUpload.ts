@@ -1,10 +1,12 @@
 import { Router } from "express";
 import multer from "multer";
 import crypto from "crypto";
-import { ADMIN_ID } from "../bot/config";
+import { ADMIN_ID, CONSULTATION_PHONE, CONSULTATION_HOURS } from "../bot/config";
 import { getBot } from "../bot/index";
 import { logger } from "../lib/logger";
-import { tgSendPhoto } from "../lib/telegramApi";
+import { tgSendPhoto, tgSendMessage } from "../lib/telegramApi";
+import { db, consultationOrdersTable } from "@workspace/db";
+import { eq } from "drizzle-orm";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
@@ -68,21 +70,33 @@ router.post("/check/upload", upload.single("file"), async (req, res) => {
     return;
   }
 
+  // DB ga saqlash
+  let orderId: number | null = null;
+  try {
+    const [inserted] = await db.insert(consultationOrdersTable).values({
+      userId,
+      status: "pending",
+    }).returning({ id: consultationOrdersTable.id });
+    orderId = inserted!.id;
+  } catch (dbErr) {
+    logger.error({ dbErr, userId }, "Konsultatsiya DB ga saqlanmadi");
+  }
+
   try {
     const { username } = getUserInfo(initData);
     const price = "99 000 so'm";
     const caption =
-      `📱 *Mini App — To'lov cheki*\n\n` +
-      `Xizmat: *Konsultatsiya*\n` +
-      `Foydalanuvchi: ${username}\n` +
+      `📱 *Mini App — Konsultatsiya To'lov Cheki*\n\n` +
+      `👤 Foydalanuvchi: ${username}\n` +
       `🆔 ID: \`${userId}\`\n` +
+      (orderId ? `📋 Buyurtma: #${orderId}\n` : "") +
       `💰 Summa: *${price}*\n\n` +
       `Tasdiqlash uchun quyidagi tugmalardan birini bosing.`;
 
     const keyboard = {
       inline_keyboard: [[
-        { text: "✅ Tasdiqlash", callback_data: `admin_ok_mc:${userId}` },
-        { text: "❌ Rad etish",  callback_data: `admin_no_mc:${userId}` },
+        { text: "✅ Tasdiqlash", callback_data: `admin_ok_mc:${userId}:${orderId ?? 0}` },
+        { text: "❌ Rad etish",  callback_data: `admin_no_mc:${userId}:${orderId ?? 0}` },
       ]],
     };
 
@@ -101,11 +115,48 @@ router.post("/check/upload", upload.single("file"), async (req, res) => {
       });
     }
 
-    logger.info({ userId }, "Mini app chek adminga yuborildi");
-    res.json({ ok: true });
+    logger.info({ userId, orderId }, "Mini app konsultatsiya cheki adminga yuborildi");
+    res.json({ ok: true, orderId });
   } catch (err) {
     logger.error({ err, userId }, "Chek yuborishda xato");
     res.status(500).json({ error: "send_failed" });
+  }
+});
+
+// Admin tomonidan tasdiqlash (Railway bot callback handler qo'ng'iroq qiladi)
+router.post("/consultation/approve", async (req, res) => {
+  const { orderId, userId, secret } = req.body as { orderId?: number; userId?: number; secret?: string };
+  if (secret !== process.env.ADMIN_SECRET) {
+    res.status(403).json({ error: "forbidden" });
+    return;
+  }
+  if (!orderId || !userId) {
+    res.status(400).json({ error: "missing_fields" });
+    return;
+  }
+  try {
+    await db.update(consultationOrdersTable)
+      .set({ status: "completed", updatedAt: new Date() })
+      .where(eq(consultationOrdersTable.id, orderId));
+
+    const phoneMsg =
+      `✅ *To'lovingiz tasdiqlandi!*\n\n` +
+      `📞 Yuristimiz telefon raqami:\n*${CONSULTATION_PHONE}*\n\n` +
+      `Ish vaqti: *${CONSULTATION_HOURS}*\n` +
+      `Qo'ng'iroq qiling — yurist sizga maslahat beradi.`;
+
+    const bot = getBot();
+    if (bot) {
+      await bot.sendMessage(userId, phoneMsg, { parse_mode: "Markdown" });
+    } else {
+      await tgSendMessage(userId, phoneMsg, { parse_mode: "Markdown" });
+    }
+
+    logger.info({ orderId, userId }, "Konsultatsiya tasdiqlandi");
+    res.json({ ok: true });
+  } catch (err) {
+    logger.error({ err, orderId, userId }, "Consultation approve xato");
+    res.status(500).json({ error: "db_error" });
   }
 });
 

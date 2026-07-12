@@ -19,3 +19,4 @@
 
 export * from "./professional";
 export * from "./shablon";
+export * from "./consultation";

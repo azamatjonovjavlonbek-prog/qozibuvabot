@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, FileText, Clock, CheckCircle2, XCircle, CreditCard, RefreshCw, Inbox, Scale, Users, Car, AlertCircle } from "lucide-react";
+import { ChevronLeft, FileText, Clock, CheckCircle2, XCircle, CreditCard, RefreshCw, Inbox, Scale, Users, Car, Phone } from "lucide-react";
 import { tg } from "@/lib/tg";
 
 interface Props { onBack: () => void; }
@@ -16,6 +16,12 @@ interface ShablonOrder {
   id: number;
   catId: string;
   catLabel: string;
+  status: "pending" | "completed" | "rejected";
+  createdAt: string;
+}
+
+interface ConsultationOrder {
+  id: number;
   status: "pending" | "completed" | "rejected";
   createdAt: string;
 }
@@ -67,12 +73,28 @@ function ShablonStatusBadge({ status }: { status: ShablonOrder["status"] }) {
   );
 }
 
+function ConsultationStatusBadge({ status }: { status: ConsultationOrder["status"] }) {
+  const map = {
+    pending:   { label: "Tekshirilmoqda", color: "#FBB924", bg: "rgba(251,185,36,0.12)", icon: Clock },
+    completed: { label: "Tasdiqlandi ✓",  color: "#4CAF84", bg: "rgba(76,175,132,0.12)", icon: CheckCircle2 },
+    rejected:  { label: "Rad etildi",     color: "#EF4444", bg: "rgba(239,68,68,0.12)",  icon: XCircle },
+  };
+  const { label, color, bg, icon: Icon } = map[status] ?? map.pending;
+  return (
+    <div style={{ display: "inline-flex", alignItems: "center", gap: 5, background: bg, borderRadius: 8, padding: "4px 10px" }}>
+      <Icon size={11} color={color} strokeWidth={2.2} />
+      <span style={{ fontSize: 11, fontWeight: 700, color }}>{label}</span>
+    </div>
+  );
+}
+
 export function MyRequestsPage({ onBack }: Props) {
-  const [tab, setTab]                 = useState<"shablon" | "professional">("shablon");
-  const [shablonOrders, setShablonOrders] = useState<ShablonOrder[]>([]);
-  const [profRequests, setProfRequests]   = useState<ProfRequest[]>([]);
-  const [loading, setLoading]         = useState(true);
-  const [error, setError]             = useState<string | null>(null);
+  const [tab, setTab] = useState<"shablon" | "professional" | "consultation">("shablon");
+  const [shablonOrders, setShablonOrders]       = useState<ShablonOrder[]>([]);
+  const [profRequests, setProfRequests]         = useState<ProfRequest[]>([]);
+  const [consultOrders, setConsultOrders]       = useState<ConsultationOrder[]>([]);
+  const [loading, setLoading]                   = useState(true);
+  const [error, setError]                       = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -81,12 +103,14 @@ export function MyRequestsPage({ onBack }: Props) {
       const initData = getInitData();
       const base = getApiBase();
       const headers = { "x-init-data": initData };
-      const [s, p] = await Promise.all([
+      const [s, p, c] = await Promise.all([
         fetch(`${base}/shablon/my-orders`, { headers }).then(r => r.json() as Promise<{ orders: ShablonOrder[] }>),
         fetch(`${base}/professional/my-requests`, { headers }).then(r => r.json() as Promise<{ requests: ProfRequest[] }>),
+        fetch(`${base}/consultation/my-orders`, { headers }).then(r => r.json() as Promise<{ orders: ConsultationOrder[] }>),
       ]);
       setShablonOrders(s.orders ?? []);
       setProfRequests(p.requests ?? []);
+      setConsultOrders(c.orders ?? []);
     } catch {
       setError("Ma'lumotlarni yuklab bo'lmadi.");
     } finally {
@@ -96,7 +120,7 @@ export function MyRequestsPage({ onBack }: Props) {
 
   useEffect(() => { void load(); }, [load]);
 
-  const totalCount = shablonOrders.length + profRequests.length;
+  const totalCount = shablonOrders.length + profRequests.length + consultOrders.length;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -117,16 +141,17 @@ export function MyRequestsPage({ onBack }: Props) {
       {/* Tabs */}
       <div style={{ display: "flex", padding: "12px 16px 0", gap: 8 }}>
         {([
-          { key: "shablon",      label: "Shablon arizalar",   count: shablonOrders.length },
-          { key: "professional", label: "Professional arizalar", count: profRequests.length },
+          { key: "shablon",      label: "Shablon",      count: shablonOrders.length },
+          { key: "professional", label: "Professional", count: profRequests.length },
+          { key: "consultation", label: "Konsultatsiya", count: consultOrders.length },
         ] as const).map(({ key, label, count }) => (
           <button
             key={key}
             onClick={() => setTab(key)}
-            style={{ flex: 1, background: tab === key ? "rgba(42,171,238,0.15)" : "var(--tg-card)", border: tab === key ? "1.5px solid rgba(42,171,238,0.4)" : "1px solid var(--tg-border)", borderRadius: 12, padding: "9px 0", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}
+            style={{ flex: 1, background: tab === key ? "rgba(42,171,238,0.15)" : "var(--tg-card)", border: tab === key ? "1.5px solid rgba(42,171,238,0.4)" : "1px solid var(--tg-border)", borderRadius: 12, padding: "9px 4px", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}
           >
-            <span style={{ fontSize: 12, fontWeight: 700, color: tab === key ? "#2AABEE" : "var(--tg-text)" }}>{label}</span>
-            <span style={{ fontSize: 11, color: "var(--tg-muted)" }}>{count} ta</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: tab === key ? "#2AABEE" : "var(--tg-text)" }}>{label}</span>
+            <span style={{ fontSize: 10, color: "var(--tg-muted)" }}>{count} ta</span>
           </button>
         ))}
       </div>
@@ -238,6 +263,51 @@ export function MyRequestsPage({ onBack }: Props) {
                 {req.status === "rejected" && (
                   <div style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 10, padding: "8px 12px" }}>
                     <div style={{ fontSize: 11, color: "#EF4444", display: "flex", alignItems: "center", gap: 5 }}><XCircle size={11} color="#EF4444" strokeWidth={2} /><span>Rad etildi. Botga murojaat qiling.</span></div>
+                  </div>
+                )}
+              </div>
+            ))
+          )
+        )}
+
+        {/* CONSULTATION TAB */}
+        {!loading && !error && tab === "consultation" && (
+          consultOrders.length === 0 ? (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: 250, gap: 10 }}>
+              <div style={{ width: 64, height: 64, borderRadius: 18, background: "rgba(76,175,132,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Inbox size={28} color="#4CAF84" strokeWidth={1.4} />
+              </div>
+              <div style={{ fontSize: 15, fontWeight: 700 }}>Konsultatsiya yo'q</div>
+              <div style={{ fontSize: 12, color: "var(--tg-muted)", textAlign: "center", maxWidth: 220, lineHeight: 1.6 }}>Hali konsultatsiya buyurtma bermagansiz.</div>
+            </div>
+          ) : (
+            consultOrders.map((order) => (
+              <div key={order.id} style={{ background: "var(--tg-card)", borderRadius: 16, padding: 16, marginBottom: 10, border: "1px solid var(--tg-border)" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ width: 40, height: 40, borderRadius: 12, background: "rgba(76,175,132,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <Phone size={18} color="#4CAF84" strokeWidth={1.8} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 11, color: "var(--tg-muted)" }}>#{order.id} · {formatDate(order.createdAt)}</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, marginTop: 1, color: "#4CAF84" }}>Konsultatsiya</div>
+                    </div>
+                  </div>
+                  <ConsultationStatusBadge status={order.status} />
+                </div>
+                {order.status === "pending" && (
+                  <div style={{ background: "rgba(251,185,36,0.08)", border: "1px solid rgba(251,185,36,0.2)", borderRadius: 10, padding: "8px 12px" }}>
+                    <div style={{ fontSize: 11, color: "var(--tg-muted)", display: "flex", alignItems: "flex-start", gap: 5 }}><Clock size={11} color="#FBB924" strokeWidth={2} style={{ flexShrink: 0, marginTop: 1 }} /><span>Administrator to'lovingizni tekshirmoqda. Tasdiqlangach telefon raqam Telegram botga yuboriladi.</span></div>
+                  </div>
+                )}
+                {order.status === "completed" && (
+                  <div style={{ background: "rgba(76,175,132,0.08)", border: "1px solid rgba(76,175,132,0.2)", borderRadius: 10, padding: "8px 12px" }}>
+                    <div style={{ fontSize: 11, color: "#4CAF84", display: "flex", alignItems: "center", gap: 5 }}><CheckCircle2 size={11} color="#4CAF84" strokeWidth={2} /><span>Tasdiqlandi! Yurist telefon raqami Telegram botga yuborildi.</span></div>
+                  </div>
+                )}
+                {order.status === "rejected" && (
+                  <div style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 10, padding: "8px 12px" }}>
+                    <div style={{ fontSize: 11, color: "#EF4444", display: "flex", alignItems: "center", gap: 5 }}><XCircle size={11} color="#EF4444" strokeWidth={2} /><span>To'lov tasdiqlanmadi. Botga murojaat qiling.</span></div>
                   </div>
                 )}
               </div>
