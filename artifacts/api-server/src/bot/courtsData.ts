@@ -537,7 +537,8 @@ const IQT: Record<string, CourtEntry[]> = {
   ],
   sirvil:  [
     { name: "Sirdaryo viloyati iqtisodiy sudi",   address: "Guliston shahri, Islom Karimov ko'chasi, 75-uy", phone: "+998 (55) 651-35-35", email: "i.sirdaryo@sud.uz", lat: 40.501258, lng: 68.772602 },
-    { name: "Guliston tumanlararo iqtisodiy sudi", address: "Guliston shahar, Birlashgan ko'chasi, 7-uy",     phone: "+998 (55) 651-35-40", email: "i.guliston@sud.uz", lat: 40.494119, lng: 68.774100 },
+    { name: "Guliston tumanlararo iqtisodiy sudi",  address: "Guliston shahar, Birlashgan ko'chasi, 7-uy",    phone: "+998 (55) 651-35-40", email: "i.guliston@sud.uz",   lat: 40.494119, lng: 68.774100 },
+    { name: "Sirdaryo tumanlararo iqtisodiy sudi",  address: "Sirdaryo shahar, O'zbekiston ko'chasi, 80-uy",  phone: "+998 (55) 651-35-34", email: "i.sirdaryo.t@sud.uz", lat: 40.827146, lng: 68.665432 },
   ],
   kashvil: [{ name: "Qashqadaryo viloyati iqtisodiy sudi",         address: "180100, Qarshi shahar, Amir Temur ko'ch., 40",                 phone: "+998 (75) 225-92-03", email: "kashvil.iqt@supcourt.uz", lat: 38.8610, lng: 65.7880 }],
   surxvil: [{ name: "Surxondaryo viloyati iqtisodiy sudi",         address: "190100, Termiz shahar, Al-Termiziy ko'ch., 3",                 phone: "+998 (76) 225-03-14", email: "surxvil.iqt@supcourt.uz", lat: 37.2245, lng: 67.2783 }],
