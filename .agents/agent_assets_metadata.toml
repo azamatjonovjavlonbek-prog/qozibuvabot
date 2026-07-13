@@ -162,3 +162,9 @@ id = "PpO9YSJC3RVkBoJcjqSHF"
 uri = "file://qozibuvabot_dist_v8.zip"
 type = "unspecified"
 title = "qozibuvabot dist v8 (koordinatasiz — Google Maps havolasi)"
+
+[[outputs]]
+id = "oIizQjbdsPKH7UbtsfGTQ"
+uri = "file://bot-dist.zip"
+type = "unspecified"
+title = "Bot dist fayllari (1.7MB)"
