@@ -506,7 +506,8 @@ const IQT: Record<string, CourtEntry[]> = {
   namvil:  [{ name: "Namangan viloyati iqtisodiy sudi",            address: "160100, Namangan shahar, Hamza ko'ch., 36",                    phone: "+998 (69) 234-04-15", email: "namvil.iqt@supcourt.uz",  lat: 41.0011, lng: 71.6724 }],
   samvil:  [
     { name: "Samarqand viloyati iqtisodiy sudi",       address: "Samarqand shahri, Mingtut ko'chasi, 2-uy",                      phone: "+998 (55) 706-70-04", email: "i.samarqand@sud.uz",     lat: 39.657841, lng: 66.940196 },
-    { name: "Kattaqo'rg'on tumanlararo iqtisodiy sudi", address: "Kattaqo'rg'on tumani, Kadan q., Mustaqillik ko'chasi, 34-uy",  phone: "+998 (55) 706-70-41", email: "i.kattaqurgon@sud.uz",   lat: 39.990586, lng: 66.232919 },
+    { name: "Kattaqo'rg'on tumanlararo iqtisodiy sudi", address: "Kattaqo'rg'on tumani, Kadan q., Mustaqillik ko'chasi, 34-uy", phone: "+998 (55) 706-70-41", email: "i.kattaqurgon@sud.uz", lat: 39.990586, lng: 66.232919 },
+    { name: "Ishtixon tumanlararo iqtisodiy sudi",      address: "Ishtixon sh., Ishtixon ko'chasi, 11-uy",                       phone: "+998 (55) 706-70-99", email: "i.ishtixon@sud.uz",    lat: 39.961547, lng: 66.501721 },
   ],
   buhvil:  [
     { name: "Buxoro viloyati iqtisodiy sudi",              address: "Buxoro shahar, Yangi hayot ko'chasi, 122-uy",           phone: "+998 (65) 220-01-14", email: "i.buxoro@sud.uz",      lat: 39.799530, lng: 64.424433 },
