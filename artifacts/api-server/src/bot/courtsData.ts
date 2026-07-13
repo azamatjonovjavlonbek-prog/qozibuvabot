@@ -493,6 +493,7 @@ const IQT: Record<string, CourtEntry[]> = {
     { name: "G'ijduvon tumanlararo iqtisodiy sudi",        address: "G'ijduvon tuman, Yu.Hamadoniy ko'chasi, 54-uy",              phone: "+998 (65) 220-07-35", email: "i.gijduvon@sud.uz",    lat: 40.042341, lng: 64.397416 },
     { name: "Qorakol tumanlararo iqtisodiy sudi",          address: "Qorakol tumani, Buxoro ko'chasi, 152-uy",                    phone: "+998 (65) 220-07-36", email: "i.qorakul@sud.uz",     lat: 39.935072, lng: 64.384823 },
     { name: "Peshku tumanlararo iqtisodiy sudi",           address: "Peshku tumani, A.Temur ko'chasi, 5-uy",                      phone: "+998 (79) 220-22-43", email: "i.peshku@sud.uz",      lat: 41.145809, lng: 69.170816 },
+    { name: "Romitan tumanlararo iqtisodiy sudi",          address: "Romitan tuman, A.Temur ko'chasi, 40-uy",                     phone: "+998 (79) 573-43-83", email: "i.romitan@sud.uz",     lat: 41.572318, lng: 64.200719 },
   ],
   navvil:  [
     { name: "Navoiy viloyati iqtisodiy sudi",              address: "Navoiy shahar, Navoiy ko'chasi, 1-uy",              phone: "+998 (79) 222-01-24", email: "i.navoiy@sud.uz",      lat: 40.087914, lng: 65.373864 },
