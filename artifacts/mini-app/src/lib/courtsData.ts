@@ -254,8 +254,121 @@ const JIN: Record<string, CourtEntry[]> = {
   ],
 };
 
+const IQT: Record<string, CourtEntry[]> = {
+  tashsh: [
+    { name: "Toshkent shahar iqtisodiy sudi",      address: "Toshkent shahar, Cho'pon-ota ko'chasi, 6-uy",       phone: "+998 (71) 273-06-46", email: "i.toshkent@sud.uz" },
+    { name: "Toshkent tumanlararo iqtisodiy sudi", address: "Toshkent shahar, Cho'pon-ota ko'chasi, 6-uy",       phone: "+998 (55) 501-05-04", email: "i.toshkent.t@sud.uz" },
+  ],
+  tashvil: [
+    { name: "Toshkent viloyati iqtisodiy sudi",              address: "Toshkent shahar, Usmon Nosir ko'chasi, 93-uy",                                             phone: "+998 (55) 510-74-74", email: "i.toshkent.v@sud.uz" },
+    { name: "Yuqorichirchiq tumanlararo iqtisodiy sudi",     address: "Toshkent viloyati, Yuqorichirchiq tumani, Yangiboʻzor qoʻrg'oni, Mustaqillik ko'chasi, 77-uy", phone: "+998 (55) 517-02-32", email: "i.yuqorichirchiq@sud.uz" },
+    { name: "Zangiota tumanlararo iqtisodiy sudi",           address: "Toshkent viloyati, Zangiota tumani, Eshonguzar MFY, Y.Oxunboboyev ko'chasi",              phone: "+998 (55) 517-02-37", email: "i.zangiota@sud.uz" },
+    { name: "Chirchiq tumanlararo iqtisodiy sudi",           address: "Toshkent viloyati, Chirchiq shahri, Istiqbol ko'chasi, 8-uy",                              phone: "+998 (55) 517-02-71", email: "i.chirchiq@sud.uz" },
+    { name: "Quyichirchiq tumanlararo iqtisodiy sudi",       address: "Toshkent viloyati, Quyichirchiq tumani, Do'stobod shahar, «Do'stlik-1» m.f.y., Markaziy ko'chasi", phone: "+998 (55) 517-02-55", email: "i.quyichirchiq@sud.uz" },
+    { name: "O'rtachirchiq tumanlararo iqtisodiy sudi",      address: "Toshkent viloyati, O'rtachirchiq tumani, Qorasov qo'rg'oni, Temirchi ko'chasi, 3-uy",     phone: "+998 (55) 517-02-74", email: "i.urtachirchiq@sud.uz" },
+    { name: "Bekobod tumanlararo iqtisodiy sudi",            address: "Toshkent viloyati, Bekobod shahar, G'.G'ulom ko'chasi",                                    phone: "+998 (55) 517-02-33", email: "i.bekobod@sud.uz" },
+    { name: "Ohangaron tumanlararo iqtisodiy sudi",          address: "Toshkent viloyati, Ohangaron shahri, Ezgulik ko'chasi, 100-uy",                            phone: "+998 (55) 517-02-73", email: "i.oxangaron@sud.uz" },
+  ],
+  andvil: [
+    { name: "Andijon viloyati iqtisodiy sudi",          address: "Andijon shahar, A.Navoiy shoh ko'chasi, 15-uy",                      phone: "+998 (74) 224-42-44", email: "i.andijon@sud.uz" },
+    { name: "Andijon tumanlararo iqtisodiy sudi",       address: "Andijon shahar, A.Navoiy shoh ko'chasi, 41-uy",                      phone: "+998 (74) 224-57-17", email: "i.andijon.t@sud.uz" },
+    { name: "Asaka tumanlararo iqtisodiy sudi",         address: "Asaka shahri, Sohilbo'yi ko'chasi, 11-uy",                           phone: "+998 (74) 224-57-27", email: "i.asaka@sud.uz" },
+    { name: "Bo'ston tumanlararo iqtisodiy sudi",       address: "Bo'ston tumani, Pillakor MFY, Mustaqillik ko'chasi, 32-uy",           phone: "+998 (74) 224-57-37", email: "i.buz@sud.uz" },
+    { name: "Izboskan tumanlararo iqtisodiy sudi",      address: "Izboskan tumani, Poytug' shahri, Mirzo Ulug'bek ko'chasi, 2-uy",     phone: "+998 (74) 224-57-47", email: "i.izboskan@sud.uz" },
+    { name: "Qo'rg'ontepa tumanlararo iqtisodiy sudi", address: "Qo'rg'ontepa shahri, Mustaqillik ko'chasi, 50a-uy",                  phone: "+998 (74) 224-57-67", email: "i.qurgontepa@sud.uz" },
+    { name: "Xo'jaobod tumanlararo iqtisodiy sudi",    address: "Xo'jaobod shahri, Pok niyat ko'chasi, 2-uy",                         phone: "+998 (55) 404-69-15", email: "i.xujaobod@sud.uz" },
+  ],
+  farvil: [
+    { name: "Farg'ona viloyati iqtisodiy sudi",         address: "Farg'ona shahar, Yangioy ko'chasi, 2-uy",                            phone: "+998 (73) 249-15-30", email: "i.fargona@sud.uz" },
+    { name: "Farg'ona tumanlararo iqtisodiy sudi",      address: "Farg'ona shahar, Al-Farg'oniy ko'chasi, 47-uy",                      phone: "+998 (73) 249-15-31", email: "i.fargona.t@sud.uz" },
+    { name: "Qo'qon tumanlararo iqtisodiy sudi",        address: "Qo'qon shahar, Imom Buxoriy ko'chasi, 37a-uy",                       phone: "+998 (73) 249-15-32", email: "i.quqon@sud.uz" },
+    { name: "O'zbekiston tumanlararo iqtisodiy sudi",   address: "O'zbekiston tumani, Konizar qishlog'i, A.Navoiy ko'chasi, 18-uy",    phone: "+998 (73) 249-15-33", email: "i.uzbekiston@sud.uz" },
+    { name: "Marg'ilon tumanlararo iqtisodiy sudi",     address: "Marg'ilon shahar, Nurafshon ko'chasi, 7-uy",                         phone: "+998 (73) 249-15-34", email: "i.margilon@sud.uz" },
+    { name: "Rishton tumanlararo iqtisodiy sudi",       address: "Rishton tumani, B.Roshidoniy ko'chasi, 187a-uy",                     phone: "+998 (73) 249-15-35", email: "i.rishton@sud.uz" },
+  ],
+  namvil: [
+    { name: "Namangan viloyati iqtisodiy sudi",           address: "Namangan shahri, N.Namangoniy ko'chasi, 20a-uy",          phone: "+998 (69) 211-10-57", email: "i.namangan@sud.uz" },
+    { name: "Yangiyo'rg'on tumanlararo iqtisodiy sudi",  address: "Yangiyo'rg'on shaharchasi, Chortoq ko'chasi, 15-uy",       phone: "+998 (69) 211-12-58", email: "i.yangiqurgon@sud.uz" },
+    { name: "Namangan tumanlararo iqtisodiy sudi",        address: "Namangan shahri, N.Namangoniy ko'chasi, 20a-uy",          phone: "+998 (69) 211-12-06", email: "i.namangan.t@sud.uz" },
+    { name: "Uchqo'rg'on tumanlararo iqtisodiy sudi",    address: "Uchqo'rg'on shahri, Nodira ko'chasi, 4-uy",               phone: "+998 (69) 211-12-48", email: "i.uchqurgon@sud.uz" },
+    { name: "Chust tumanlararo iqtisodiy sudi",           address: "Chust shahri, Chustiy ko'chasi, 5-uy",                    phone: "+998 (69) 211-12-58", email: "i.chust@sud.uz" },
+  ],
+  samvil: [
+    { name: "Samarqand viloyati iqtisodiy sudi",          address: "Samarqand shahri, Mingtut ko'chasi, 2-uy",                          phone: "+998 (55) 706-70-04", email: "i.samarqand@sud.uz" },
+    { name: "Kattaqo'rg'on tumanlararo iqtisodiy sudi",   address: "Kattaqo'rg'on tumani, Kadan q., Mustaqillik ko'chasi, 34-uy",       phone: "+998 (55) 706-70-41", email: "i.kattaqurgon@sud.uz" },
+    { name: "Ishtixon tumanlararo iqtisodiy sudi",        address: "Ishtixon sh., Ishtixon ko'chasi, 11-uy",                            phone: "+998 (55) 706-70-99", email: "i.ishtixon@sud.uz" },
+    { name: "Jomboy tumanlararo iqtisodiy sudi",          address: "Jomboy sh., Toshkent ko'chasi, 35-uy",                              phone: "+998 (55) 706-70-38", email: "i.jomboy@sud.uz" },
+    { name: "Tayloq tumanlararo iqtisodiy sudi",          address: "Tayloq tumani, Mustaqillik ko'chasi, 8-uy",                         phone: "+998 (55) 706-70-44", email: "i.tayloq@sud.uz" },
+    { name: "Payariq tumanlararo iqtisodiy sudi",         address: "Payariq sh., 50 yillik ko'chasi, 4-uy",                             phone: "+998 (55) 706-70-42", email: "i.payariq@sud.uz" },
+    { name: "Pastdarg'om tumanlararo iqtisodiy sudi",     address: "Pastdarg'om tumani, Go'zalqent qo'rg'oni",                          phone: "+998 (55) 706-70-43", email: "i.pastdargom@sud.uz" },
+    { name: "Samarqand shahar iqtisodiy sudi",            address: "Samarqand shahri, Mingtut ko'chasi, 2-uy",                          phone: "+998 (55) 706-70-37", email: "i.samarqand.sh@sud.uz" },
+  ],
+  buhvil: [
+    { name: "Buxoro viloyati iqtisodiy sudi",     address: "Buxoro shahar, Yangi hayot ko'chasi, 122-uy",                          phone: "+998 (65) 220-01-14", email: "i.buxoro@sud.uz" },
+    { name: "Buxoro tumanlararo iqtisodiy sudi",  address: "Buxoro tumani, G'ala Osiyo shahri, Buyuk ipak yo'li ko'chasi",          phone: "+998 (65) 220-07-33", email: "i.buxoro.sh@sud.uz" },
+    { name: "Kogon tumanlararo iqtisodiy sudi",   address: "Kogon shahar, Qorovulbozor shoh ko'chasi, 2-uy",                        phone: "+998 (65) 220-07-34", email: "i.kogon@sud.uz" },
+    { name: "G'ijduvon tumanlararo iqtisodiy sudi", address: "G'ijduvon tuman, Yu.Hamadoniy ko'chasi, 54-uy",                       phone: "+998 (65) 220-07-35", email: "i.gijduvon@sud.uz" },
+    { name: "Qorakol tumanlararo iqtisodiy sudi", address: "Qorakol tumani, Buxoro ko'chasi, 152-uy",                               phone: "+998 (65) 220-07-36", email: "i.qorakul@sud.uz" },
+    { name: "Peshku tumanlararo iqtisodiy sudi",  address: "Peshku tumani, A.Temur ko'chasi, 5-uy",                                 phone: "+998 (79) 220-22-43", email: "i.peshku@sud.uz" },
+    { name: "Romitan tumanlararo iqtisodiy sudi", address: "Romitan tuman, A.Temur ko'chasi, 40-uy",                                phone: "+998 (79) 573-43-83", email: "i.romitan@sud.uz" },
+  ],
+  navvil: [
+    { name: "Navoiy viloyati iqtisodiy sudi",       address: "Navoiy shahar, Navoiy ko'chasi, 1-uy",              phone: "+998 (79) 222-01-24", email: "i.navoiy@sud.uz" },
+    { name: "Zarafshon tumanlararo iqtisodiy sudi", address: "Zarafshon shahar, Marvarid ko'chasi, 19-uy",        phone: "+998 (79) 222-01-43", email: "i.zarafshon@sud.uz" },
+    { name: "Uchquduq tuman iqtisodiy sudi",        address: "Uchquduq tumani, Amir Temur ko'chasi, 46-uy",       phone: "+998 (79) 222-01-44", email: "i.uchquduq@sud.uz" },
+    { name: "Navbahor tumanlararo iqtisodiy sudi",  address: "Navbahor tumani, Bobur shoh ko'chasi, 7-uy",        phone: "+998 (79) 222-01-27", email: "i.navbahor@sud.uz" },
+    { name: "Karmana tumanlararo iqtisodiy sudi",   address: "Navoiy shahar, Navoiy ko'chasi, 39b-uy",            phone: "+998 (79) 222-01-21", email: "i.karmana@sud.uz" },
+  ],
+  xorvil: [
+    { name: "Xorazm viloyati iqtisodiy sudi",     address: "Urganch shahar, Mashal ko'chasi, 4-uy",       phone: "+998 (62) 226-01-69", email: "i.xorazm@sud.uz" },
+    { name: "Urganch tumanlararo iqtisodiy sudi", address: "Urganch shahar, Mashal ko'chasi, 3-uy",       phone: "+998 (62) 315-10-18", email: "i.urganch@sud.uz" },
+    { name: "Shovot tumanlararo iqtisodiy sudi",  address: "Shovot tumani, Turkiston ko'chasi, 3-uy",     phone: "+998 (55) 102-40-66", email: "i.shovot@sud.uz" },
+    { name: "Bog'ot tumanlararo iqtisodiy sudi",  address: "Bog'ot tumani, Navroz ko'chasi, 104-uy",      phone: "+998 (55) 102-40-63", email: "i.bogot@sud.uz" },
+  ],
+  qrvil: [
+    { name: "Qoraqalpog'iston Respublikasi iqtisodiy sudi", address: "Nukus shahri, Do'stlik guzari MFY, I.Karimov ko'chasi, 122-uy", phone: "+998 (55) 102-40-42", email: "i.qr@sud.uz" },
+    { name: "Chimboy tumanlararo iqtisodiy sudi",           address: "Chimboy tumani, Tozg'ora OFY, raqamsiz uy",                    phone: "+998 (55) 102-40-54", email: "i.chimboy@sud.uz" },
+    { name: "Qo'ng'irot tumanlararo iqtisodiy sudi",        address: "Qo'ng'irot tumani, R.Abdullaev ko'chasi, raqamsiz uy",         phone: "+998 (61) 312-05-49", email: "i.qungirot@sud.uz" },
+    { name: "Beruniy tumanlararo iqtisodiy sudi",           address: "Beruniy tumani, Beruniy ko'chasi, raqamsiz uy",                phone: "+998 (55) 102-40-63", email: "i.beruniy@sud.uz" },
+    { name: "Nukus tumanlararo iqtisodiy sudi",             address: "Nukus shahri, A.Dosnazarov ko'chasi, 92-uy",                   phone: "+998 (55) 102-40-66", email: "i.nukus@sud.uz" },
+  ],
+  jizzvil: [
+    { name: "Jizzax viloyati iqtisodiy sudi",         address: "Jizzax shahri, Katta o'zbek trakti, 115-uy",                          phone: "+998 (55) 152-05-72", email: "i.jizzah@sud.uz" },
+    { name: "Forish tuman iqtisodiy sudi",            address: "Forish tumani, Osmonsoy QFY, Tutak qishlog'i",                        phone: "+998 (55) 152-05-73", email: "i.forish@sud.uz" },
+    { name: "Jizzax tumanlararo iqtisodiy sudi",      address: "Jizzax shahri, Katta o'zbek trakti, 115-uy",                          phone: "+998 (55) 152-05-72", email: "i.jizzah.t@sud.uz" },
+    { name: "G'allaorol tumanlararo iqtisodiy sudi",  address: "G'allaorol tumani, Sarbozor MFY, Shodlik ko'chasi, 17-uy",            phone: "+998 (55) 152-05-99", email: "i.gallaorol@sud.uz" },
+    { name: "Do'stlik tumanlararo iqtisodiy sudi",    address: "Do'stlik tumani, Do'stlik shahar, Alisher Navoiy MFY",                phone: "+998 (55) 152-05-81", email: "i.dustlik@sud.uz" },
+    { name: "Zomin tumanlararo iqtisodiy sudi",       address: "Zomin tumani, Shirin QFY, Nebosa qishlog'i",                          phone: "+998 (55) 152-05-74", email: "i.zomin@sud.uz" },
+  ],
+  sirvil: [
+    { name: "Sirdaryo viloyati iqtisodiy sudi",     address: "Guliston shahri, Islom Karimov ko'chasi, 75-uy",   phone: "+998 (55) 651-35-35", email: "i.sirdaryo@sud.uz" },
+    { name: "Guliston tumanlararo iqtisodiy sudi",  address: "Guliston shahar, Birlashgan ko'chasi, 7-uy",       phone: "+998 (55) 651-35-40", email: "i.guliston@sud.uz" },
+    { name: "Sirdaryo tumanlararo iqtisodiy sudi",  address: "Sirdaryo shahar, O'zbekiston ko'chasi, 80-uy",     phone: "+998 (55) 651-35-34", email: "i.sirdaryo.t@sud.uz" },
+    { name: "Boyovut tumanlararo iqtisodiy sudi",   address: "Hovos shahar, Fidokorlar ko'chasi, 16-uy",         phone: "+998 (55) 651-35-31", email: "i.boyovut@sud.uz" },
+    { name: "Oqoltin tumanlararo iqtisodiy sudi",   address: "Sardoba shaharchasi, Guliston ko'chasi, 7-uy",     phone: "+998 (55) 651-35-36", email: "i.oqoltin@sud.uz" },
+  ],
+  kashvil: [
+    { name: "Qashqadaryo viloyati iqtisodiy sudi",   address: "Qarshi shahar, A.Oripov ko'chasi, 10a-uy",                      phone: "+998 (55) 404-69-10", email: "i.qashqadaryo@sud.uz" },
+    { name: "Koson tumanlararo iqtisodiy sudi",      address: "Koson tumani, Mustaqillik ko'chasi, 116-uy",                    phone: "+998 (55) 404-69-26", email: "i.koson@sud.uz" },
+    { name: "Shahrisabz tumanlararo iqtisodiy sudi", address: "Shahrisabz shahri, Ipak yo'li ko'chasi, 140-uy",               phone: "+998 (55) 404-69-17", email: "i.shaxrisabz@sud.uz" },
+    { name: "Kasbi tumanlararo iqtisodiy sudi",      address: "Kasbi tumani, Muglon ko'chasi",                                 phone: "+998 (55) 404-69-23", email: "i.kasbi@sud.uz" },
+    { name: "Chiroqchi tuman iqtisodiy sudi",        address: "Chiroqchi tumani, Dam-2 massivi, 1-uy",                        phone: "+998 (55) 404-69-31", email: "i.chiroqchi@sud.uz" },
+    { name: "G'uzor tumanlararo iqtisodiy sudi",     address: "Qarshi shahar, Bog'zor ko'chasi, 2A-uy",                       phone: "+998 (55) 404-69-18", email: "i.guzor@sud.uz" },
+    { name: "Qarshi tumanlararo iqtisodiy sudi",     address: "Qarshi shahar, Bog'zor ko'chasi, 2A-uy",                       phone: "+998 (55) 404-69-15", email: "i.qarshi@sud.uz" },
+    { name: "Yakkabog' tumanlararo iqtisodiy sudi",  address: "Yakkabog' shahri, Aygirkol MFY, Amir Temur ko'chasi",          phone: "+998 (55) 404-69-33", email: "i.yakkabog@sud.uz" },
+  ],
+  surxvil: [
+    { name: "Surxondaryo viloyati iqtisodiy sudi",    address: "Termiz shahri, Sulton saodat ko'chasi, 286b-uy",              phone: "+998 (76) 228-19-00", email: "i.surxondaryo@sud.uz" },
+    { name: "Termiz tumanlararo iqtisodiy sudi",      address: "Termiz shahri, Sh.Rashidov ko'chasi, 67-uy",                 phone: "+998 (76) 228-40-01", email: "i.termiz@sud.uz" },
+    { name: "Sariosiyo tumanlararo iqtisodiy sudi",   address: "Sariosiyo tumani, Mehr shavqat mahallasi",                   phone: "+998 (76) 228-40-03", email: "i.sariosiyo@sud.uz" },
+    { name: "Sherobod tumanlararo iqtisodiy sudi",    address: "Sherobod tumani, «Do'stlik» mahallasi, Mustaqillik ko'chasi", phone: "+998 (76) 228-40-02", email: "i.sherobod@sud.uz" },
+    { name: "Qumqo'rg'on tumanlararo iqtisodiy sudi", address: "Qumqo'rg'on tumani, Bogoro mahallasi, O'zbekiston shoh ko'chasi", phone: "+998 (76) 228-40-06", email: "i.qumqurgon@sud.uz" },
+    { name: "Denov tumanlararo iqtisodiy sudi",       address: "Denov tumani, Buyuk kelajak MFY, Ezgu maqsad ko'chasi, 63-uy", phone: "+998 (76) 228-40-05", email: "i.denov@sud.uz" },
+  ],
+};
+
 export function getCourts(type: CourtType, regionId: string): CourtEntry[] {
   if (type === "oliy") return [OLIY_SUD];
-  // For fuq/mam/iqt - use jin data as they share buildings in most regions
+  if (type === "iqt") return IQT[regionId] ?? [];
   return JIN[regionId] ?? [];
 }
