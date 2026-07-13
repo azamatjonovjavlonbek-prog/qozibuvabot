@@ -498,7 +498,8 @@ const IQT: Record<string, CourtEntry[]> = {
   farvil:  [
     { name: "Farg'ona viloyati iqtisodiy sudi",   address: "Farg'ona shahar, Yangioy ko'chasi, 2-uy",          phone: "+998 (73) 249-15-30", email: "i.fargona@sud.uz",   lat: 40.374776, lng: 71.809034 },
     { name: "Farg'ona tumanlararo iqtisodiy sudi", address: "Farg'ona shahar, Al-Farg'oniy ko'chasi, 47-uy",  phone: "+998 (73) 249-15-31", email: "i.fargona.t@sud.uz", lat: 40.541791, lng: 70.921019 },
-    { name: "Qo'qon tumanlararo iqtisodiy sudi",   address: "Qo'qon shahar, Imom Buxoriy ko'chasi, 37a-uy",  phone: "+998 (73) 249-15-32", email: "i.quqon@sud.uz",     lat: 40.377905, lng: 70.831174 },
+    { name: "Qo'qon tumanlararo iqtisodiy sudi",      address: "Qo'qon shahar, Imom Buxoriy ko'chasi, 37a-uy",          phone: "+998 (73) 249-15-32", email: "i.quqon@sud.uz",      lat: 40.377905, lng: 70.831174 },
+    { name: "O'zbekiston tumanlararo iqtisodiy sudi", address: "O'zbekiston tumani, Konizar qishlog'i, A.Navoiy ko'chasi, 18-uy", phone: "+998 (73) 249-15-33", email: "i.uzbekiston@sud.uz", lat: 40.472373, lng: 71.724757 },
   ],
   namvil:  [{ name: "Namangan viloyati iqtisodiy sudi",            address: "160100, Namangan shahar, Hamza ko'ch., 36",                    phone: "+998 (69) 234-04-15", email: "namvil.iqt@supcourt.uz",  lat: 41.0011, lng: 71.6724 }],
   samvil:  [{ name: "Samarqand viloyati iqtisodiy sudi",           address: "140100, Samarqand shahar, Registon ko'ch., 8",                 phone: "+998 (66) 233-15-26", email: "samvil.iqt@supcourt.uz",  lat: 39.6542, lng: 66.9597 }],
