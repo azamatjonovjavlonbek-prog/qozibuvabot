@@ -513,7 +513,8 @@ const IQT: Record<string, CourtEntry[]> = {
   ],
   namvil:  [
     { name: "Namangan viloyati iqtisodiy sudi",      address: "Namangan shahri, N.Namangoniy ko'chasi, 20a-uy",      phone: "+998 (69) 211-10-57", email: "i.namangan@sud.uz",      lat: 40.999467, lng: 71.665218 },
-    { name: "Yangiyo'rg'on tumanlararo iqtisodiy sudi", address: "Yangiyo'rg'on shaharchasi, Chortoq ko'chasi, 15-uy", phone: "+998 (69) 211-12-58", email: "i.yangiqurgon@sud.uz", lat: 41.279804, lng: 71.820765 },
+    { name: "Yangiyo'rg'on tumanlararo iqtisodiy sudi", address: "Yangiyo'rg'on shaharchasi, Chortoq ko'chasi, 15-uy",  phone: "+998 (69) 211-12-58", email: "i.yangiqurgon@sud.uz",  lat: 41.279804, lng: 71.820765 },
+    { name: "Namangan tumanlararo iqtisodiy sudi",      address: "Namangan shahri, N.Namangoniy ko'chasi, 20a-uy",     phone: "+998 (69) 211-12-06", email: "i.namangan.t@sud.uz",   lat: 41.108055, lng: 72.053052 },
   ],
   samvil:  [
     { name: "Samarqand viloyati iqtisodiy sudi",       address: "Samarqand shahri, Mingtut ko'chasi, 2-uy",                      phone: "+998 (55) 706-70-04", email: "i.samarqand@sud.uz",     lat: 39.657841, lng: 66.940196 },
