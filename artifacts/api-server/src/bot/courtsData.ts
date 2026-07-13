@@ -578,7 +578,8 @@ const IQT: Record<string, CourtEntry[]> = {
     { name: "Termiz tumanlararo iqtisodiy sudi",     address: "Termiz shahri, Sh.Rashidov ko'chasi, 67-uy",  phone: "+998 (76) 228-40-01", email: "i.termiz@sud.uz",     lat: 37.226367, lng: 67.266306 },
     { name: "Sariosiyo tumanlararo iqtisodiy sudi", address: "Sariosiyo tumani, Mehr shavqat mahallasi",              phone: "+998 (76) 228-40-03", email: "i.sariosiyo@sud.uz", lat: 38.417384, lng: 67.960091 },
     { name: "Sherobod tumanlararo iqtisodiy sudi",   address: "Sherobod tumani, «Do'stlik» mahallasi, Mustaqillik ko'chasi",    phone: "+998 (76) 228-40-02", email: "i.sherobod@sud.uz",   lat: 37.651918, lng: 67.033343 },
-    { name: "Qumqo'rg'on tumanlararo iqtisodiy sudi", address: "Qumqo'rg'on tumani, Bogoro mahallasi, O'zbekiston shoh ko'chasi", phone: "+998 (76) 228-40-06", email: "i.qumqurgon@sud.uz", lat: 37.836869, lng: 67.580395 },
+    { name: "Qumqo'rg'on tumanlararo iqtisodiy sudi", address: "Qumqo'rg'on tumani, Bogoro mahallasi, O'zbekiston shoh ko'chasi",  phone: "+998 (76) 228-40-06", email: "i.qumqurgon@sud.uz", lat: 37.836869, lng: 67.580395 },
+    { name: "Denov tumanlararo iqtisodiy sudi",        address: "Denov tumani, Buyuk kelajak MFY, Ezgu maqsad ko'chasi, 63-uy",   phone: "+998 (76) 228-40-05", email: "i.denov@sud.uz",      lat: 38.263554, lng: 67.908350 },
   ],
 };
 
