@@ -492,6 +492,7 @@ const IQT: Record<string, CourtEntry[]> = {
     { name: "Zarafshon tumanlararo iqtisodiy sudi",        address: "Zarafshon shahar, Marvarid ko'chasi, 19-uy",        phone: "+998 (79) 222-01-43", email: "i.zarafshon@sud.uz",   lat: 42.148348, lng: 63.556376 },
     { name: "Uchquduq tuman iqtisodiy sudi",               address: "Uchquduq tumani, Amir Temur ko'chasi, 46-uy",        phone: "+998 (79) 222-01-44", email: "i.uchquduq@sud.uz",    lat: 41.680613, lng: 60.277568 },
     { name: "Navbahor tumanlararo iqtisodiy sudi",         address: "Navbahor tumani, Bobur shoh ko'chasi, 7-uy",         phone: "+998 (79) 222-01-27", email: "i.navbahor@sud.uz",    lat: 41.570703, lng: 60.629933 },
+    { name: "Karmana tumanlararo iqtisodiy sudi",          address: "Navoiy shahar, Navoiy ko'chasi, 39b-uy",             phone: "+998 (79) 222-01-21", email: "i.karmana@sud.uz",     lat: 40.221583, lng: 65.307096 },
   ],
   xorvil:  [{ name: "Xorazm viloyati iqtisodiy sudi",              address: "220100, Urganch shahar, Al-Xorazmiy ko'ch., 12",               phone: "+998 (62) 226-48-59", email: "xorvil.iqt@supcourt.uz",  lat: 41.5553, lng: 60.6333 }],
   qrvil:   [{ name: "Qoraqalpog'iston Respublikasi iqtisodiy sudi",address: "230100, Nukus shahar, Qoraqalpog'iston ko'ch., 18",            phone: "+998 (61) 222-59-70", email: "qrvil.iqt@supcourt.uz",   lat: 42.4600, lng: 59.6166 }],
