@@ -508,6 +508,7 @@ const IQT: Record<string, CourtEntry[]> = {
     { name: "Chimboy tumanlararo iqtisodiy sudi",           address: "Chimboy tumani, Tozg'ora OFY, raqamsiz uy",              phone: "+998 (55) 102-40-54", email: "i.chimboy@sud.uz",       lat: 42.903102,  lng: 59.777117  },
     { name: "Qo'ng'irot tumanlararo iqtisodiy sudi",       address: "Qo'ng'irot tumani, R.Abdullaev ko'chasi, raqamsiz uy",   phone: "+998 (61) 312-05-49", email: "i.qungirot@sud.uz",      lat: 43.047755,  lng: 58.849018  },
     { name: "Beruniy tumanlararo iqtisodiy sudi",          address: "Beruniy tumani, Beruniy ko'chasi, raqamsiz uy",           phone: "+998 (55) 102-40-63", email: "i.beruniy@sud.uz",       lat: 41.696413,  lng: 60.725016  },
+    { name: "Nukus tumanlararo iqtisodiy sudi",            address: "Nukus shahri, A.Dosnazarov ko'chasi, 92-uy",              phone: "+998 (55) 102-40-66", email: "i.nukus@sud.uz",         lat: 42.465328,  lng: 59.620350  },
   ],
   jizzvil: [{ name: "Jizzax viloyati iqtisodiy sudi",              address: "130100, Jizzax shahar, Sharof Rashidov ko'ch., 12",            phone: "+998 (72) 226-70-81", email: "jizzvil.iqt@supcourt.uz", lat: 40.1156, lng: 67.8422 }],
   sirvil:  [{ name: "Sirdaryo viloyati iqtisodiy sudi",            address: "120100, Guliston shahar, Mustaqillik ko'ch., 24",              phone: "+998 (67) 223-81-92", email: "sirvil.iqt@supcourt.uz",  lat: 40.4897, lng: 68.7869 }],
