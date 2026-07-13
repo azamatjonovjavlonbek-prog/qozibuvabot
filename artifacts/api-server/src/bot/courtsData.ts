@@ -575,7 +575,8 @@ const IQT: Record<string, CourtEntry[]> = {
   kashvil: [
     { name: "Qashqadaryo viloyati iqtisodiy sudi", address: "Qarshi shahar, A.Oripov ko'chasi, 10a-uy",        phone: "+998 (55) 404-69-10", email: "i.qashqadaryo@sud.uz", lat: 38.847359, lng: 65.786444 },
     { name: "Koson tumanlararo iqtisodiy sudi",      address: "Koson tumani, Mustaqillik ko'chasi, 116-uy",    phone: "+998 (55) 404-69-26", email: "i.koson@sud.uz",        lat: 39.059146, lng: 65.579588 },
-    { name: "Shahrisabz tumanlararo iqtisodiy sudi", address: "Shahrisabz shahri, Ipak yo'li ko'chasi, 140-uy", phone: "+998 (55) 404-69-17", email: "i.shaxrisabz@sud.uz",   lat: 39.080739, lng: 66.840470 },
+    { name: "Shahrisabz tumanlararo iqtisodiy sudi", address: "Shahrisabz shahri, Ipak yo'li ko'chasi, 140-uy", phone: "+998 (55) 404-69-17", email: "i.shaxrisabz@sud.uz", lat: 39.080739, lng: 66.840470 },
+    { name: "Kasbi tumanlararo iqtisodiy sudi",      address: "Kasbi tumani, Muglon ko'chasi",                   phone: "+998 (55) 404-69-23", email: "i.kasbi@sud.uz",       lat: 38.915954, lng: 65.401836 },
   ],
   surxvil: [
     { name: "Surxondaryo viloyati iqtisodiy sudi", address: "Termiz shahri, Sulton saodat ko'chasi, 286b-uy", phone: "+998 (76) 228-19-00", email: "i.surxondaryo@sud.uz", lat: 37.237798, lng: 67.307166 },
