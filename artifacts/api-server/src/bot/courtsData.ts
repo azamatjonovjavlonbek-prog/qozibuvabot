@@ -486,6 +486,7 @@ const IQT: Record<string, CourtEntry[]> = {
     { name: "Yuqorichirchiq tumanlararo iqtisodiy sudi",   address: "Toshkent viloyati, Yuqorichirchiq tumani, Yangiboʻzor qoʻrg'oni, Mustaqillik ko'chasi, 77-uy", phone: "+998 (55) 517-02-32", email: "i.yuqorichirchiq@sud.uz", lat: 41.313962, lng: 69.529620 },
     { name: "Zangiota tumanlararo iqtisodiy sudi",         address: "Toshkent viloyati, Zangiota tumani, Eshonguzar MFY, Y.Oxunboboyev ko'chasi",                   phone: "+998 (55) 517-02-37", email: "i.zangiota@sud.uz",      lat: 41.256105, lng: 69.145623 },
     { name: "Chirchiq tumanlararo iqtisodiy sudi",         address: "Toshkent viloyati, Chirchiq shahri, Istiqbol ko'chasi, 8-uy",                                   phone: "+998 (55) 517-02-71", email: "i.chirchiq@sud.uz",      lat: 41.470844, lng: 69.577138 },
+    { name: "Quyichirchiq tumanlararo iqtisodiy sudi",    address: "Toshkent viloyati, Quyichirchiq tumani, Do'stobod shahar, «Do'stlik-1» m.f.y., Markaziy ko'chasi", phone: "+998 (55) 517-02-55", email: "i.quyichirchiq@sud.uz",  lat: 40.831601, lng: 68.881559 },
   ],
   andvil:  [{ name: "Andijon viloyati iqtisodiy sudi",             address: "170100, Andijon shahar, Navruz ko'ch., 12",                    phone: "+998 (74) 223-82-93", email: "andvil.iqt@supcourt.uz",  lat: 40.7829, lng: 72.3440 }],
   farvil:  [{ name: "Farg'ona viloyati iqtisodiy sudi",            address: "150100, Farg'ona shahar, Mustaqillik ko'ch., 15",              phone: "+998 (73) 244-93-04", email: "farvil.iqt@supcourt.uz",  lat: 40.3840, lng: 71.7870 }],
