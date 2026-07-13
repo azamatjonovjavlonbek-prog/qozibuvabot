@@ -500,7 +500,8 @@ const IQT: Record<string, CourtEntry[]> = {
     { name: "Asaka tumanlararo iqtisodiy sudi",   address: "Asaka shahri, Sohilbo'yi ko'chasi, 11-uy",                    phone: "+998 (74) 224-57-27", email: "i.asaka@sud.uz", lat: 40.412625, lng: 71.553974 },
     { name: "Bo'ston tumanlararo iqtisodiy sudi",  address: "Bo'ston tumani, Pillakor MFY, Mustaqillik ko'chasi, 32-uy",    phone: "+998 (74) 224-57-37", email: "i.buz@sud.uz",       lat: 40.534753, lng: 72.151715 },
     { name: "Izboskan tumanlararo iqtisodiy sudi",   address: "Izboskan tumani, Poytug' shahri, Mirzo Ulug'bek ko'chasi, 2-uy", phone: "+998 (74) 224-57-47", email: "i.izboskan@sud.uz",    lat: 40.728636, lng: 72.758529 },
-    { name: "Qo'rg'ontepa tumanlararo iqtisodiy sudi", address: "Qo'rg'ontepa shahri, Mustaqillik ko'chasi, 50a-uy",              phone: "+998 (74) 224-57-67", email: "i.qurgontepa@sud.uz", lat: 40.400673, lng: 72.335252 },
+    { name: "Qo'rg'ontepa tumanlararo iqtisodiy sudi", address: "Qo'rg'ontepa shahri, Mustaqillik ko'chasi, 50a-uy",       phone: "+998 (74) 224-57-67", email: "i.qurgontepa@sud.uz", lat: 40.400673, lng: 72.335252 },
+    { name: "Xo'jaobod tumanlararo iqtisodiy sudi",    address: "Xo'jaobod shahri, Pok niyat ko'chasi, 2-uy",             phone: "+998 (55) 404-69-15", email: "i.xujaobod@sud.uz",   lat: 38.826816, lng: 65.789511 },
   ],
   farvil:  [
     { name: "Farg'ona viloyati iqtisodiy sudi",   address: "Farg'ona shahar, Yangioy ko'chasi, 2-uy",          phone: "+998 (73) 249-15-30", email: "i.fargona@sud.uz",   lat: 40.374776, lng: 71.809034 },
