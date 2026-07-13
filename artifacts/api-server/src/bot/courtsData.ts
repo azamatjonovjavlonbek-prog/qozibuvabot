@@ -572,7 +572,10 @@ const IQT: Record<string, CourtEntry[]> = {
     { name: "Boyovut tumanlararo iqtisodiy sudi",   address: "Hovos shahar, Fidokorlar ko'chasi, 16-uy",      phone: "+998 (55) 651-35-31", email: "i.boyovut@sud.uz",  lat: 40.242458, lng: 68.896806 },
     { name: "Oqoltin tumanlararo iqtisodiy sudi",   address: "Sardoba shaharchasi, Guliston ko'chasi, 7-uy",  phone: "+998 (55) 651-35-36", email: "i.oqoltin@sud.uz",  lat: 40.546512, lng: 68.404334 },
   ],
-  kashvil: [{ name: "Qashqadaryo viloyati iqtisodiy sudi",         address: "Qarshi shahar, A.Oripov ko'chasi, 10a-uy",                     phone: "+998 (55) 404-69-10", email: "i.qashqadaryo@sud.uz",    lat: 38.847359, lng: 65.786444 }],
+  kashvil: [
+    { name: "Qashqadaryo viloyati iqtisodiy sudi", address: "Qarshi shahar, A.Oripov ko'chasi, 10a-uy",        phone: "+998 (55) 404-69-10", email: "i.qashqadaryo@sud.uz", lat: 38.847359, lng: 65.786444 },
+    { name: "Koson tumanlararo iqtisodiy sudi",    address: "Koson tumani, Mustaqillik ko'chasi, 116-uy",      phone: "+998 (55) 404-69-26", email: "i.koson@sud.uz",        lat: 39.059146, lng: 65.579588 },
+  ],
   surxvil: [
     { name: "Surxondaryo viloyati iqtisodiy sudi", address: "Termiz shahri, Sulton saodat ko'chasi, 286b-uy", phone: "+998 (76) 228-19-00", email: "i.surxondaryo@sud.uz", lat: 37.237798, lng: 67.307166 },
     { name: "Termiz tumanlararo iqtisodiy sudi",     address: "Termiz shahri, Sh.Rashidov ko'chasi, 67-uy",  phone: "+998 (76) 228-40-01", email: "i.termiz@sud.uz",     lat: 37.226367, lng: 67.266306 },
