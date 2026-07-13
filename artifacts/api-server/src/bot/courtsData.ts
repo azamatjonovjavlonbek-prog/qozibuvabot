@@ -480,7 +480,10 @@ const MAM: Record<string, CourtEntry[]> = {
 
 // ── Iqtisodiy sudlar (bir viloyat — bir sud) ──────────────────────────────────
 const IQT: Record<string, CourtEntry[]> = {
-  tashsh:  [{ name: "Toshkent shahar iqtisodiy sudi",              address: "Toshkent shahar, Cho'pon-ota ko'chasi, 6-uy",                  phone: "+998 (71) 273-06-46", email: "i.toshkent@sud.uz",       lat: 41.283271, lng: 69.210198 }],
+  tashsh:  [
+    { name: "Toshkent shahar iqtisodiy sudi",    address: "Toshkent shahar, Cho'pon-ota ko'chasi, 6-uy", phone: "+998 (71) 273-06-46", email: "i.toshkent@sud.uz",   lat: 41.283271, lng: 69.210198 },
+    { name: "Toshkent tumanlararo iqtisodiy sudi", address: "Toshkent shahar, Cho'pon-ota ko'chasi, 6-uy", phone: "+998 (55) 501-05-04", email: "i.toshkent.t@sud.uz", lat: 41.283271, lng: 69.210198 },
+  ],
   tashvil: [
     { name: "Toshkent viloyati iqtisodiy sudi",            address: "Toshkent shahar, Usmon Nosir ko'chasi, 93-uy",                           phone: "+998 (55) 510-74-74", email: "i.toshkent.v@sud.uz",        lat: 41.266486, lng: 69.233482 },
     { name: "Yuqorichirchiq tumanlararo iqtisodiy sudi",   address: "Toshkent viloyati, Yuqorichirchiq tumani, Yangiboʻzor qoʻrg'oni, Mustaqillik ko'chasi, 77-uy", phone: "+998 (55) 517-02-32", email: "i.yuqorichirchiq@sud.uz", lat: 41.313962, lng: 69.529620 },
