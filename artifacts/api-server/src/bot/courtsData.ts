@@ -504,7 +504,8 @@ const IQT: Record<string, CourtEntry[]> = {
   ],
   xorvil:  [
     { name: "Xorazm viloyati iqtisodiy sudi",   address: "Urganch shahar, Mashal ko'chasi, 4-uy", phone: "+998 (62) 226-01-69", email: "i.xorazm@sud.uz",   lat: 41.562171, lng: 60.627568 },
-    { name: "Urganch tumanlararo iqtisodiy sudi", address: "Urganch shahar, Mashal ko'chasi, 3-uy", phone: "+998 (62) 315-10-18", email: "i.urganch@sud.uz", lat: 41.568046, lng: 60.630189 },
+    { name: "Urganch tumanlararo iqtisodiy sudi", address: "Urganch shahar, Mashal ko'chasi, 3-uy",   phone: "+998 (62) 315-10-18", email: "i.urganch@sud.uz", lat: 41.568046, lng: 60.630189 },
+    { name: "Shovot tumanlararo iqtisodiy sudi",  address: "Shovot tumani, Turkiston ko'chasi, 3-uy", phone: "+998 (55) 102-40-66", email: "i.shovot@sud.uz",  lat: 42.465328, lng: 59.620350 },
   ],
   qrvil:   [
     { name: "Qoraqalpog'iston Respublikasi iqtisodiy sudi", address: "Nukus shahri, Do'stlik guzari MFY, I.Karimov ko'chasi, 122-uy", phone: "+998 (55) 102-40-42", email: "i.qr@sud.uz",          lat: 42.469688,  lng: 59.615159  },
