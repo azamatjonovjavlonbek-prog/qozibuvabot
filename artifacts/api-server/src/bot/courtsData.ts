@@ -494,7 +494,7 @@ const IQT: Record<string, CourtEntry[]> = {
     { name: "Bekobod tumanlararo iqtisodiy sudi",        address: "Toshkent viloyati, Bekobod shahar, G'.G'ulom ko'chasi",                                            phone: "+998 (55) 517-02-33", email: "i.bekobod@sud.uz",     lat: 40.232978, lng: 69.253346 },
     { name: "Ohangaron tumanlararo iqtisodiy sudi",      address: "Toshkent viloyati, Ohangaron shahri, Ezgulik ko'chasi, 100-uy",                                    phone: "+998 (55) 517-02-73", email: "i.oxangaron@sud.uz",   lat: 40.907297, lng: 69.639351 },
   ],
-  andvil:  [{ name: "Andijon viloyati iqtisodiy sudi",             address: "170100, Andijon shahar, Navruz ko'ch., 12",                    phone: "+998 (74) 223-82-93", email: "andvil.iqt@supcourt.uz",  lat: 40.7829, lng: 72.3440 }],
+  andvil:  [{ name: "Andijon viloyati iqtisodiy sudi",             address: "Andijon shahar, A.Navoiy shoh ko'chasi, 15-uy",                phone: "+998 (74) 224-42-44", email: "i.andijon@sud.uz",        lat: 40.767796, lng: 72.364417 }],
   farvil:  [
     { name: "Farg'ona viloyati iqtisodiy sudi",   address: "Farg'ona shahar, Yangioy ko'chasi, 2-uy",          phone: "+998 (73) 249-15-30", email: "i.fargona@sud.uz",   lat: 40.374776, lng: 71.809034 },
     { name: "Farg'ona tumanlararo iqtisodiy sudi", address: "Farg'ona shahar, Al-Farg'oniy ko'chasi, 47-uy",  phone: "+998 (73) 249-15-31", email: "i.fargona.t@sud.uz", lat: 40.541791, lng: 70.921019 },
