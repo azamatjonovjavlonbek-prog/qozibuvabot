@@ -487,7 +487,10 @@ const IQT: Record<string, CourtEntry[]> = {
   namvil:  [{ name: "Namangan viloyati iqtisodiy sudi",            address: "160100, Namangan shahar, Hamza ko'ch., 36",                    phone: "+998 (69) 234-04-15", email: "namvil.iqt@supcourt.uz",  lat: 41.0011, lng: 71.6724 }],
   samvil:  [{ name: "Samarqand viloyati iqtisodiy sudi",           address: "140100, Samarqand shahar, Registon ko'ch., 8",                 phone: "+998 (66) 233-15-26", email: "samvil.iqt@supcourt.uz",  lat: 39.6542, lng: 66.9597 }],
   buhvil:  [{ name: "Buxoro viloyati iqtisodiy sudi",              address: "200100, Buxoro shahar, Al-Xorazmiy ko'ch., 6",                 phone: "+998 (65) 223-26-37", email: "buhvil.iqt@supcourt.uz",  lat: 39.7748, lng: 64.4286 }],
-  navvil:  [{ name: "Navoiy viloyati iqtisodiy sudi",              address: "Navoiy shahar, Navoiy ko'chasi, 1-uy",                         phone: "+998 (79) 222-01-24", email: "i.navoiy@sud.uz",         lat: 40.087914, lng: 65.373864 }],
+  navvil:  [
+    { name: "Navoiy viloyati iqtisodiy sudi",              address: "Navoiy shahar, Navoiy ko'chasi, 1-uy",              phone: "+998 (79) 222-01-24", email: "i.navoiy@sud.uz",      lat: 40.087914, lng: 65.373864 },
+    { name: "Zarafshon tumanlararo iqtisodiy sudi",        address: "Zarafshon shahar, Marvarid ko'chasi, 19-uy",        phone: "+998 (79) 222-01-43", email: "i.zarafshon@sud.uz",   lat: 42.148348, lng: 63.556376 },
+  ],
   xorvil:  [{ name: "Xorazm viloyati iqtisodiy sudi",              address: "220100, Urganch shahar, Al-Xorazmiy ko'ch., 12",               phone: "+998 (62) 226-48-59", email: "xorvil.iqt@supcourt.uz",  lat: 41.5553, lng: 60.6333 }],
   qrvil:   [{ name: "Qoraqalpog'iston Respublikasi iqtisodiy sudi",address: "230100, Nukus shahar, Qoraqalpog'iston ko'ch., 18",            phone: "+998 (61) 222-59-70", email: "qrvil.iqt@supcourt.uz",   lat: 42.4600, lng: 59.6166 }],
   jizzvil: [{ name: "Jizzax viloyati iqtisodiy sudi",              address: "130100, Jizzax shahar, Sharof Rashidov ko'ch., 12",            phone: "+998 (72) 226-70-81", email: "jizzvil.iqt@supcourt.uz", lat: 40.1156, lng: 67.8422 }],
