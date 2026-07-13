@@ -530,7 +530,8 @@ const IQT: Record<string, CourtEntry[]> = {
   jizzvil: [
     { name: "Jizzax viloyati iqtisodiy sudi",   address: "Jizzax shahri, Katta o'zbek trakti, 115-uy",          phone: "+998 (55) 152-05-72", email: "i.jizzah@sud.uz",  lat: 40.097062, lng: 67.882290 },
     { name: "Forish tuman iqtisodiy sudi",          address: "Forish tumani, Osmonsoy QFY, Tutak qishlog'i",  phone: "+998 (55) 152-05-73", email: "i.forish@sud.uz",   lat: 40.407652, lng: 67.202854 },
-    { name: "Jizzax tumanlararo iqtisodiy sudi",    address: "Jizzax shahri, Katta o'zbek trakti, 115-uy",    phone: "+998 (55) 152-05-72", email: "i.jizzah.t@sud.uz", lat: 40.097062, lng: 67.882290 },
+    { name: "Jizzax tumanlararo iqtisodiy sudi",    address: "Jizzax shahri, Katta o'zbek trakti, 115-uy",              phone: "+998 (55) 152-05-72", email: "i.jizzah.t@sud.uz",    lat: 40.097062, lng: 67.882290 },
+    { name: "G'allaorol tumanlararo iqtisodiy sudi", address: "G'allaorol tumani, Sarbozor MFY, Shodlik ko'chasi, 17-uy", phone: "+998 (55) 152-05-99", email: "i.gallaorol@sud.uz",   lat: 39.998295, lng: 67.588051 },
   ],
   sirvil:  [{ name: "Sirdaryo viloyati iqtisodiy sudi",            address: "120100, Guliston shahar, Mustaqillik ko'ch., 24",              phone: "+998 (67) 223-81-92", email: "sirvil.iqt@supcourt.uz",  lat: 40.4897, lng: 68.7869 }],
   kashvil: [{ name: "Qashqadaryo viloyati iqtisodiy sudi",         address: "180100, Qarshi shahar, Amir Temur ko'ch., 40",                 phone: "+998 (75) 225-92-03", email: "kashvil.iqt@supcourt.uz", lat: 38.8610, lng: 65.7880 }],
