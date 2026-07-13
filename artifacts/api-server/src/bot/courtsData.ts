@@ -486,7 +486,7 @@ const IQT: Record<string, CourtEntry[]> = {
   farvil:  [{ name: "Farg'ona viloyati iqtisodiy sudi",            address: "150100, Farg'ona shahar, Mustaqillik ko'ch., 15",              phone: "+998 (73) 244-93-04", email: "farvil.iqt@supcourt.uz",  lat: 40.3840, lng: 71.7870 }],
   namvil:  [{ name: "Namangan viloyati iqtisodiy sudi",            address: "160100, Namangan shahar, Hamza ko'ch., 36",                    phone: "+998 (69) 234-04-15", email: "namvil.iqt@supcourt.uz",  lat: 41.0011, lng: 71.6724 }],
   samvil:  [{ name: "Samarqand viloyati iqtisodiy sudi",           address: "140100, Samarqand shahar, Registon ko'ch., 8",                 phone: "+998 (66) 233-15-26", email: "samvil.iqt@supcourt.uz",  lat: 39.6542, lng: 66.9597 }],
-  buhvil:  [{ name: "Buxoro viloyati iqtisodiy sudi",              address: "200100, Buxoro shahar, Al-Xorazmiy ko'ch., 6",                 phone: "+998 (65) 223-26-37", email: "buhvil.iqt@supcourt.uz",  lat: 39.7748, lng: 64.4286 }],
+  buhvil:  [{ name: "Buxoro viloyati iqtisodiy sudi",              address: "Buxoro shahar, Yangi hayot ko'chasi, 122-uy",                  phone: "+998 (65) 220-01-14", email: "i.buxoro@sud.uz",         lat: 39.799530, lng: 64.424433 }],
   navvil:  [
     { name: "Navoiy viloyati iqtisodiy sudi",              address: "Navoiy shahar, Navoiy ko'chasi, 1-uy",              phone: "+998 (79) 222-01-24", email: "i.navoiy@sud.uz",      lat: 40.087914, lng: 65.373864 },
     { name: "Zarafshon tumanlararo iqtisodiy sudi",        address: "Zarafshon shahar, Marvarid ko'chasi, 19-uy",        phone: "+998 (79) 222-01-43", email: "i.zarafshon@sud.uz",   lat: 42.148348, lng: 63.556376 },
