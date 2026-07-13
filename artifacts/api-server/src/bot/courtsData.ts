@@ -481,7 +481,10 @@ const MAM: Record<string, CourtEntry[]> = {
 // ── Iqtisodiy sudlar (bir viloyat — bir sud) ──────────────────────────────────
 const IQT: Record<string, CourtEntry[]> = {
   tashsh:  [{ name: "Toshkent shahar iqtisodiy sudi",              address: "100047, Toshkent sh., Chilonzor tumani, A.Ikromov ko'ch., 3", phone: "+998 (71) 233-60-80", email: "tashsh.iqt@supcourt.uz",  lat: 41.2993, lng: 69.2395 }],
-  tashvil: [{ name: "Toshkent viloyati iqtisodiy sudi",            address: "Toshkent shahar, Usmon Nosir ko'chasi, 93-uy",                 phone: "+998 (55) 510-74-74", email: "i.toshkent.v@sud.uz",     lat: 41.266486, lng: 69.233482 }],
+  tashvil: [
+    { name: "Toshkent viloyati iqtisodiy sudi",            address: "Toshkent shahar, Usmon Nosir ko'chasi, 93-uy",                           phone: "+998 (55) 510-74-74", email: "i.toshkent.v@sud.uz",        lat: 41.266486, lng: 69.233482 },
+    { name: "Yuqorichirchiq tumanlararo iqtisodiy sudi",   address: "Toshkent viloyati, Yuqorichirchiq tumani, Yangiboʻzor qoʻrg'oni, Mustaqillik ko'chasi, 77-uy", phone: "+998 (55) 517-02-32", email: "i.yuqorichirchiq@sud.uz", lat: 41.313962, lng: 69.529620 },
+  ],
   andvil:  [{ name: "Andijon viloyati iqtisodiy sudi",             address: "170100, Andijon shahar, Navruz ko'ch., 12",                    phone: "+998 (74) 223-82-93", email: "andvil.iqt@supcourt.uz",  lat: 40.7829, lng: 72.3440 }],
   farvil:  [{ name: "Farg'ona viloyati iqtisodiy sudi",            address: "150100, Farg'ona shahar, Mustaqillik ko'ch., 15",              phone: "+998 (73) 244-93-04", email: "farvil.iqt@supcourt.uz",  lat: 40.3840, lng: 71.7870 }],
   namvil:  [{ name: "Namangan viloyati iqtisodiy sudi",            address: "160100, Namangan shahar, Hamza ko'ch., 36",                    phone: "+998 (69) 234-04-15", email: "namvil.iqt@supcourt.uz",  lat: 41.0011, lng: 71.6724 }],
