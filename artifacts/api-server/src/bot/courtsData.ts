@@ -573,7 +573,7 @@ const IQT: Record<string, CourtEntry[]> = {
     { name: "Oqoltin tumanlararo iqtisodiy sudi",   address: "Sardoba shaharchasi, Guliston ko'chasi, 7-uy",  phone: "+998 (55) 651-35-36", email: "i.oqoltin@sud.uz",  lat: 40.546512, lng: 68.404334 },
   ],
   kashvil: [{ name: "Qashqadaryo viloyati iqtisodiy sudi",         address: "180100, Qarshi shahar, Amir Temur ko'ch., 40",                 phone: "+998 (75) 225-92-03", email: "kashvil.iqt@supcourt.uz", lat: 38.8610, lng: 65.7880 }],
-  surxvil: [{ name: "Surxondaryo viloyati iqtisodiy sudi",         address: "190100, Termiz shahar, Al-Termiziy ko'ch., 3",                 phone: "+998 (76) 225-03-14", email: "surxvil.iqt@supcourt.uz", lat: 37.2245, lng: 67.2783 }],
+  surxvil: [{ name: "Surxondaryo viloyati iqtisodiy sudi",         address: "Termiz shahri, Sulton saodat ko'chasi, 286b-uy",               phone: "+998 (76) 228-19-00", email: "i.surxondaryo@sud.uz",    lat: 37.237798, lng: 67.307166 }],
 };
 
 // ── Yagona kirish nuqtasi ─────────────────────────────────────────────────────
