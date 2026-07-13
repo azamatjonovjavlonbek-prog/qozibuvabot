@@ -579,7 +579,8 @@ const IQT: Record<string, CourtEntry[]> = {
     { name: "Kasbi tumanlararo iqtisodiy sudi",   address: "Kasbi tumani, Muglon ko'chasi",                phone: "+998 (55) 404-69-23", email: "i.kasbi@sud.uz",       lat: 38.915954, lng: 65.401836 },
     { name: "Chiroqchi tuman iqtisodiy sudi",  address: "Chiroqchi tumani, Dam-2 massivi, 1-uy",      phone: "+998 (55) 404-69-31", email: "i.chiroqchi@sud.uz", lat: 39.023967, lng: 66.587991 },
     { name: "G'uzor tumanlararo iqtisodiy sudi",  address: "Qarshi shahar, Bog'zor ko'chasi, 2A-uy",  phone: "+998 (55) 404-69-18", email: "i.guzor@sud.uz",   lat: 38.826906, lng: 65.789491 },
-    { name: "Qarshi tumanlararo iqtisodiy sudi",  address: "Qarshi shahar, Bog'zor ko'chasi, 2A-uy",  phone: "+998 (55) 404-69-15", email: "i.qarshi@sud.uz",  lat: 38.826906, lng: 65.789491 },
+    { name: "Qarshi tumanlararo iqtisodiy sudi",    address: "Qarshi shahar, Bog'zor ko'chasi, 2A-uy",                    phone: "+998 (55) 404-69-15", email: "i.qarshi@sud.uz",     lat: 38.826906, lng: 65.789491 },
+    { name: "Yakkabog' tumanlararo iqtisodiy sudi", address: "Yakkabog' shahri, Aygirkol MFY, Amir Temur ko'chasi",       phone: "+998 (55) 404-69-33", email: "i.yakkabog@sud.uz",   lat: 38.973443, lng: 66.702348 },
   ],
   surxvil: [
     { name: "Surxondaryo viloyati iqtisodiy sudi", address: "Termiz shahri, Sulton saodat ko'chasi, 286b-uy", phone: "+998 (76) 228-19-00", email: "i.surxondaryo@sud.uz", lat: 37.237798, lng: 67.307166 },
