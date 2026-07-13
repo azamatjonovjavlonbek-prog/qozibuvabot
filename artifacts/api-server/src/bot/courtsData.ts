@@ -511,7 +511,8 @@ const IQT: Record<string, CourtEntry[]> = {
     { name: "Jomboy tumanlararo iqtisodiy sudi",  address: "Jomboy sh., Toshkent ko'chasi, 35-uy",       phone: "+998 (55) 706-70-38", email: "i.jomboy@sud.uz",  lat: 39.714648, lng: 67.105501 },
     { name: "Tayloq tumanlararo iqtisodiy sudi",  address: "Tayloq tumani, Mustaqillik ko'chasi, 8-uy",  phone: "+998 (55) 706-70-44", email: "i.tayloq@sud.uz",  lat: 39.602117, lng: 67.097190 },
     { name: "Payariq tumanlararo iqtisodiy sudi",    address: "Payariq sh., 50 yillik ko'chasi, 4-uy",  phone: "+998 (55) 706-70-42", email: "i.payariq@sud.uz",    lat: 39.986463, lng: 66.846708 },
-    { name: "Pastdarg'om tumanlararo iqtisodiy sudi", address: "Pastdarg'om tumani, Go'zalqent qo'rg'oni", phone: "+998 (55) 706-70-43", email: "i.pastdargom@sud.uz", lat: 39.749982, lng: 66.578990 },
+    { name: "Pastdarg'om tumanlararo iqtisodiy sudi",  address: "Pastdarg'om tumani, Go'zalqent qo'rg'oni",  phone: "+998 (55) 706-70-43", email: "i.pastdargom@sud.uz",    lat: 39.749982, lng: 66.578990 },
+    { name: "Samarqand shahar iqtisodiy sudi",         address: "Samarqand shahri, Mingtut ko'chasi, 2-uy",  phone: "+998 (55) 706-70-37", email: "i.samarqand.sh@sud.uz",  lat: 39.657841, lng: 66.940196 },
   ],
   buhvil:  [
     { name: "Buxoro viloyati iqtisodiy sudi",              address: "Buxoro shahar, Yangi hayot ko'chasi, 122-uy",           phone: "+998 (65) 220-01-14", email: "i.buxoro@sud.uz",      lat: 39.799530, lng: 64.424433 },
