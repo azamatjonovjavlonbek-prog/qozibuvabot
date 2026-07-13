@@ -498,7 +498,8 @@ const IQT: Record<string, CourtEntry[]> = {
     { name: "Andijon viloyati iqtisodiy sudi",   address: "Andijon shahar, A.Navoiy shoh ko'chasi, 15-uy", phone: "+998 (74) 224-42-44", email: "i.andijon@sud.uz",   lat: 40.767796, lng: 72.364417 },
     { name: "Andijon tumanlararo iqtisodiy sudi", address: "Andijon shahar, A.Navoiy shoh ko'chasi, 41-uy", phone: "+998 (74) 224-57-17", email: "i.andijon.t@sud.uz", lat: 40.384623, lng: 72.135875 },
     { name: "Asaka tumanlararo iqtisodiy sudi",   address: "Asaka shahri, Sohilbo'yi ko'chasi, 11-uy",                    phone: "+998 (74) 224-57-27", email: "i.asaka@sud.uz", lat: 40.412625, lng: 71.553974 },
-    { name: "Bo'ston tumanlararo iqtisodiy sudi", address: "Bo'ston tumani, Pillakor MFY, Mustaqillik ko'chasi, 32-uy",  phone: "+998 (74) 224-57-37", email: "i.buz@sud.uz",   lat: 40.534753, lng: 72.151715 },
+    { name: "Bo'ston tumanlararo iqtisodiy sudi",  address: "Bo'ston tumani, Pillakor MFY, Mustaqillik ko'chasi, 32-uy",    phone: "+998 (74) 224-57-37", email: "i.buz@sud.uz",       lat: 40.534753, lng: 72.151715 },
+    { name: "Izboskan tumanlararo iqtisodiy sudi", address: "Izboskan tumani, Poytug' shahri, Mirzo Ulug'bek ko'chasi, 2-uy", phone: "+998 (74) 224-57-47", email: "i.izboskan@sud.uz", lat: 40.728636, lng: 72.758529 },
   ],
   farvil:  [
     { name: "Farg'ona viloyati iqtisodiy sudi",   address: "Farg'ona shahar, Yangioy ko'chasi, 2-uy",          phone: "+998 (73) 249-15-30", email: "i.fargona@sud.uz",   lat: 40.374776, lng: 71.809034 },
