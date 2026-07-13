@@ -503,7 +503,10 @@ const IQT: Record<string, CourtEntry[]> = {
     { name: "Karmana tumanlararo iqtisodiy sudi",          address: "Navoiy shahar, Navoiy ko'chasi, 39b-uy",             phone: "+998 (79) 222-01-21", email: "i.karmana@sud.uz",     lat: 40.221583, lng: 65.307096 },
   ],
   xorvil:  [{ name: "Xorazm viloyati iqtisodiy sudi",              address: "220100, Urganch shahar, Al-Xorazmiy ko'ch., 12",               phone: "+998 (62) 226-48-59", email: "xorvil.iqt@supcourt.uz",  lat: 41.5553, lng: 60.6333 }],
-  qrvil:   [{ name: "Qoraqalpog'iston Respublikasi iqtisodiy sudi",address: "230100, Nukus shahar, Qoraqalpog'iston ko'ch., 18",            phone: "+998 (61) 222-59-70", email: "qrvil.iqt@supcourt.uz",   lat: 42.4600, lng: 59.6166 }],
+  qrvil:   [
+    { name: "Qoraqalpog'iston Respublikasi iqtisodiy sudi", address: "230100, Nukus shahar, Qoraqalpog'iston ko'ch., 18",       phone: "+998 (61) 222-59-70", email: "qrvil.iqt@supcourt.uz",  lat: 42.4600,    lng: 59.6166    },
+    { name: "Chimboy tumanlararo iqtisodiy sudi",           address: "Chimboy tumani, Tozg'ora OFY, raqamsiz uy",              phone: "+998 (55) 102-40-54", email: "i.chimboy@sud.uz",       lat: 42.903102,  lng: 59.777117  },
+  ],
   jizzvil: [{ name: "Jizzax viloyati iqtisodiy sudi",              address: "130100, Jizzax shahar, Sharof Rashidov ko'ch., 12",            phone: "+998 (72) 226-70-81", email: "jizzvil.iqt@supcourt.uz", lat: 40.1156, lng: 67.8422 }],
   sirvil:  [{ name: "Sirdaryo viloyati iqtisodiy sudi",            address: "120100, Guliston shahar, Mustaqillik ko'ch., 24",              phone: "+998 (67) 223-81-92", email: "sirvil.iqt@supcourt.uz",  lat: 40.4897, lng: 68.7869 }],
   kashvil: [{ name: "Qashqadaryo viloyati iqtisodiy sudi",         address: "180100, Qarshi shahar, Amir Temur ko'ch., 40",                 phone: "+998 (75) 225-92-03", email: "kashvil.iqt@supcourt.uz", lat: 38.8610, lng: 65.7880 }],
